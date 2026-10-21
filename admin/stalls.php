@@ -162,7 +162,7 @@ admin_header('Stalls');
             <td><?= e($r['city'] ?? '—') ?></td>
             <td><?= e((string) $r['product_count']) ?></td>
             <td><span class="admin-badge admin-badge-<?= $r['verified'] ? 'yes' : 'no' ?>"><?= $r['verified'] ? 'Verified' : 'No' ?></span></td>
-            <td><?= e($r['status']) ?> <?php $rs = $r['review_status'] ?? 'approved'; if ($rs !== 'approved'): ?><span class="admin-badge admin-badge-no"><?= $rs === 'pending' ? 'Pending approval' : 'Rejected' ?></span> <?php endif; ?><?php if (!empty($r['seller_id'])): ?><span class="muted" style="font-size:.78rem">seller</span><?php endif; ?></td>
+            <td><?= e($r['status']) ?> <?php $rs = $r['review_status'] ?? 'approved'; if ($rs !== 'approved'): ?><span class="admin-badge admin-badge-no"><?= $rs === 'pending' ? 'Pending approval' : 'Rejected' ?></span> <?php endif; ?><?php if (!empty($r['seller_id'])): ?><span class="muted" style="font-size:.78rem">seller</span><?php endif; ?><?php if (!empty($r['package'])): ?><span class="muted" style="font-size:.78rem"> · <?= e($r['package']) ?></span><?php endif; ?></td>
             <td class="admin-row-actions">
               <?php if (($r['review_status'] ?? 'approved') !== 'approved'): ?>
                 <form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?= e((string) $r['id']) ?>"><button class="admin-btn admin-btn-primary admin-btn-sm" type="submit">Approve</button></form>

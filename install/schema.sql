@@ -44,6 +44,7 @@ CREATE TABLE stalls (
   logo_emoji VARCHAR(10) NULL,
   logo_image VARCHAR(255) NULL,
   seller_id INT UNSIGNED NULL,
+  package VARCHAR(40) NULL,
   review_status VARCHAR(20) NOT NULL DEFAULT 'approved',
   verified TINYINT NOT NULL DEFAULT 0,
   rating DECIMAL(2,1) NULL,
