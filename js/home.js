@@ -1,4 +1,23 @@
 (function () {
+  /* "Shop by category" counts come from the dashboard's real products. */
+  var catCounts = null;
+  var UNITS = {
+    listing: { en: ['listing', 'listings'], bn: ['লিস্টিং', 'লিস্টিং'] },
+    product: { en: ['product', 'products'], bn: ['পণ্য', 'পণ্য'] }
+  };
+  function renderCatCounts() {
+    if (!catCounts) return;
+    var lang = window.I18N ? window.I18N.currentLang() : 'en';
+    document.querySelectorAll('[data-cat-count]').forEach(function (el) {
+      var n = catCounts[el.getAttribute('data-cat-count')] || 0;
+      var unit = UNITS[el.getAttribute('data-unit')] || UNITS.product;
+      var words = unit[lang] || unit.en;
+      el.textContent = n.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US') + ' ' + (n === 1 ? words[0] : words[1]);
+    });
+  }
+  var langBtn = document.getElementById('langToggle');
+  if (langBtn) langBtn.addEventListener('click', renderCatCounts);
+
   var statStalls = document.getElementById('statStalls');
   var statDistricts = document.getElementById('statDistricts');
   var statProducts = document.getElementById('statProducts');
@@ -10,6 +29,8 @@
         if (statStalls) statStalls.textContent = s.verifiedStalls.toLocaleString('en-US');
         if (statDistricts) statDistricts.textContent = s.districts.toLocaleString('en-US');
         if (statProducts) statProducts.textContent = s.products.toLocaleString('en-US');
+        catCounts = s.categories || null;
+        renderCatCounts();
       })
       .catch(function () {});
   }

@@ -154,9 +154,6 @@
 
     'categories.eyebrow': { en: 'Walk the aisles', bn: 'আইল ঘুরে দেখুন' },
     'categories.heading': { en: 'Shop by category', bn: 'ক্যাটাগরি অনুযায়ী কিনুন' },
-    'cat.count.carbike': { en: '1,760 stalls', bn: '১,৭৬০ স্টল' },
-    'cat.count.realestate': { en: '980 listings', bn: '৯৮০ লিস্টিং' },
-    'cat.count.agro': { en: '2,240 stalls', bn: '২,২৪০ স্টল' },
 
     'deals.eyebrow': { en: 'Fresh off the shelf', bn: 'তাজা মজুদ' },
     'deals.heading': { en: 'Trending in the bazaar', bn: 'বাজারে এখন জনপ্রিয়' },
