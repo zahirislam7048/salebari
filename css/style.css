@@ -1809,3 +1809,38 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
   .pp-mobile-bar .pp-bar-wa { flex: 1; }
   .pp-share { margin-left: 0; }
 }
+
+/* ---- product page: reviews, ask-a-question, recently viewed, spec table (BDStall-style full width) ---- */
+.pp-meta-rating { color: #b27a00; font-weight: 700; }
+.pp-spec-table th { width: 46%; }
+.pp-spec-table tr:nth-child(odd) th, .pp-spec-table tr:nth-child(odd) td { background: var(--paper-warm); }
+.pp-spec-table tr:nth-child(even) th, .pp-spec-table tr:nth-child(even) td { background: #fff; }
+.pp-reviews { text-align: center; }
+.pp-rev-empty { max-width: 520px; margin: 4px auto 18px; }
+.pp-rev-star { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: #fbf3dc; color: var(--gold-deep); font-size: 2rem; display: grid; place-items: center; }
+.pp-rev-empty h2 { display: block; margin: 0 0 8px; font-size: 1.2rem; }
+.pp-rev-empty p { margin: 0 0 14px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
+.pp-rev-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.pp-rev-chips span { font-size: 0.78rem; font-weight: 600; color: #1d6b33; background: #e8f5ea; border-radius: 999px; padding: 5px 12px; }
+.pp-rev-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 18px 0 6px; }
+.pp-rev-summary { margin-bottom: 14px; }
+.pp-rev-score { display: inline-flex; align-items: baseline; gap: 10px; }
+.pp-rev-score strong { font-size: 2rem; }
+.pp-stars { color: #e0a100; letter-spacing: 2px; }
+.pp-rev-list { text-align: left; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.pp-rev { border: 1px solid var(--line); border-radius: var(--radius-m); padding: 14px 16px; }
+.pp-rev-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.pp-rev-head small { color: var(--ink-soft); margin-left: auto; }
+.pp-rev p { margin: 8px 0 0; color: var(--ink-soft); line-height: 1.6; overflow-wrap: anywhere; }
+.pp-rev-form { max-width: 560px; margin: 18px auto 0; text-align: left; }
+.pp-rev-form[hidden] { display: none; }
+.pp-rate-label { margin: 0; font-weight: 600; font-size: 0.9rem; }
+.pp-rate-input { display: inline-flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+.pp-rate-input input { position: absolute; opacity: 0; pointer-events: none; }
+.pp-rate-input label { font-size: 2rem; line-height: 1; color: #d7d2c6; cursor: pointer; transition: color 0.1s; }
+.pp-rate-input label:hover, .pp-rate-input label:hover ~ label, .pp-rate-input input:checked ~ label { color: #e0a100; }
+.pp-rate-input input:focus-visible + label { outline: 2px solid var(--gold); border-radius: 4px; }
+.pp-recent[hidden] { display: none; }
+@media (max-width: 640px) {
+  .pp-rev-actions .btn { flex: 1 1 100%; justify-content: center; }
+}

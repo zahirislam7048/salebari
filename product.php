@@ -27,6 +27,52 @@ $similar = $product ? rows(
     [$product['category_id'], $product['id'], 'active']
 ) : [];
 
+/* Reviews: anyone can submit one; it goes live after the admin approves it. */
+$reviewErr  = null;
+$reviewOld  = ['rname' => '', 'rating' => 0, 'rcomment' => ''];
+if ($product && is_post() && input('action') === 'review') {
+    csrf_check();
+    if ((string) input('company_url') !== '') {
+        exit; // honeypot
+    }
+    $reviewOld = ['rname' => (string) input('rname'), 'rating' => input_int('rating', 0), 'rcomment' => (string) input('rcomment')];
+    $times = array_filter($_SESSION['review_times'] ?? [], function ($t) { return time() - $t < 3600; });
+
+    if (mb_strlen($reviewOld['rname']) < 2) {
+        $reviewErr = 'Please enter your name.';
+    } elseif ($reviewOld['rating'] < 1 || $reviewOld['rating'] > 5) {
+        $reviewErr = 'Please choose a star rating.';
+    } elseif (mb_strlen($reviewOld['rcomment']) < 5 || mb_strlen($reviewOld['rcomment']) > 1000) {
+        $reviewErr = 'Please write a short review (5 to 1000 characters).';
+    } elseif (count($times) >= 3) {
+        $reviewErr = 'You have sent several reviews already. Please try again later.';
+    } else {
+        try {
+            insert('product_reviews', [
+                'product_id' => $product['id'],
+                'name'       => mb_substr($reviewOld['rname'], 0, 80),
+                'rating'     => $reviewOld['rating'],
+                'comment'    => $reviewOld['rcomment'],
+                'status'     => 'pending',
+                'created_at' => now(),
+            ]);
+            $times[] = time();
+            $_SESSION['review_times'] = array_values($times);
+            flash('success', 'Thank you! Your review will appear after our team approves it.');
+            header('Location: ' . url('product.php', ['slug' => $slug]) . '#pp-reviews');
+            exit;
+        } catch (Throwable $ex) {
+            $reviewErr = 'Could not save your review right now. Please try again.';
+        }
+    }
+}
+$reviews = $product ? rows(
+    "SELECT * FROM product_reviews WHERE product_id = ? AND status = 'approved' ORDER BY id DESC LIMIT 50",
+    [$product['id']]
+) : [];
+$ratingCount = count($reviews);
+$ratingAvg   = $ratingCount ? array_sum(array_column($reviews, 'rating')) / $ratingCount : 0;
+
 /* Specifications: one "Name: Value" per line. */
 $specs = [];
 if ($product && trim((string) ($product['specs'] ?? '')) !== '') {
@@ -44,6 +90,8 @@ $phone     = setting('contact_phone', 'en', CONTACT_PHONE);
 $whatsapp  = preg_replace('/[^0-9]/', '', setting('contact_whatsapp', 'en', $phone));
 $waMessage = $product ? "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari." : '';
 $waLink    = $whatsapp ? 'https://wa.me/' . $whatsapp . '?text=' . urlencode($waMessage) : '';
+$askMsg    = $product ? "Hi, I have a question about \"" . $product['title_en'] . "\" on SaleBari: " : '';
+$askLink   = $whatsapp ? 'https://wa.me/' . $whatsapp . '?text=' . urlencode($askMsg) : '';
 $waIcon    = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg>';
 
 $pageTitle = $product ? ($product['meta_title'] ?: $product['title_en']) . ' — SaleBari' : 'Product not found — SaleBari';
@@ -193,6 +241,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       <a href="#pp-seller" data-i18n="pp.tab.seller">Seller</a>
       <?php if ($specs): ?><a href="#pp-specs" data-i18n="pp.tab.specs">Specs</a><?php endif; ?>
       <?php if ($product['description_en']): ?><a href="#pp-overview" data-i18n="pp.tab.overview">Overview</a><?php endif; ?>
+      <a href="#pp-reviews" data-i18n="pp.tab.reviews">Reviews</a>
       <?php if ($similar): ?><a href="#pp-related" data-i18n="pp.tab.related">Related</a><?php endif; ?>
     </nav>
 
@@ -221,6 +270,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
         <div class="pp-meta">
           <span class="pp-meta-item">SKU <?= (int) $product['id'] ?></span>
+          <?php if ($ratingCount): ?><a class="pp-meta-item pp-meta-rating" href="#pp-reviews">★ <?= number_format($ratingAvg, 1) ?> (<?= $ratingCount ?>)</a><?php endif; ?>
           <span class="pp-meta-item">Posted <?= e(date('j M Y', strtotime((string) $product['created_at']))) ?></span>
           <button type="button" class="pp-share" id="ppShare" data-title="<?= e($product['title_en']) ?>">↗ <span data-i18n="pp.share">Share</span></button>
         </div>
@@ -269,7 +319,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
     <?php if ($specs): ?>
       <section class="pp-section" id="pp-specs">
-        <h2><span class="pp-sec-ico">📋</span> <span data-i18n="pp.specs">Specifications</span></h2>
+        <h2><span class="pp-sec-ico">📋</span> <?= e($category['name_en'] ?? '') ?> <span data-i18n="pp.specs">Full Specification</span></h2>
         <table class="pp-spec-table">
           <?php foreach ($specs as [$k, $v]): ?>
             <tr><th><?= e($k) ?></th><td><?= e($v) ?></td></tr>
@@ -285,9 +335,62 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       </section>
     <?php endif; ?>
 
+
+    <section class="pp-section pp-reviews" id="pp-reviews">
+      <?php foreach (take_flashes() as $f): ?><p class="acct-flash acct-flash-<?= e($f['type']) ?>"><?= e($f['msg']) ?></p><?php endforeach; ?>
+
+      <?php if ($ratingCount): ?>
+        <div class="pp-rev-summary">
+          <div class="pp-rev-score"><strong><?= number_format($ratingAvg, 1) ?></strong><span class="pp-stars" aria-hidden="true"><?= str_repeat('★', (int) round($ratingAvg)) . str_repeat('☆', 5 - (int) round($ratingAvg)) ?></span><small><?= $ratingCount ?> <span data-i18n="pp.reviewsWord">reviews</span></small></div>
+        </div>
+        <div class="pp-rev-list">
+          <?php foreach ($reviews as $rv): ?>
+            <div class="pp-rev">
+              <div class="pp-rev-head"><strong><?= e($rv['name']) ?></strong><span class="pp-stars" aria-hidden="true"><?= str_repeat('★', (int) $rv['rating']) . str_repeat('☆', 5 - (int) $rv['rating']) ?></span><small><?= e(date('j M Y', strtotime((string) $rv['created_at']))) ?></small></div>
+              <p><?= nl2br(e($rv['comment'])) ?></p>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <div class="pp-rev-empty">
+          <div class="pp-rev-star">☆</div>
+          <h2 data-i18n="pp.firstReview">Be the first to review</h2>
+          <p data-i18n="pp.reviewInvite">Share your experience with this product and help other buyers in Bangladesh make a better decision.</p>
+          <div class="pp-rev-chips">
+            <span data-i18n="pp.chip1">✓ Takes under 2 minutes</span>
+            <span data-i18n="pp.chip2">✓ Help other buyers</span>
+            <span data-i18n="pp.chip3">✓ Ask the seller anything</span>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <div class="pp-rev-actions">
+        <button type="button" class="btn btn-primary" id="ppWriteReview" data-i18n="pp.writeReview">★ Write a Review</button>
+        <?php if ($askLink): ?><a class="btn btn-ghost" href="<?= e($askLink) ?>" target="_blank" rel="noopener" data-i18n="pp.askQuestion">Ask a Question</a><?php endif; ?>
+      </div>
+
+      <form method="post" class="pp-rev-form acct-form" id="ppReviewForm" <?= $reviewErr ? '' : 'hidden' ?> action="<?= e(url('product.php', ['slug' => $slug])) ?>#pp-reviews">
+        <?= csrf_field() ?>
+        <input type="hidden" name="action" value="review">
+        <div class="acct-hp" aria-hidden="true"><label>Company URL <input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
+        <?php if ($reviewErr): ?><p class="acct-error"><?= e($reviewErr) ?></p><?php endif; ?>
+        <p class="pp-rate-label" data-i18n="pp.howRate">How would you rate it?</p>
+        <div class="pp-rate-input" role="radiogroup" aria-label="Rating">
+          <?php for ($i = 5; $i >= 1; $i--): ?>
+            <input type="radio" name="rating" id="rate<?= $i ?>" value="<?= $i ?>" <?= (int) $reviewOld['rating'] === $i ? 'checked' : '' ?>><label for="rate<?= $i ?>" title="<?= $i ?> star<?= $i > 1 ? 's' : '' ?>">★</label>
+          <?php endfor; ?>
+        </div>
+        <label class="acct-field"><span data-i18n="pp.yourName">Your name</span>
+          <input type="text" name="rname" maxlength="80" required value="<?= e($reviewOld['rname']) ?>"></label>
+        <label class="acct-field"><span data-i18n="pp.yourReview">Your review</span>
+          <textarea name="rcomment" rows="4" maxlength="1000" required><?= e($reviewOld['rcomment']) ?></textarea></label>
+        <button class="btn btn-primary" type="submit" data-i18n="pp.submitReview">Submit review</button>
+      </form>
+    </section>
+
     <?php if ($similar): ?>
       <section class="pp-section pp-similar" id="pp-related">
-        <h2><span class="pp-sec-ico">🔗</span> <span data-i18n="pp.similar">Similar products</span></h2>
+        <h2><span class="pp-sec-ico">🔗</span> <span data-i18n="pp.similar">Similar</span> <?= e($category['name_en'] ?? '') ?></h2>
         <div class="product-grid">
           <?php foreach ($similar as $s): $simgs = json_decode((string) $s['images'], true) ?: []; ?>
             <a class="product-card" href="product.php?slug=<?= e($s['slug']) ?>" style="text-decoration:none;color:inherit;display:block">
@@ -304,6 +407,11 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
         </div>
       </section>
     <?php endif; ?>
+
+    <section class="pp-section pp-recent" id="pp-recent" hidden>
+      <h2><span class="pp-sec-ico">🕘</span> <span data-i18n="pp.recent">Recently viewed</span></h2>
+      <div class="product-grid" id="ppRecentGrid"></div>
+    </section>
   </div>
 </section>
 <?php endif; ?>
@@ -390,8 +498,22 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     'pp.title.<?= (int) $product['id'] ?>': { en: <?= json_encode($product['title_en']) ?>, bn: <?= json_encode($product['title_bn'] ?: $product['title_en']) ?> },
     'pp.desc.<?= (int) $product['id'] ?>': { en: <?= json_encode((string) $product['description_en']) ?>, bn: <?= json_encode($product['description_bn'] ?: (string) $product['description_en']) ?> },
     'pp.overview': { en: 'Overview', bn: 'বিবরণ' },
-    'pp.similar': { en: 'Similar products', bn: 'একই ধরনের পণ্য' },
-    'pp.specs': { en: 'Specifications', bn: 'স্পেসিফিকেশন' },
+    'pp.similar': { en: 'Similar', bn: 'একই ধরনের' },
+    'pp.specs': { en: 'Full Specification', bn: 'পূর্ণ স্পেসিফিকেশন' },
+    'pp.tab.reviews': { en: 'Reviews', bn: 'রিভিউ' },
+    'pp.reviewsWord': { en: 'reviews', bn: 'টি রিভিউ' },
+    'pp.firstReview': { en: 'Be the first to review', bn: 'প্রথম রিভিউটি আপনিই দিন' },
+    'pp.reviewInvite': { en: 'Share your experience with this product and help other buyers in Bangladesh make a better decision.', bn: 'পণ্যটি নিয়ে আপনার অভিজ্ঞতা জানান এবং বাংলাদেশের অন্য ক্রেতাদের সঠিক সিদ্ধান্ত নিতে সাহায্য করুন।' },
+    'pp.chip1': { en: '✓ Takes under 2 minutes', bn: '✓ ২ মিনিটেরও কম সময় লাগে' },
+    'pp.chip2': { en: '✓ Help other buyers', bn: '✓ অন্য ক্রেতাদের সাহায্য করুন' },
+    'pp.chip3': { en: '✓ Ask the seller anything', bn: '✓ বিক্রেতাকে যেকোনো প্রশ্ন করুন' },
+    'pp.writeReview': { en: '★ Write a Review', bn: '★ রিভিউ লিখুন' },
+    'pp.askQuestion': { en: 'Ask a Question', bn: 'প্রশ্ন করুন' },
+    'pp.howRate': { en: 'How would you rate it?', bn: 'আপনি কত রেটিং দেবেন?' },
+    'pp.yourName': { en: 'Your name', bn: 'আপনার নাম' },
+    'pp.yourReview': { en: 'Your review', bn: 'আপনার রিভিউ' },
+    'pp.submitReview': { en: 'Submit review', bn: 'রিভিউ জমা দিন' },
+    'pp.recent': { en: 'Recently viewed', bn: 'সম্প্রতি দেখা' },
     'pp.tab.seller': { en: 'Seller', bn: 'বিক্রেতা' },
     'pp.tab.specs': { en: 'Specs', bn: 'স্পেসিফিকেশন' },
     'pp.tab.overview': { en: 'Overview', bn: 'বিবরণ' },
@@ -424,6 +546,38 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   function placeTabs() { if (tabs && header) { var h = header.offsetHeight; tabs.style.top = h + 'px'; document.documentElement.style.setProperty('--pp-sticky', (h + 60) + 'px'); } }
   placeTabs();
   window.addEventListener('resize', placeTabs);
+
+  /* Review form toggle; clicking a star opens it with that rating. */
+  var revForm = document.getElementById('ppReviewForm');
+  var revBtn = document.getElementById('ppWriteReview');
+  if (revBtn && revForm) {
+    revBtn.addEventListener('click', function () { revForm.hidden = !revForm.hidden; if (!revForm.hidden) revForm.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  }
+
+  /* Recently viewed: remembered in this browser only. */
+  (function () {
+    var KEY = 'sb_recent', here = <?= json_encode(['slug' => $product['slug'], 'title' => $product['title_en'], 'price' => (string) $product['price_display'], 'img' => $images ? asset($images[0]) : '']) ?>;
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { list = []; }
+    var others = list.filter(function (p) { return p && p.slug !== here.slug; }).slice(0, 5);
+    var next = [here].concat(others).slice(0, 8);
+    try { localStorage.setItem(KEY, JSON.stringify(next)); } catch (e) {}
+    if (!others.length) return;
+    var grid = document.getElementById('ppRecentGrid');
+    others.forEach(function (p) {
+      var a = document.createElement('a');
+      a.className = 'product-card'; a.href = 'product.php?slug=' + encodeURIComponent(p.slug);
+      a.style.cssText = 'text-decoration:none;color:inherit;display:block';
+      var media = document.createElement('div'); media.className = 'product-media grad-1';
+      if (p.img) { var im = document.createElement('img'); im.src = p.img; im.alt = ''; media.appendChild(im); } else { media.textContent = '🛒'; }
+      var body = document.createElement('div'); body.className = 'product-body';
+      var h = document.createElement('h3'); h.className = 'product-title'; h.textContent = p.title;
+      body.appendChild(h);
+      if (p.price) { var pr = document.createElement('div'); pr.className = 'product-price'; var tag = document.createElement('span'); tag.className = 'price-tag'; tag.textContent = p.price; pr.appendChild(tag); body.appendChild(pr); }
+      a.appendChild(media); a.appendChild(body); grid.appendChild(a);
+    });
+    document.getElementById('pp-recent').hidden = false;
+  })();
 
   var share = document.getElementById('ppShare');
   if (share) {

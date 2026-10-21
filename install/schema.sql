@@ -190,3 +190,13 @@ CREATE TABLE sellers (
   last_login_at DATETIME NULL,
   created_at DATETIME NOT NULL
 );
+
+CREATE TABLE product_reviews (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id INT UNSIGNED NOT NULL,
+  name VARCHAR(80) NOT NULL,
+  rating INT NOT NULL,
+  comment TEXT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  created_at DATETIME NOT NULL
+);
