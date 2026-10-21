@@ -73,6 +73,12 @@ if (is_post()) {
         }
     }
 
+    if ($action === 'approve' || $action === 'reject') {
+        update('brands', ['review_status' => $action === 'approve' ? 'approved' : 'rejected'], 'id = ?', [input_int('id', 0)]);
+        flash('success', $action === 'approve' ? 'Approved — it is now live on the public site.' : 'Marked as not approved.');
+        redirect('admin/brands.php');
+    }
+
     if ($action === 'delete') {
         $b = row('SELECT logo_image FROM brands WHERE id = ?', [input_int('id', 0)]);
         if (!empty($b['logo_image'])) {
@@ -88,7 +94,7 @@ $perPage = 40;
 $page    = input_int('page', 1);
 $total   = (int) scalar('SELECT COUNT(*) FROM brands');
 $p       = paginate($total, $perPage, $page);
-$rows    = rows('SELECT * FROM brands ORDER BY name LIMIT ' . $p['per'] . ' OFFSET ' . $p['offset']);
+$rows    = rows('SELECT * FROM brands ORDER BY (review_status = \'pending\') DESC, name LIMIT ' . $p['per'] . ' OFFSET ' . $p['offset']);
 
 admin_header('Brands', '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">');
 ?>
@@ -165,8 +171,14 @@ admin_header('Brands', '<link rel="stylesheet" href="https://cdnjs.cloudflare.co
         <?php foreach ($rows as $r): ?>
           <tr>
             <td><?php if ($r['logo_image']): ?><img src="<?= e(asset($r['logo_image'])) ?>" alt="" style="width:32px;height:32px;object-fit:contain"><?php else: ?>—<?php endif; ?></td>
-            <td><?= e($r['name']) ?></td>
+            <td><?= e($r['name']) ?> <?php $rs = $r['review_status'] ?? 'approved'; if ($rs !== 'approved'): ?><span class="admin-badge admin-badge-no"><?= $rs === 'pending' ? 'Pending approval' : 'Rejected' ?></span> <?php endif; ?><?php if (!empty($r['seller_id'])): ?><span class="muted" style="font-size:.78rem">seller</span><?php endif; ?></td>
             <td class="admin-row-actions">
+              <?php if (($r['review_status'] ?? 'approved') !== 'approved'): ?>
+                <form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?= e((string) $r['id']) ?>"><button class="admin-btn admin-btn-primary admin-btn-sm" type="submit">Approve</button></form>
+              <?php endif; ?>
+              <?php if (($r['review_status'] ?? 'approved') === 'pending'): ?>
+                <form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="action" value="reject"><input type="hidden" name="id" value="<?= e((string) $r['id']) ?>"><button class="admin-btn admin-btn-ghost admin-btn-sm" type="submit">Reject</button></form>
+              <?php endif; ?>
               <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= url('admin/brands.php', ['edit' => $r['id']]) ?>">Edit</a>
               <form method="post" onsubmit="return confirm('Delete this brand?');" style="display:inline">
                 <?= csrf_field() ?>

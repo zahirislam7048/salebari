@@ -13,6 +13,7 @@ function admin_nav_items(): array
         'stalls.php'      => 'Stalls',
         'malls.php'       => 'Shopping Malls',
         'brands.php'      => 'Brands',
+        'sellers.php'     => 'Sellers',
         'deals.php'       => 'Trending Deals',
         'real_estate.php' => 'Real Estate Strip',
         'settings.php'    => 'Site Settings',

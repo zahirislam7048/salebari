@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../../app/bootstrap.php';
 
-$brands = rows('SELECT * FROM brands ORDER BY name');
+$brands = rows("SELECT * FROM brands WHERE review_status = 'approved' ORDER BY name");
 $byLetter = [];
 foreach ($brands as $b) {
     $letter = mb_strtoupper(mb_substr($b['name'], 0, 1));
@@ -72,7 +72,7 @@ $total = count($brands);
     </form>
 
     <div class="header-actions">
-      <a href="../../index.html#account" class="icon-link">
+      <a href="../../account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>

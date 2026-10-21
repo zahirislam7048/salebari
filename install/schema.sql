@@ -43,6 +43,8 @@ CREATE TABLE stalls (
   description TEXT NULL,
   logo_emoji VARCHAR(10) NULL,
   logo_image VARCHAR(255) NULL,
+  seller_id INT UNSIGNED NULL,
+  review_status VARCHAR(20) NOT NULL DEFAULT 'approved',
   verified TINYINT NOT NULL DEFAULT 0,
   rating DECIMAL(2,1) NULL,
   product_count INT UNSIGNED NOT NULL DEFAULT 0,
@@ -94,6 +96,8 @@ CREATE TABLE brands (
   twitter VARCHAR(255) NULL,
   linkedin VARCHAR(255) NULL,
   description LONGTEXT NULL,
+  seller_id INT UNSIGNED NULL,
+  review_status VARCHAR(20) NOT NULL DEFAULT 'approved',
   sort_order INT NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL
 );
@@ -171,5 +175,16 @@ CREATE TABLE blog_posts (
   content_bn LONGTEXT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'draft',
   published_at DATETIME NULL,
+  created_at DATETIME NOT NULL
+);
+
+CREATE TABLE sellers (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NULL,
+  phone VARCHAR(30) NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'active',
+  last_login_at DATETIME NULL,
   created_at DATETIME NOT NULL
 );

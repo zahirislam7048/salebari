@@ -9,8 +9,8 @@ if (!$product) {
 }
 
 $category = $product ? row('SELECT * FROM categories WHERE id = ?', [$product['category_id']]) : null;
-$stall = $product && $product['stall_id'] ? row('SELECT * FROM stalls WHERE id = ?', [$product['stall_id']]) : null;
-$brand = $product && $product['brand_id'] ? row('SELECT * FROM brands WHERE id = ?', [$product['brand_id']]) : null;
+$stall = $product && $product['stall_id'] ? row("SELECT * FROM stalls WHERE id = ? AND review_status = 'approved'", [$product['stall_id']]) : null;
+$brand = $product && $product['brand_id'] ? row("SELECT * FROM brands WHERE id = ? AND review_status = 'approved'", [$product['brand_id']]) : null;
 
 /* Build the breadcrumb trail up to the top-level category. */
 $trail = [];
@@ -89,7 +89,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     </form>
 
     <div class="header-actions">
-      <a href="index.html#account" class="icon-link">
+      <a href="account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>

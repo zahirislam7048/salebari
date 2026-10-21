@@ -15,6 +15,8 @@ $stats = [
     'Trending Deals' => (int) scalar('SELECT COUNT(*) FROM deals'),
     'Real Estate Strip' => (int) scalar('SELECT COUNT(*) FROM real_estate_listings'),
     'Subscribers' => (int) scalar('SELECT COUNT(*) FROM subscribers'),
+    'Seller accounts' => (int) scalar('SELECT COUNT(*) FROM sellers'),
+    'Awaiting approval' => (int) scalar("SELECT (SELECT COUNT(*) FROM stalls WHERE review_status = 'pending') + (SELECT COUNT(*) FROM brands WHERE review_status = 'pending')"),
 ];
 
 admin_header('Dashboard');

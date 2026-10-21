@@ -70,6 +70,12 @@ if (is_post()) {
         }
     }
 
+    if ($action === 'approve' || $action === 'reject') {
+        update('stalls', ['review_status' => $action === 'approve' ? 'approved' : 'rejected'], 'id = ?', [input_int('id', 0)]);
+        flash('success', $action === 'approve' ? 'Approved — it is now live on the public site.' : 'Marked as not approved.');
+        redirect('admin/stalls.php');
+    }
+
     if ($action === 'delete') {
         $s = row('SELECT logo_image FROM stalls WHERE id = ?', [input_int('id', 0)]);
         if (!empty($s['logo_image'])) {
@@ -85,7 +91,7 @@ $perPage = 20;
 $page    = input_int('page', 1);
 $total   = (int) scalar('SELECT COUNT(*) FROM stalls');
 $p       = paginate($total, $perPage, $page);
-$rows    = rows('SELECT * FROM stalls ORDER BY id DESC LIMIT ' . $p['per'] . ' OFFSET ' . $p['offset']);
+$rows    = rows('SELECT * FROM stalls ORDER BY (review_status = \'pending\') DESC, id DESC LIMIT ' . $p['per'] . ' OFFSET ' . $p['offset']);
 
 admin_header('Stalls');
 ?>
@@ -156,8 +162,14 @@ admin_header('Stalls');
             <td><?= e($r['city'] ?? '—') ?></td>
             <td><?= e((string) $r['product_count']) ?></td>
             <td><span class="admin-badge admin-badge-<?= $r['verified'] ? 'yes' : 'no' ?>"><?= $r['verified'] ? 'Verified' : 'No' ?></span></td>
-            <td><?= e($r['status']) ?></td>
+            <td><?= e($r['status']) ?> <?php $rs = $r['review_status'] ?? 'approved'; if ($rs !== 'approved'): ?><span class="admin-badge admin-badge-no"><?= $rs === 'pending' ? 'Pending approval' : 'Rejected' ?></span> <?php endif; ?><?php if (!empty($r['seller_id'])): ?><span class="muted" style="font-size:.78rem">seller</span><?php endif; ?></td>
             <td class="admin-row-actions">
+              <?php if (($r['review_status'] ?? 'approved') !== 'approved'): ?>
+                <form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?= e((string) $r['id']) ?>"><button class="admin-btn admin-btn-primary admin-btn-sm" type="submit">Approve</button></form>
+              <?php endif; ?>
+              <?php if (($r['review_status'] ?? 'approved') === 'pending'): ?>
+                <form method="post" style="display:inline"><?= csrf_field() ?><input type="hidden" name="action" value="reject"><input type="hidden" name="id" value="<?= e((string) $r['id']) ?>"><button class="admin-btn admin-btn-ghost admin-btn-sm" type="submit">Reject</button></form>
+              <?php endif; ?>
               <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= url('admin/stalls.php', ['edit' => $r['id']]) ?>">Edit</a>
               <form method="post" onsubmit="return confirm('Delete this stall?');" style="display:inline">
                 <?= csrf_field() ?>

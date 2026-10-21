@@ -2,14 +2,14 @@
 require __DIR__ . '/../../app/bootstrap.php';
 
 $q       = trim((string) input('q', ''));
-$where   = "status = 'active'" . ($q !== '' ? ' AND name LIKE ?' : '');
+$where   = "status = 'active' AND review_status = 'approved'" . ($q !== '' ? ' AND name LIKE ?' : '');
 $args    = $q !== '' ? ['%' . $q . '%'] : [];
 $perPage = 24;
 $page    = input_int('page', 1);
 $total   = (int) scalar("SELECT COUNT(*) FROM stalls WHERE $where", $args);
 $p       = paginate($total, $perPage, $page);
 $stalls  = rows("SELECT * FROM stalls WHERE $where ORDER BY id DESC LIMIT " . $p['per'] . ' OFFSET ' . $p['offset'], $args);
-$grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active'");
+$grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' AND review_status = 'approved'");
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +70,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active'"
     </form>
 
     <div class="header-actions">
-      <a href="../../index.html#account" class="icon-link">
+      <a href="../../account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>

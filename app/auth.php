@@ -98,3 +98,61 @@ function valid_email(string $s): bool
 {
     return (bool) filter_var($s, FILTER_VALIDATE_EMAIL);
 }
+
+/* --- Seller accounts (public sign-up) ------------------------- */
+/* Separate from the admin login: a seller session can never reach admin/*. */
+
+function seller(): ?array
+{
+    static $s = false;
+    if ($s !== false) {
+        return $s;
+    }
+    $id = $_SESSION['seller_id'] ?? null;
+    if (!$id) {
+        return $s = null;
+    }
+    $r = row('SELECT * FROM sellers WHERE id = ? AND status = ?', [$id, 'active']);
+    if (!$r) {
+        unset($_SESSION['seller_id']);
+        return $s = null;
+    }
+    return $s = $r;
+}
+
+function login_seller(array $seller): void
+{
+    session_regenerate_id(true);
+    $_SESSION['seller_id'] = (int) $seller['id'];
+    update('sellers', ['last_login_at' => now()], 'id = ?', [$seller['id']]);
+}
+
+function require_seller(): array
+{
+    $s = seller();
+    if (!$s) {
+        redirect('account/login.php');
+    }
+    return $s;
+}
+
+/** Find a seller by what they typed: an email or a Bangladesh mobile number. */
+function find_seller_by_identifier(string $ident): ?array
+{
+    $ident = trim($ident);
+    if (valid_email($ident)) {
+        return row('SELECT * FROM sellers WHERE email = ?', [strtolower($ident)]);
+    }
+    $phone = normalize_bd_phone($ident);
+    return $phone ? row('SELECT * FROM sellers WHERE phone = ?', [$phone]) : null;
+}
+
+/** May the current visitor see a not-yet-approved stall/brand? (its owner, or the admin) */
+function can_preview(array $record): bool
+{
+    if (is_logged_in()) {
+        return true;
+    }
+    $s = seller();
+    return $s && !empty($record['seller_id']) && (int) $record['seller_id'] === (int) $s['id'];
+}

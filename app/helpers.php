@@ -159,3 +159,91 @@ function paginate(int $total, int $perPage, int $page): array
         'per'    => $perPage,
     ];
 }
+
+/* --- Seller-submitted content --------------------------------- */
+
+/** Bangladesh mobile -> 01XXXXXXXXX, or null if it isn't one. */
+function normalize_bd_phone(string $raw): ?string
+{
+    $d = preg_replace('/\D+/', '', $raw);
+    if (strpos($d, '880') === 0) {
+        $d = '0' . substr($d, 3);
+    }
+    return preg_match('/^01[3-9]\d{8}$/', $d) ? $d : null;
+}
+
+/**
+ * Whitelist-clean HTML from the rich-text editor. Seller input is untrusted
+ * (unlike the admin's), and it is printed raw on public pages, so only basic
+ * formatting survives: no scripts, no inline styles/events, no images, and
+ * links limited to http(s)/mailto/tel.
+ */
+function sanitize_html(?string $html): ?string
+{
+    $html = trim((string) $html);
+    if ($html === '') {
+        return null;
+    }
+    $allowed = ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'h2', 'h3', 'blockquote', 'a'];
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML('<?xml encoding="utf-8"?><div id="sb-root">' . $html . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+    $root = $doc->getElementById('sb-root');
+    if (!$root) {
+        return null;
+    }
+
+    $clean = function (DOMNode $node) use (&$clean, $allowed): void {
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if ($child instanceof DOMComment) {
+                $node->removeChild($child);
+                continue;
+            }
+            if (!($child instanceof DOMElement)) {
+                continue;
+            }
+            $tag = strtolower($child->tagName);
+            if (!in_array($tag, $allowed, true)) {
+                if (in_array($tag, ['script', 'style', 'iframe', 'object', 'embed', 'svg', 'math', 'form', 'textarea', 'select', 'img', 'video', 'audio'], true)) {
+                    $node->removeChild($child);
+                    continue;
+                }
+                // Unknown wrapper (div, span, font…): keep its text/children, drop the tag.
+                $clean($child);
+                while ($child->firstChild) {
+                    $node->insertBefore($child->firstChild, $child);
+                }
+                $node->removeChild($child);
+                continue;
+            }
+            $href = $tag === 'a' ? trim((string) $child->getAttribute('href')) : '';
+            foreach (iterator_to_array($child->attributes) as $attr) {
+                $child->removeAttributeNode($attr);
+            }
+            $clean($child);
+            if ($tag === 'a') {
+                if (preg_match('~^(https?://|mailto:|tel:)~i', $href)) {
+                    $child->setAttribute('href', $href);
+                    $child->setAttribute('rel', 'nofollow noopener');
+                    $child->setAttribute('target', '_blank');
+                } else {
+                    // Unsafe or empty link: keep the text, drop the anchor.
+                    while ($child->firstChild) {
+                        $node->insertBefore($child->firstChild, $child);
+                    }
+                    $node->removeChild($child);
+                }
+            }
+        }
+    };
+
+    $clean($root);
+
+    $out = '';
+    foreach ($root->childNodes as $child) {
+        $out .= $doc->saveHTML($child);
+    }
+    $out = trim($out);
+    return $out === '' ? null : $out;
+}

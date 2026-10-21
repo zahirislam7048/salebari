@@ -25,6 +25,7 @@ require APP_ROOT . '/app/helpers.php';
 require APP_ROOT . '/app/auth.php';
 require APP_ROOT . '/app/upload.php';
 require APP_ROOT . '/app/migrate.php';
+require APP_ROOT . '/app/layout.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
