@@ -26,7 +26,7 @@ if (is_post()) {
 }
 
 $rows = rows(
-    'SELECT r.*, p.title_en, p.slug
+    'SELECT r.*, p.title_en, p.slug, p.id AS pid
        FROM product_reviews r LEFT JOIN products p ON p.id = r.product_id
       ORDER BY (r.status = \'pending\') DESC, r.id DESC LIMIT 200'
 );
@@ -44,7 +44,7 @@ admin_header('Reviews');
         <?php endif; ?>
         <?php foreach ($rows as $r): ?>
           <tr>
-            <td><?php if ($r['slug']): ?><a href="<?= e(url('product.php', ['slug' => $r['slug']])) ?>" target="_blank"><?= e($r['title_en']) ?></a><?php else: ?>—<?php endif; ?></td>
+            <td><?php if ($r['slug']): ?><a href="<?= e(product_url(['slug' => $r['slug'], 'id' => $r['pid']])) ?>" target="_blank"><?= e($r['title_en']) ?></a><?php else: ?>—<?php endif; ?></td>
             <td><?= e($r['name']) ?></td>
             <td><?= str_repeat('★', (int) $r['rating']) ?></td>
             <td style="max-width:320px"><?= e($r['comment']) ?></td>

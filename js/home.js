@@ -33,7 +33,7 @@
     products.forEach(function (p, i) {
       var a = document.createElement('a');
       a.className = 'product-card';
-      a.href = 'product.php?slug=' + encodeURIComponent(p.slug);
+      a.href = 'details/' + encodeURIComponent(p.slug) + '-' + p.id + '/';
       a.style.cssText = 'text-decoration:none;color:inherit;display:block';
 
       var media = document.createElement('div');

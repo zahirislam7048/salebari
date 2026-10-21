@@ -66,7 +66,7 @@ site_header('My account');
               <?= acct_badge((string) $s['review_status']) ?>
             </div>
             <div class="acct-item-actions">
-              <a href="../stall/show.php?slug=<?= e($s['slug']) ?>">View</a>
+              <a href="<?= e(stall_url($s)) ?>">View</a>
               <a href="stall.php?id=<?= (int) $s['id'] ?>">Edit</a>
               <form method="post" onsubmit="return confirm('Delete this stall?');">
                 <?= csrf_field() ?><input type="hidden" name="action" value="delete_stall"><input type="hidden" name="id" value="<?= (int) $s['id'] ?>">
@@ -94,7 +94,7 @@ site_header('My account');
               <?= acct_badge((string) $b['review_status']) ?>
             </div>
             <div class="acct-item-actions">
-              <a href="../brand/show.php?slug=<?= e($b['slug']) ?>">View</a>
+              <a href="<?= e(brand_url($b)) ?>">View</a>
               <a href="brand.php?id=<?= (int) $b['id'] ?>">Edit</a>
               <form method="post" onsubmit="return confirm('Delete this brand?');">
                 <?= csrf_field() ?><input type="hidden" name="action" value="delete_brand"><input type="hidden" name="id" value="<?= (int) $b['id'] ?>">

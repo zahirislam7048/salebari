@@ -247,3 +247,56 @@ function sanitize_html(?string $html): ?string
     $out = trim($out);
     return $out === '' ? null : $out;
 }
+
+/* --- Public URLs ----------------------------------------------- */
+/* Pretty, BDStall-style addresses:
+     /details/<product-slug>-<id>/        product ids are the real ids
+     /stall/<name>-1001/   /market/<name>-1001/   /brand/<name>-1001/
+   Stalls, malls and brands are numbered from 1001: the number in the URL is the
+   database id + 1000, so existing records need no renumbering. */
+
+const PUBLIC_ID_OFFSET = 1000;
+
+function public_number(int $id): int
+{
+    return $id + PUBLIC_ID_OFFSET;
+}
+
+function public_to_id(int $number): int
+{
+    return $number - PUBLIC_ID_OFFSET;
+}
+
+function product_url(array $p): string
+{
+    return base_path() . '/details/' . $p['slug'] . '-' . (int) $p['id'] . '/';
+}
+
+function stall_url(array $s): string
+{
+    return base_path() . '/stall/' . $s['slug'] . '-' . public_number((int) $s['id']) . '/';
+}
+
+function mall_url(array $m): string
+{
+    return base_path() . '/market/' . $m['slug'] . '-' . public_number((int) $m['id']) . '/';
+}
+
+function brand_url(array $b): string
+{
+    return base_path() . '/brand/' . $b['slug'] . '-' . public_number((int) $b['id']) . '/';
+}
+
+/** If this page was reached by an old or non-canonical address, send the browser to the proper one. */
+function redirect_to_canonical(string $canonical): void
+{
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
+        return;
+    }
+    $want = rtrim((string) parse_url($canonical, PHP_URL_PATH), '/');
+    $have = rtrim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+    if ($want !== '' && $want !== $have) {
+        header('Location: ' . $canonical, true, 301);
+        exit;
+    }
+}

@@ -2,10 +2,16 @@
 require __DIR__ . '/app/bootstrap.php';
 
 $slug = (string) input('slug', '');
-$product = $slug ? row('SELECT * FROM products WHERE slug = ? AND status = ?', [$slug, 'active']) : null;
+$pid  = input_int('pid', 0);
+$product = $pid
+    ? row('SELECT * FROM products WHERE id = ? AND status = ?', [$pid, 'active'])
+    : ($slug ? row('SELECT * FROM products WHERE slug = ? AND status = ?', [$slug, 'active']) : null);
 
 if (!$product) {
     http_response_code(404);
+} else {
+    $slug = $product['slug'];
+    redirect_to_canonical(product_url($product));
 }
 
 $category = $product ? row('SELECT * FROM categories WHERE id = ?', [$product['category_id']]) : null;
@@ -59,7 +65,7 @@ if ($product && is_post() && input('action') === 'review') {
             $times[] = time();
             $_SESSION['review_times'] = array_values($times);
             flash('success', 'Thank you! Your review will appear after our team approves it.');
-            header('Location: ' . url('product.php', ['slug' => $slug]) . '#pp-reviews');
+            header('Location: ' . product_url($product) . '#pp-reviews');
             exit;
         } catch (Throwable $ex) {
             $reviewErr = 'Could not save your review right now. Please try again.';
@@ -103,11 +109,11 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($pageTitle) ?></title>
 <meta name="description" content="<?= e($pageDesc) ?>">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css">
 </head>
 <body class="has-pp-bar">
 
@@ -120,9 +126,9 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       <span data-i18n="utility.helpline">☎ +8801644842785</span>
     </div>
     <div class="utility-right">
-      <a href="sell/" data-i18n="utility.sell">Sell on SaleBari</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="utility.sell">Sell on SaleBari</a>
       <span class="sep">•</span>
-      <a href="index.html#help" data-i18n="utility.help">Help</a>
+      <a href="<?= base_path() ?>/index.html#help" data-i18n="utility.help">Help</a>
       <span class="sep">•</span>
       <button type="button" id="langToggle" class="lang-toggle">বাংলা</button>
     </div>
@@ -132,7 +138,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="index.html" class="logo">
+    <a href="<?= base_path() ?>/index.html" class="logo">
       <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
         <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -156,15 +162,15 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     </form>
 
     <div class="header-actions">
-      <a href="account/" class="icon-link">
+      <a href="<?= base_path() ?>/account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>
-      <a href="sell/" class="icon-link sell-link">
+      <a href="<?= base_path() ?>/sell/" class="icon-link sell-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 10 5 4h14l1 6M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0M5 10v9h14v-9"/></svg>
         <span data-i18n="header.sell">Sell</span>
       </a>
-      <a href="index.html#cart" class="icon-link cart-link">
+      <a href="<?= base_path() ?>/index.html#cart" class="icon-link cart-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h2l2.2 11.6a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 8H6"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
         <span data-i18n="header.cart">Cart</span>
         <b class="cart-count">0</b>
@@ -179,31 +185,31 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     <div class="wrap cat-nav-inner">
       <ul class="cat-list">
         <li class="has-mega">
-          <a href="category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a>
+          <a href="<?= base_path() ?>/category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <span class="mega-item" data-flyout="carAccessories"><a href="category.html?sub=carAccessories" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="category.html?sub=bikeAccessories" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="category.html?sub=threeWheeler" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="category.html?sub=commercialVehicle" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="category.html?sub=rental" data-i18n="mega.rental">Rental</a></span>
+              <span class="mega-item" data-flyout="carAccessories"><a href="<?= base_path() ?>/category.html?sub=carAccessories" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="<?= base_path() ?>/category.html?sub=bikeAccessories" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="<?= base_path() ?>/category.html?sub=threeWheeler" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="<?= base_path() ?>/category.html?sub=commercialVehicle" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="<?= base_path() ?>/category.html?sub=rental" data-i18n="mega.rental">Rental</a></span>
             </div>
           </div>
         </li>
         <li class="has-mega">
-          <a href="category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+          <a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <a href="listing.html?item=apartment" data-i18n="mega.apartment">Apartment</a><a href="listing.html?item=land" data-i18n="mega.land">Land</a><a href="listing.html?item=commercialSpace" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="category.html?sub=sanitary" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="category.html?sub=constructionMaterial" data-i18n="mega.constructionMaterial">Construction Material</a></span>
+              <a href="<?= base_path() ?>/listing.html?item=apartment" data-i18n="mega.apartment">Apartment</a><a href="<?= base_path() ?>/listing.html?item=land" data-i18n="mega.land">Land</a><a href="<?= base_path() ?>/listing.html?item=commercialSpace" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="<?= base_path() ?>/category.html?sub=sanitary" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="<?= base_path() ?>/category.html?sub=constructionMaterial" data-i18n="mega.constructionMaterial">Construction Material</a></span>
             </div>
           </div>
         </li>
         <li class="has-mega">
-          <a href="category.html?cat=agro" data-i18n="cat.agro">Agro</a>
+          <a href="<?= base_path() ?>/category.html?cat=agro" data-i18n="cat.agro">Agro</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <span class="mega-item" data-flyout="livestock"><a href="category.html?sub=livestock" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="category.html?sub=fish" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="category.html?sub=poultry" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="category.html?sub=birds" data-i18n="mega.birds">Birds</a></span>
+              <span class="mega-item" data-flyout="livestock"><a href="<?= base_path() ?>/category.html?sub=livestock" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="<?= base_path() ?>/category.html?sub=fish" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="<?= base_path() ?>/category.html?sub=poultry" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="<?= base_path() ?>/category.html?sub=birds" data-i18n="mega.birds">Birds</a></span>
             </div>
           </div>
         </li>
       </ul>
-      <a class="deals-tag" href="index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a class="deals-tag" href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
   </nav>
 </header>
@@ -211,7 +217,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <?php if (!$product): ?>
 <section class="section category-page">
   <div class="wrap">
-    <nav class="breadcrumb"><a href="index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Not found</span></nav>
+    <nav class="breadcrumb"><a href="<?= base_path() ?>/index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Not found</span></nav>
     <div class="listing-page-header">
       <h1 class="listing-page-title">Product not found</h1>
       <p class="listing-page-stat">This listing may have been removed or is no longer available.</p>
@@ -222,16 +228,16 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <section class="section category-page">
   <div class="wrap">
     <nav class="breadcrumb">
-      <a href="index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span>
+      <a href="<?= base_path() ?>/index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span>
       <?php foreach ($trail as $i => $c): ?>
         <?php
           $crumbI18n = $c['level'] === 1 ? ('cat.' . $c['slug']) : ($c['level'] === 2 ? ('mega.' . $c['slug']) : null);
           $crumbI18nAttr = $crumbI18n ? ' data-i18n="' . e($crumbI18n) . '"' : '';
         ?>
         <?php if ($i < count($trail) - 1): ?>
-          <a href="category.html?<?= $c['level'] === 1 ? 'cat=' . e($c['slug']) : 'sub=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
+          <a href="<?= base_path() ?>/category.html?<?= $c['level'] === 1 ? 'cat=' . e($c['slug']) : 'sub=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
         <?php else: ?>
-          <a href="<?= $c['level'] === 1 ? 'category.html?cat=' . e($c['slug']) : 'listing.html?item=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
+          <a href="<?= base_path() ?>/<?= $c['level'] === 1 ? 'category.html?cat=' . e($c['slug']) : 'listing.html?item=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
         <?php endif; ?>
       <?php endforeach; ?>
       <span class="breadcrumb-current" data-i18n="pp.title.<?= (int) $product['id'] ?>"><?= e($product['title_en']) ?></span>
@@ -277,7 +283,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
         <div class="pp-chips">
           <?php if ($category): ?><span class="pp-category-chip"><?= e($category['name_en']) ?></span><?php endif; ?>
-          <?php if ($brand): ?><a class="pp-category-chip" href="brand/show.php?slug=<?= e($brand['slug']) ?>">🏷️ <?= e($brand['name']) ?></a><?php endif; ?>
+          <?php if ($brand): ?><a class="pp-category-chip" href="<?= e(brand_url($brand)) ?>">🏷️ <?= e($brand['name']) ?></a><?php endif; ?>
         </div>
 
         <?php if ($product['price_display']): ?>
@@ -287,7 +293,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
         <div class="pp-sellercard" id="pp-seller">
           <?php if ($stall): ?>
-            <a class="pp-seller-head" href="stall/show.php?slug=<?= e($stall['slug']) ?>">
+            <a class="pp-seller-head" href="<?= e(stall_url($stall)) ?>">
               <span class="pp-seller-logo">
                 <?php if ($stall['logo_image']): ?><img src="<?= e(asset($stall['logo_image'])) ?>" alt=""><?php else: ?><?= e($stall['logo_emoji'] ?: '🏬') ?><?php endif; ?>
               </span>
@@ -369,7 +375,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
         <?php if ($askLink): ?><a class="btn btn-ghost" href="<?= e($askLink) ?>" target="_blank" rel="noopener" data-i18n="pp.askQuestion">Ask a Question</a><?php endif; ?>
       </div>
 
-      <form method="post" class="pp-rev-form acct-form" id="ppReviewForm" <?= $reviewErr ? '' : 'hidden' ?> action="<?= e(url('product.php', ['slug' => $slug])) ?>#pp-reviews">
+      <form method="post" class="pp-rev-form acct-form" id="ppReviewForm" <?= $reviewErr ? '' : 'hidden' ?> action="<?= e(product_url($product)) ?>#pp-reviews">
         <?= csrf_field() ?>
         <input type="hidden" name="action" value="review">
         <div class="acct-hp" aria-hidden="true"><label>Company URL <input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
@@ -393,7 +399,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
         <h2><span class="pp-sec-ico">🔗</span> <span data-i18n="pp.similar">Similar</span> <?= e($category['name_en'] ?? '') ?></h2>
         <div class="product-grid">
           <?php foreach ($similar as $s): $simgs = json_decode((string) $s['images'], true) ?: []; ?>
-            <a class="product-card" href="product.php?slug=<?= e($s['slug']) ?>" style="text-decoration:none;color:inherit;display:block">
+            <a class="product-card" href="<?= e(product_url($s)) ?>" style="text-decoration:none;color:inherit;display:block">
               <div class="product-media grad-1">
                 <?php if ($simgs): ?><img src="<?= e(asset($simgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
               </div>
@@ -420,7 +426,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <footer class="site-footer">
   <div class="wrap footer-inner">
     <div class="footer-col footer-brand">
-      <a href="index.html" class="logo logo-footer">
+      <a href="<?= base_path() ?>/index.html" class="logo logo-footer">
         <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
           <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -439,18 +445,18 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.shop">Shop</h4>
-      <a href="stall/list/" data-i18n="footer.allStalls">All stalls</a>
-      <a href="market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
-      <a href="index.html#deals" data-i18n="deals.tag">Today's Deals</a>
-      <a href="category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+      <a href="<?= base_path() ?>/stall/list/" data-i18n="footer.allStalls">All stalls</a>
+      <a href="<?= base_path() ?>/market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
+      <a href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
       <a href="#" data-i18n="footer.giftCards">Gift cards</a>
-      <a href="brand/list/" data-i18n="footer.brands">Brands</a>
-      <a href="blog.php" data-i18n="footer.blog">Blog</a>
+      <a href="<?= base_path() ?>/brand/list/" data-i18n="footer.brands">Brands</a>
+      <a href="<?= base_path() ?>/blog.php" data-i18n="footer.blog">Blog</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.forSellers">For Sellers</h4>
-      <a href="sell/" data-i18n="footer.startSelling">Start selling</a>
-      <a href="package.html" data-i18n="footer.package">Package</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="footer.startSelling">Start selling</a>
+      <a href="<?= base_path() ?>/package.html" data-i18n="footer.package">Package</a>
       <a href="#" data-i18n="footer.howItWorks">How it works</a>
       <a href="#" data-i18n="footer.sellerFees">Seller fees</a>
       <a href="#" data-i18n="footer.successStories">Success stories</a>
@@ -489,9 +495,9 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="js/nav-data.js"></script>
-<script src="js/catalog-data.js"></script>
-<script src="js/main.js"></script>
+<script src="<?= base_path() ?>/js/nav-data.js"></script>
+<script src="<?= base_path() ?>/js/catalog-data.js"></script>
+<script src="<?= base_path() ?>/js/main.js"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {
@@ -556,7 +562,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
   /* Recently viewed: remembered in this browser only. */
   (function () {
-    var KEY = 'sb_recent', here = <?= json_encode(['slug' => $product['slug'], 'title' => $product['title_en'], 'price' => (string) $product['price_display'], 'img' => $images ? asset($images[0]) : '']) ?>;
+    var KEY = 'sb_recent', here = <?= json_encode(['slug' => $product['slug'], 'id' => (int) $product['id'], 'url' => product_url($product), 'title' => $product['title_en'], 'price' => (string) $product['price_display'], 'img' => $images ? asset($images[0]) : '']) ?>;
     var list = [];
     try { list = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { list = []; }
     var others = list.filter(function (p) { return p && p.slug !== here.slug; }).slice(0, 5);
@@ -566,7 +572,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     var grid = document.getElementById('ppRecentGrid');
     others.forEach(function (p) {
       var a = document.createElement('a');
-      a.className = 'product-card'; a.href = 'product.php?slug=' + encodeURIComponent(p.slug);
+      a.className = 'product-card'; a.href = p.url || ('details/' + encodeURIComponent(p.slug) + '-' + p.id + '/');
       a.style.cssText = 'text-decoration:none;color:inherit;display:block';
       var media = document.createElement('div'); media.className = 'product-media grad-1';
       if (p.img) { var im = document.createElement('img'); im.src = p.img; im.alt = ''; media.appendChild(im); } else { media.textContent = '🛒'; }

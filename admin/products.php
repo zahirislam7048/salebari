@@ -270,7 +270,7 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
             <td><?= e($r['price_display'] ?? '—') ?></td>
             <td><?= e($r['status']) ?></td>
             <td class="admin-row-actions">
-              <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= url('product.php', ['slug' => $r['slug']]) ?>" target="_blank">View</a>
+              <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= e(product_url($r)) ?>" target="_blank">View</a>
               <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= url('admin/products.php', ['edit' => $r['id']]) ?>">Edit</a>
               <form method="post" onsubmit="return confirm('Delete this product?');" style="display:inline">
                 <?= csrf_field() ?>

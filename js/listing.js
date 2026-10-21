@@ -234,7 +234,7 @@
           location: '', badge: null, tag: null, verified: false,
           title: p.title, titleBn: p.titleBn,
           meta: '', priceText: p.price || '', price: 0,
-          image: p.image, href: 'product.php?slug=' + encodeURIComponent(p.slug)
+          image: p.image, href: 'details/' + encodeURIComponent(p.slug) + '-' + p.id + '/'
         };
       });
       renderGrid();

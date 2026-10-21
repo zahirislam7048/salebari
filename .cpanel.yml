@@ -4,4 +4,4 @@ deployment:
     # Site folder (the domain's document root).
     - export DEPLOYPATH=$HOME/salebari.com/
     # Copy code only. Never touch config.php, uploads/, data/, and never re-create install.php.
-    - /bin/rsync -rlv --exclude='.git' --exclude='.gitignore' --exclude='.cpanel.yml' --exclude='config.php' --exclude='config.sample.php' --exclude='install.php' --exclude='uploads' --exclude='data' --exclude='*.zip' ./ $DEPLOYPATH
+    - /bin/rsync -rlv --exclude='.git' --exclude='.gitignore' --exclude='.cpanel.yml' --exclude='dev-router.php' --exclude='config.php' --exclude='config.sample.php' --exclude='install.php' --exclude='uploads' --exclude='data' --exclude='*.zip' ./ $DEPLOYPATH

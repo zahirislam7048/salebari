@@ -2,13 +2,18 @@
 require __DIR__ . '/../app/bootstrap.php';
 
 $slug  = (string) input('slug', '');
-$brand = $slug ? row('SELECT * FROM brands WHERE slug = ?', [$slug]) : null;
+$bid   = input_int('bid', 0);
+$brand = $bid
+    ? row('SELECT * FROM brands WHERE id = ?', [public_to_id($bid)])
+    : ($slug ? row('SELECT * FROM brands WHERE slug = ?', [$slug]) : null);
 
 if ($brand && $brand['review_status'] !== 'approved' && !can_preview($brand)) {
     $brand = null;
 }
 if (!$brand) {
     http_response_code(404);
+} else {
+    redirect_to_canonical(brand_url($brand));
 }
 
 $products = $brand ? rows(
@@ -22,11 +27,11 @@ $products = $brand ? rows(
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= $brand ? e($brand['name']) . ' — SaleBari' : 'Brand not found — SaleBari' ?></title>
 <meta name="description" content="<?= $brand ? e(mb_substr(trim(strip_tags((string) $brand['description'])), 0, 160) ?: $brand['name'] . ' products on SaleBari, Bangladesh\'s digital bazaar.') : '' ?>">
-<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css">
 </head>
 <body>
 
@@ -39,9 +44,9 @@ $products = $brand ? rows(
       <span data-i18n="utility.helpline">☎ +8801644842785</span>
     </div>
     <div class="utility-right">
-      <a href="../sell/" data-i18n="utility.sell">Sell on SaleBari</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="utility.sell">Sell on SaleBari</a>
       <span class="sep">•</span>
-      <a href="../index.html#help" data-i18n="utility.help">Help</a>
+      <a href="<?= base_path() ?>/index.html#help" data-i18n="utility.help">Help</a>
       <span class="sep">•</span>
       <button type="button" id="langToggle" class="lang-toggle">বাংলা</button>
     </div>
@@ -51,7 +56,7 @@ $products = $brand ? rows(
 <!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="../index.html" class="logo">
+    <a href="<?= base_path() ?>/index.html" class="logo">
       <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
         <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -75,15 +80,15 @@ $products = $brand ? rows(
     </form>
 
     <div class="header-actions">
-      <a href="../account/" class="icon-link">
+      <a href="<?= base_path() ?>/account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>
-      <a href="../sell/" class="icon-link sell-link">
+      <a href="<?= base_path() ?>/sell/" class="icon-link sell-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 10 5 4h14l1 6M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0M5 10v9h14v-9"/></svg>
         <span data-i18n="header.sell">Sell</span>
       </a>
-      <a href="../index.html#cart" class="icon-link cart-link">
+      <a href="<?= base_path() ?>/index.html#cart" class="icon-link cart-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h2l2.2 11.6a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 8H6"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
         <span data-i18n="header.cart">Cart</span>
         <b class="cart-count">0</b>
@@ -97,11 +102,11 @@ $products = $brand ? rows(
   <nav class="category-nav" aria-label="Categories">
     <div class="wrap cat-nav-inner">
       <ul class="cat-list">
-        <li><a href="../category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a></li>
-        <li><a href="../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a></li>
-        <li><a href="../category.html?cat=agro" data-i18n="cat.agro">Agro</a></li>
+        <li><a href="<?= base_path() ?>/category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a></li>
+        <li><a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a></li>
+        <li><a href="<?= base_path() ?>/category.html?cat=agro" data-i18n="cat.agro">Agro</a></li>
       </ul>
-      <a class="deals-tag" href="../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a class="deals-tag" href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
   </nav>
 </header>
@@ -109,7 +114,7 @@ $products = $brand ? rows(
 <?php if (!$brand): ?>
 <section class="section category-page">
   <div class="wrap">
-    <nav class="breadcrumb"><a href="../index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span><a href="list/">All Brands</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Not found</span></nav>
+    <nav class="breadcrumb"><a href="<?= base_path() ?>/index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span><a href="<?= base_path() ?>/brand/list/">All Brands</a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current">Not found</span></nav>
     <div class="listing-page-header">
       <h1 class="listing-page-title">Brand not found</h1>
     </div>
@@ -119,8 +124,8 @@ $products = $brand ? rows(
 <section class="section category-page">
   <div class="wrap">
     <nav class="breadcrumb">
-      <a href="../index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span>
-      <a href="list/">All Brands</a><span class="breadcrumb-sep">›</span>
+      <a href="<?= base_path() ?>/index.html" data-i18n="nav.home">Home</a><span class="breadcrumb-sep">›</span>
+      <a href="<?= base_path() ?>/brand/list/">All Brands</a><span class="breadcrumb-sep">›</span>
       <span class="breadcrumb-current"><?= e($brand['name']) ?></span>
     </nav>
 
@@ -195,7 +200,7 @@ $products = $brand ? rows(
     <?php else: ?>
       <div class="product-grid">
         <?php foreach ($products as $prod): $pimgs = json_decode((string) $prod['images'], true) ?: []; ?>
-          <a class="product-card" href="../product.php?slug=<?= e($prod['slug']) ?>" style="text-decoration:none;color:inherit;display:block">
+          <a class="product-card" href="<?= e(product_url($prod)) ?>" style="text-decoration:none;color:inherit;display:block">
             <div class="product-media grad-1">
               <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
             </div>
@@ -215,7 +220,7 @@ $products = $brand ? rows(
 <footer class="site-footer">
   <div class="wrap footer-inner">
     <div class="footer-col footer-brand">
-      <a href="../index.html" class="logo logo-footer">
+      <a href="<?= base_path() ?>/index.html" class="logo logo-footer">
         <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
           <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -234,17 +239,17 @@ $products = $brand ? rows(
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.shop">Shop</h4>
-      <a href="../stall/list/" data-i18n="footer.allStalls">All stalls</a>
-      <a href="../market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
-      <a href="../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
-      <a href="../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
-      <a href="list/" data-i18n="footer.brands">Brands</a>
-      <a href="../blog.php" data-i18n="footer.blog">Blog</a>
+      <a href="<?= base_path() ?>/stall/list/" data-i18n="footer.allStalls">All stalls</a>
+      <a href="<?= base_path() ?>/market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
+      <a href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+      <a href="<?= base_path() ?>/brand/list/" data-i18n="footer.brands">Brands</a>
+      <a href="<?= base_path() ?>/blog.php" data-i18n="footer.blog">Blog</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.forSellers">For Sellers</h4>
-      <a href="../sell/" data-i18n="footer.startSelling">Start selling</a>
-      <a href="../package.html" data-i18n="footer.package">Package</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="footer.startSelling">Start selling</a>
+      <a href="<?= base_path() ?>/package.html" data-i18n="footer.package">Package</a>
       <a href="#" data-i18n="footer.howItWorks">How it works</a>
       <a href="#" data-i18n="footer.sellerFees">Seller fees</a>
       <a href="#" data-i18n="footer.successStories">Success stories</a>
@@ -283,8 +288,8 @@ $products = $brand ? rows(
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="../js/nav-data.js"></script>
-<script src="../js/catalog-data.js"></script>
-<script src="../js/main.js"></script>
+<script src="<?= base_path() ?>/js/nav-data.js"></script>
+<script src="<?= base_path() ?>/js/catalog-data.js"></script>
+<script src="<?= base_path() ?>/js/main.js"></script>
 </body>
 </html>

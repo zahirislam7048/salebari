@@ -131,7 +131,7 @@ $total = count($brands);
           <h2 class="brand-section-letter"><?= e($letter) ?></h2>
           <div class="brand-grid">
             <?php foreach ($letterBrands as $b): ?>
-              <a class="brand-pill" href="../show.php?slug=<?= e($b['slug']) ?>">
+              <a class="brand-pill" href="<?= e(brand_url($b)) ?>">
                 <?php if ($b['logo_image']): ?><img src="<?= e(asset($b['logo_image'])) ?>" alt=""><?php endif; ?>
                 <?= e($b['name']) ?>
               </a>

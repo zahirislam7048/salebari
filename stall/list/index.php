@@ -128,7 +128,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
     <?php else: ?>
       <div class="stall-grid">
         <?php foreach ($stalls as $i => $s): ?>
-          <a class="stalldir-card" href="../show.php?slug=<?= e($s['slug']) ?>">
+          <a class="stalldir-card" href="<?= e(stall_url($s)) ?>">
             <div class="stall-logo c<?= ($i % 8) + 1 ?><?= $s['logo_image'] || $s['logo_emoji'] ? '' : ' generic' ?>">
               <?php if ($s['logo_image']): ?>
                 <img src="<?= e(asset($s['logo_image'])) ?>" alt="">
