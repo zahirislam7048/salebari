@@ -1889,3 +1889,12 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 
 .pp-btn-text small { margin-top: 3px; }
 .pp-contact-grid .pp-whatsapp-btn, .pp-call-btn { text-align: left; }
+
+/* Seller editor: 16px+ text avoids mobile zoom-on-focus; photos inside rich content never overflow. */
+.acct-richtext .ql-editor { font-size: 16px; line-height: 1.5; }
+.acct-richtext .ql-toolbar.ql-snow, .ql-toolbar.ql-snow { padding: 6px; }
+.pp-overview > div img, .blog-post-content img, .brand-about-body img { max-width: 100%; height: auto; }
+@media (max-width: 720px) {
+  .ql-toolbar.ql-snow button { width: 36px; height: 34px; }
+  .ql-toolbar.ql-snow .ql-picker { height: 34px; }
+}

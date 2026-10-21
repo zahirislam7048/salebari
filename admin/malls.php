@@ -185,7 +185,7 @@ admin_header('Shopping Malls', '<link rel="stylesheet" href="https://cdnjs.cloud
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=3"></script>
 <script>mountRichText('editor_about', 'ta_about');</script>
 <?php
 admin_footer();

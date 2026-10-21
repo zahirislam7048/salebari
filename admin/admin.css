@@ -93,3 +93,13 @@ table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
   .admin-brand { padding: 0 16px 8px; }
   .admin-main { padding: 20px 16px; }
 }
+
+/* 16px+ text in the editing area keeps iOS/Android browsers from zooming the page on focus. */
+.admin-richtext .ql-editor { font-size: 16px; line-height: 1.5; }
+.admin-richtext .ql-editor img, .acct-richtext .ql-editor img { max-width: 100%; height: auto; }
+.ql-toolbar.ql-snow { padding: 6px; }
+.ql-toolbar.ql-snow button, .ql-toolbar.ql-snow .ql-picker-label { min-height: 30px; }
+@media (max-width: 720px) {
+  .ql-toolbar.ql-snow button { width: 36px; height: 34px; }
+  .ql-toolbar.ql-snow .ql-picker { height: 34px; }
+}

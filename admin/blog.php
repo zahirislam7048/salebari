@@ -184,7 +184,7 @@ admin_header('Blog', '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=3"></script>
 <script>
   mountRichText('editor_content_en', 'ta_content_en');
   mountRichText('editor_content_bn', 'ta_content_bn');
