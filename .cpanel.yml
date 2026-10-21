@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    # Change public_html if the site lives in another folder (e.g. a subdomain folder).
+    - export DEPLOYPATH=$HOME/public_html/
+    # Copy code only. Never touch config.php, uploads/, data/, and never re-create install.php.
+    - /bin/rsync -rlv --exclude='.git' --exclude='.gitignore' --exclude='.cpanel.yml' --exclude='config.php' --exclude='config.sample.php' --exclude='install.php' --exclude='uploads' --exclude='data' --exclude='*.zip' ./ $DEPLOYPATH

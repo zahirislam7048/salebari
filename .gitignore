@@ -1,0 +1,7 @@
+# Never commit secrets, live data or uploads
+config.php
+data/
+uploads/
+*.zip
+*.sqlite
+*.log

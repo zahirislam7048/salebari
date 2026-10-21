@@ -1,0 +1,95 @@
+/* Admin dashboard — plain, functional styling in the site's charcoal/gold palette. */
+:root {
+  --ink: #262321; --ink-deep: #16140F; --gold: #B9902E; --gold-deep: #8F6D22;
+  --paper: #FCFBF8; --paper-warm: #F5F0E6; --line: #E4DDCD; --danger: #B3413A;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, "Noto Sans Bengali", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--paper-warm); color: var(--ink); }
+a { color: var(--gold-deep); }
+code { background: var(--paper); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+
+.admin-auth-body { display: grid; place-items: center; min-height: 100vh; padding: 24px; }
+.admin-auth-wrap { width: 100%; max-width: 420px; }
+.admin-auth-card { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 32px; }
+.admin-auth-card h1 { font-size: 1.4rem; margin: 0 0 4px; }
+.muted { color: #756F63; font-size: 0.92rem; margin: 0 0 18px; }
+
+.admin-field { display: block; margin-bottom: 14px; }
+.admin-field span { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
+.admin-field input, .admin-field select, .admin-field textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
+  font-size: 0.95rem; font-family: inherit; background: #fff;
+}
+.admin-field textarea { min-height: 80px; resize: vertical; }
+.admin-check { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; margin-bottom: 14px; }
+
+.admin-richtext { background: #fff; border-radius: 8px; overflow: hidden; }
+.admin-richtext .ql-container { min-height: 140px; font-size: 0.95rem; font-family: inherit; }
+.admin-richtext .ql-editor { min-height: 140px; }
+/* Quill ships with no space between paragraphs/list items by default, so
+   typed content looks like one squashed block while editing — this matches
+   the spacing the public pages actually render it with. */
+.admin-richtext .ql-editor p, .admin-richtext .ql-editor li { margin-bottom: 10px; }
+.admin-richtext .ql-editor h1, .admin-richtext .ql-editor h2, .admin-richtext .ql-editor h3 { margin: 16px 0 10px; }
+
+.admin-btn {
+  display: inline-block; padding: 9px 18px; border-radius: 8px; border: 1px solid transparent;
+  font-size: 0.92rem; font-weight: 600; cursor: pointer; text-decoration: none; line-height: 1.4;
+}
+.admin-btn-primary { background: var(--ink); color: #fff; }
+.admin-btn-primary:hover { background: var(--ink-deep); }
+.admin-btn-ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.admin-btn-danger { background: var(--danger); color: #fff; }
+.admin-btn-block { display: block; width: 100%; text-align: center; }
+.admin-btn-sm { padding: 5px 11px; font-size: 0.82rem; }
+
+.admin-flash { padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; margin-bottom: 16px; }
+.admin-flash-success { background: #E4F3E8; color: #2A6B3E; }
+.admin-flash-error { background: #FBE6E4; color: #93332B; }
+.admin-flash-info { background: #EAF1FB; color: #2E4E8A; }
+.admin-error-text { color: var(--danger); font-size: 0.88rem; margin: 0 0 8px; }
+
+/* --- dashboard chrome --- */
+.admin-shell { display: flex; min-height: 100vh; }
+.admin-sidebar { width: 220px; flex: none; background: var(--ink-deep); color: #EDE8DC; padding: 20px 0; }
+.admin-brand { font-family: Georgia, serif; font-weight: 900; font-size: 1.1rem; padding: 0 20px 18px; color: #fff; }
+.admin-nav a {
+  display: block; padding: 10px 20px; color: #C9C2B2; text-decoration: none; font-size: 0.9rem;
+}
+.admin-nav a:hover, .admin-nav a.active { background: rgba(255,255,255,0.08); color: #fff; }
+.admin-main { flex: 1; min-width: 0; padding: 28px 32px; }
+.admin-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 12px; flex-wrap: wrap; }
+.admin-topbar h1 { font-size: 1.3rem; margin: 0; }
+.admin-user { font-size: 0.86rem; color: #756F63; }
+.admin-user a { margin-left: 10px; }
+
+.admin-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.admin-stat { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+.admin-stat b { display: block; font-size: 1.5rem; font-family: Georgia, serif; }
+.admin-stat span { font-size: 0.8rem; color: #756F63; text-transform: uppercase; letter-spacing: 0.03em; }
+
+table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.admin-table th, .admin-table td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+.admin-table th { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.03em; color: #756F63; }
+.admin-table tr:hover td { background: rgba(185,144,46,0.06); }
+.admin-table-wrap { overflow-x: auto; }
+
+.admin-badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; }
+.admin-badge-yes { background: #E4F3E8; color: #2A6B3E; }
+.admin-badge-no { background: #F1EEE6; color: #756F63; }
+
+.admin-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; flex-wrap: wrap; }
+.admin-pagination { display: flex; gap: 6px; margin-top: 14px; }
+.admin-pagination a, .admin-pagination span { padding: 5px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 0.82rem; text-decoration: none; color: var(--ink); }
+.admin-pagination .active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.admin-row-actions form { display: inline; }
+
+@media (max-width: 720px) {
+  .admin-shell { flex-direction: column; }
+  .admin-sidebar { width: 100%; padding: 12px 0; }
+  .admin-nav { display: flex; overflow-x: auto; }
+  .admin-nav a { white-space: nowrap; }
+  .admin-brand { padding: 0 16px 8px; }
+  .admin-main { padding: 20px 16px; }
+}
