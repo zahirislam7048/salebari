@@ -15,8 +15,8 @@ code { background: var(--paper); padding: 1px 5px; border-radius: 4px; font-size
 .muted { color: #756F63; font-size: 0.92rem; margin: 0 0 18px; }
 
 .admin-field { display: block; margin-bottom: 14px; }
-.admin-field span { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
-.admin-field input, .admin-field select, .admin-field textarea {
+.admin-field > span { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }  /* direct label text only — never the editor's own toolbar spans */
+.admin-field > input, .admin-field > select, .admin-field > textarea {
   width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px;
   font-size: 0.95rem; font-family: inherit; background: #fff;
 }

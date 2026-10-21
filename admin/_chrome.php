@@ -33,7 +33,7 @@ function admin_header(string $title, string $extraHead = ''): void
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?> — SaleBari Admin</title>
-<link rel="stylesheet" href="<?= asset('admin/admin.css') ?>">
+<link rel="stylesheet" href="<?= asset('admin/admin.css') ?>?v=2">
 <?= $extraHead ?>
 </head>
 <body>
