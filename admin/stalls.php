@@ -20,6 +20,7 @@ if (is_post()) {
         $data = [
             'name'          => $name,
             'city'          => input('city') ?: null,
+            'mall_id'       => input_int('mall_id', 0) ?: null,
             'address'       => input('address') ?: null,
             'phone'         => input('phone') ?: null,
             'description'   => input('description') ?: null,
@@ -98,6 +99,13 @@ admin_header('Stalls');
       <input type="text" name="name" required value="<?= e($editing['name'] ?? '') ?>"></label>
     <label class="admin-field"><span>City / District</span>
       <input type="text" name="city" value="<?= e($editing['city'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Shopping mall (optional — lists this stall on the mall's page)</span>
+      <select name="mall_id">
+        <option value="">— Not in a mall —</option>
+        <?php foreach (rows('SELECT id, name, city_name_en FROM malls ORDER BY city_name_en, name') as $mo): ?>
+          <option value="<?= (int) $mo['id'] ?>" <?= (int) ($editing['mall_id'] ?? 0) === (int) $mo['id'] ? 'selected' : '' ?>><?= e($mo['name']) ?> (<?= e($mo['city_name_en']) ?>)</option>
+        <?php endforeach; ?>
+      </select></label>
     <label class="admin-field"><span>Address</span>
       <input type="text" name="address" value="<?= e($editing['address'] ?? '') ?>"></label>
     <label class="admin-field"><span>Phone</span>

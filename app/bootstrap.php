@@ -24,6 +24,7 @@ require APP_ROOT . '/app/i18n.php';
 require APP_ROOT . '/app/helpers.php';
 require APP_ROOT . '/app/auth.php';
 require APP_ROOT . '/app/upload.php';
+require APP_ROOT . '/app/migrate.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
@@ -34,6 +35,9 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_name('salebari');
     session_start();
 }
+
+/* Bring the schema up to date before any page queries it (no-op once current). */
+installed();
 
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
@@ -46,7 +50,11 @@ function installed(): bool
     if ($ok !== null) {
         return $ok;
     }
-    return $ok = (db_ok() && table_exists('settings'));
+    $ok = (db_ok() && table_exists('settings'));
+    if ($ok) {
+        auto_migrate();
+    }
+    return $ok;
 }
 
 /** setting('hero_sub', 'en') / setting('hero_sub', 'bn') */

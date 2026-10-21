@@ -65,17 +65,7 @@ function create_schema(): void
     $sql = preg_replace('/^\s*--.*$/m', '', $sql);
 
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
-        if (DB_DRIVER === 'sqlite') {
-            $statement = preg_replace('/INT UNSIGNED AUTO_INCREMENT PRIMARY KEY/i', 'INTEGER PRIMARY KEY AUTOINCREMENT', $statement);
-            $statement = preg_replace('/\bINT UNSIGNED\b/i', 'INTEGER', $statement);
-            $statement = preg_replace('/\bTINYINT\b/i', 'INTEGER', $statement);
-            $statement = preg_replace('/\bDECIMAL\s*\([^)]*\)/i', 'REAL', $statement);
-            $statement = preg_replace('/\bVARCHAR\s*\([^)]*\)/i', 'TEXT', $statement);
-            $statement = preg_replace('/\bDATETIME\b/i', 'TEXT', $statement);
-            $statement = preg_replace('/\bINT\b/i', 'INTEGER', $statement);
-        } elseif (stripos($statement, 'CREATE TABLE') === 0) {
-            $statement .= ' ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci';
-        }
+        $statement = schema_translate($statement);
         db()->exec($statement);
     }
 }

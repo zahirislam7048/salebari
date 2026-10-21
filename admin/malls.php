@@ -25,6 +25,16 @@ if (is_post()) {
             'description_en' => input('description_en') ?: null,
             'description_bn' => input('description_bn') ?: null,
             'stall_count'    => input_int('stall_count', 0),
+            'address'        => input('address') ?: null,
+            'opening_hours'  => input('opening_hours') ?: null,
+            'website'        => clean_url(input('website')),
+            'mobile'         => input('mobile') ?: null,
+            'phone'          => input('phone') ?: null,
+            'email'          => valid_email((string) input('email')) ? input('email') : null,
+            'map_url'        => clean_map_url(input('map_url')),
+            'facebook'       => clean_url(input('facebook')),
+            'instagram'      => clean_url(input('instagram')),
+            'about'          => input('about') ?: null,
         ];
 
         if ($name === '' || $data['city_name_en'] === '') {
@@ -78,7 +88,7 @@ if (is_post()) {
 
 $rows = rows('SELECT * FROM malls ORDER BY city_name_en, sort_order');
 
-admin_header('Shopping Malls');
+admin_header('Shopping Malls', '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">');
 ?>
 <div class="admin-card">
   <h3 style="margin-top:0"><?= $editing ? 'Edit mall' : 'Add a mall' ?></h3>
@@ -92,14 +102,39 @@ admin_header('Shopping Malls');
       <input type="text" name="city_name_en" required value="<?= e($editing['city_name_en'] ?? '') ?>"></label>
     <label class="admin-field"><span>City (Bangla)</span>
       <input type="text" name="city_name_bn" value="<?= e($editing['city_name_bn'] ?? '') ?>"></label>
-    <label class="admin-field"><span>Address (English)</span>
+    <label class="admin-field"><span>Short address (English) — shown on the mall's card in the list</span>
       <input type="text" name="description_en" value="<?= e($editing['description_en'] ?? '') ?>"></label>
-    <label class="admin-field"><span>Address (Bangla)</span>
+    <label class="admin-field"><span>Short address (Bangla)</span>
       <input type="text" name="description_bn" value="<?= e($editing['description_bn'] ?? '') ?>"></label>
     <label class="admin-field"><span>Closed day (optional, e.g. "Tuesday")</span>
       <input type="text" name="closed_day" value="<?= e($editing['closed_day'] ?? '') ?>"></label>
     <label class="admin-field"><span>Stall count (shown on this mall's card, optional)</span>
       <input type="number" name="stall_count" min="0" value="<?= e((string) ($editing['stall_count'] ?? 0)) ?>"></label>
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+    <p class="muted" style="margin-top:0">Details shown on the mall's own page</p>
+    <label class="admin-field"><span>Full address</span>
+      <input type="text" name="address" value="<?= e($editing['address'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Opening hours (e.g. "10:00 AM – 9:00 PM")</span>
+      <input type="text" name="opening_hours" value="<?= e($editing['opening_hours'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Website</span>
+      <input type="text" name="website" placeholder="https://example.com" value="<?= e($editing['website'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Mobile number</span>
+      <input type="text" name="mobile" value="<?= e($editing['mobile'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Phone number</span>
+      <input type="text" name="phone" value="<?= e($editing['phone'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Email</span>
+      <input type="email" name="email" value="<?= e($editing['email'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Google Maps link or embed code (paste the share link, or the full &lt;iframe&gt; from Share → Embed a map)</span>
+      <input type="text" name="map_url" value="<?= e($editing['map_url'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Facebook page</span>
+      <input type="text" name="facebook" value="<?= e($editing['facebook'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Instagram</span>
+      <input type="text" name="instagram" value="<?= e($editing['instagram'] ?? '') ?>"></label>
+    <label class="admin-field"><span>About the mall</span>
+      <div id="editor_about" class="admin-richtext"></div>
+      <textarea name="about" id="ta_about" hidden><?= e($editing['about'] ?? '') ?></textarea></label>
+    <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
 
     <?php if (!empty($editing['logo_image'])): ?>
       <div class="admin-field">
@@ -148,5 +183,8 @@ admin_header('Shopping Malls');
     </table>
   </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+<script src="<?= asset('admin/richtext.js') ?>"></script>
+<script>mountRichText('editor_about', 'ta_about');</script>
 <?php
 admin_footer();

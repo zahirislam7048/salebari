@@ -131,7 +131,7 @@ $totalCities = count($byCity);
             </div>
             <div class="market-grid">
               <?php foreach ($cityMalls as $m): ?>
-                <a class="market-card" href="#" data-search="<?= e(mb_strtolower($m['name'] . ' ' . $m['description_en'])) ?>">
+                <a class="market-card" href="../show.php?slug=<?= e($m['slug']) ?>" data-search="<?= e(mb_strtolower($m['name'] . ' ' . $m['description_en'])) ?>">
                   <div class="market-card-icon c<?= ($colorIndex++ % 8) + 1 ?>">
                     <?php if ($m['logo_image']): ?>
                       <img src="<?= e(asset($m['logo_image'])) ?>" alt="">
