@@ -54,6 +54,7 @@ function installed(): bool
     $ok = (db_ok() && table_exists('settings'));
     if ($ok) {
         auto_migrate();
+        ensure_contact_numbers();
     }
     return $ok;
 }

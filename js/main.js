@@ -100,7 +100,7 @@
     'vbadge.nid': { en: 'NID Verified', bn: 'এনআইডি ভেরিফায়েড' },
 
     'utility.location': { en: '📍 Serving all 64 districts', bn: '📍 ৬৪ জেলাতেই সেবা' },
-    'utility.helpline': { en: '☎ +8801644842785', bn: '☎ +8801644842785' },
+    'utility.helpline': { en: '☎ +8801515286327', bn: '☎ +8801515286327' },
     'utility.sell': { en: 'Sell on SaleBari', bn: 'SaleBari-তে বিক্রি করুন' },
     'utility.help': { en: 'Help', bn: 'সহায়তা' },
 

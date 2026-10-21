@@ -91,13 +91,13 @@ if ($product && trim((string) ($product['specs'] ?? '')) !== '') {
     }
 }
 
-/* WhatsApp is the only contact route on a product page. */
-$phone     = setting('contact_phone', 'en', CONTACT_PHONE);
-$whatsapp  = preg_replace('/[^0-9]/', '', setting('contact_whatsapp', 'en', $phone));
+/* Both site numbers work for calling and for WhatsApp. */
+$nums      = site_numbers();
+$whatsapp  = $nums[0]['wa'];
 $waMessage = $product ? "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari." : '';
-$waLink    = $whatsapp ? 'https://wa.me/' . $whatsapp . '?text=' . urlencode($waMessage) : '';
+$waLink    = 'https://wa.me/' . $whatsapp . '?text=' . urlencode($waMessage);
 $askMsg    = $product ? "Hi, I have a question about \"" . $product['title_en'] . "\" on SaleBari: " : '';
-$askLink   = $whatsapp ? 'https://wa.me/' . $whatsapp . '?text=' . urlencode($askMsg) : '';
+$askLink   = 'https://wa.me/' . $whatsapp . '?text=' . urlencode($askMsg);
 $waIcon    = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg>';
 
 $pageTitle = $product ? ($product['meta_title'] ?: $product['title_en']) . ' — SaleBari' : 'Product not found — SaleBari';
@@ -123,7 +123,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     <div class="utility-left">
       <span data-i18n="utility.location">📍 Serving all 64 districts</span>
       <span class="sep">•</span>
-      <span data-i18n="utility.helpline">☎ +8801644842785</span>
+      <span data-i18n="utility.helpline">☎ +8801515286327</span><span class="util-num2">+8801644842785</span>
     </div>
     <div class="utility-right">
       <a href="<?= base_path() ?>/sell/" data-i18n="utility.sell">Sell on SaleBari</a>
@@ -312,13 +312,21 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
             </div>
           <?php endif; ?>
 
-          <?php if ($whatsapp): ?>
-            <a class="pp-whatsapp-btn" href="<?= e($waLink) ?>" target="_blank" rel="noopener">
-              <?= $waIcon ?>
-              <span data-i18n="pp.whatsapp">Message on WhatsApp</span>
-            </a>
-            <p class="pp-seller-note" data-i18n="pp.waNote">Chat directly with the seller — ask about price, stock, delivery or a visit.</p>
-          <?php endif; ?>
+          <div class="pp-contact-grid">
+            <?php foreach ($nums as $n): ?>
+              <a class="pp-whatsapp-btn" href="https://wa.me/<?= e($n['wa']) ?>?text=<?= urlencode($waMessage) ?>" target="_blank" rel="noopener">
+                <?= $waIcon ?>
+                <span class="pp-btn-text"><span data-i18n="pp.wa">WhatsApp</span><small><?= e($n['display']) ?></small></span>
+              </a>
+            <?php endforeach; ?>
+            <?php foreach ($nums as $n): ?>
+              <a class="pp-call-btn" href="tel:<?= e($n['tel']) ?>">
+                <span class="pp-call-ico" aria-hidden="true">📞</span>
+                <span class="pp-btn-text"><span data-i18n="pp.call">Call</span><small><?= e($n['display']) ?></small></span>
+              </a>
+            <?php endforeach; ?>
+          </div>
+          <p class="pp-seller-note" data-i18n="pp.waNote">Chat or call the seller directly — ask about price, stock, delivery or a visit.</p>
         </div>
       </div>
     </div>
@@ -470,7 +478,8 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.getInTouch">Get in touch</h4>
-      <p class="footer-phone">☎ +880 1644-842785</p>
+      <p class="footer-phone">☎ <a href="tel:+8801515286327">+880 1515-286327</a> <a class="ft-wa" href="https://wa.me/8801515286327" target="_blank" rel="noopener">WhatsApp</a></p>
+      <p class="footer-phone">☎ <a href="tel:+8801644842785">+880 1644-842785</a> <a class="ft-wa" href="https://wa.me/8801644842785" target="_blank" rel="noopener">WhatsApp</a></p>
       <p>islamzahirul7048@gmail.com</p>
     </div>
   </div>
@@ -531,8 +540,10 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     'pp.blurb3': { en: 'Message the seller on WhatsApp to confirm the latest price and availability.', bn: 'সর্বশেষ দাম ও স্টক নিশ্চিত করতে হোয়াটসঅ্যাপে বিক্রেতাকে মেসেজ করুন।' },
     'pp.verified': { en: 'Verified Seller', bn: 'ভেরিফায়েড বিক্রেতা' },
     'pp.sellerGeneric': { en: 'Listed on SaleBari', bn: 'SaleBari-তে তালিকাভুক্ত' },
-    'pp.whatsapp': { en: 'Message on WhatsApp', bn: 'হোয়াটসঅ্যাপে মেসেজ করুন' },
-    'pp.waNote': { en: 'Chat directly with the seller — ask about price, stock, delivery or a visit.', bn: 'সরাসরি বিক্রেতার সাথে কথা বলুন — দাম, স্টক, ডেলিভারি বা শোরুম ভিজিট সম্পর্কে জিজ্ঞেস করুন।' }
+    'pp.whatsapp': { en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ' },
+    'pp.wa': { en: 'WhatsApp', bn: 'হোয়াটসঅ্যাপ' },
+    'pp.call': { en: 'Call', bn: 'কল করুন' },
+    'pp.waNote': { en: 'Chat or call the seller directly — ask about price, stock, delivery or a visit.', bn: 'সরাসরি বিক্রেতাকে কল বা মেসেজ করুন — দাম, স্টক, ডেলিভারি বা শোরুম ভিজিট সম্পর্কে জিজ্ঞেস করুন।' }
   });
   window.I18N.applyLanguage(window.I18N.currentLang());
 
@@ -600,9 +611,10 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   }
 </script>
 <?php endif; ?>
-<?php if ($product && $waLink): ?>
+<?php if ($product): ?>
 <div class="pp-mobile-bar">
-  <a class="pp-bar-wa" href="<?= e($waLink) ?>" target="_blank" rel="noopener"><?= $waIcon ?> <span data-i18n="pp.whatsapp">Message on WhatsApp</span></a>
+  <a class="pp-bar-call" href="tel:<?= e($nums[0]['tel']) ?>">📞 <span data-i18n="pp.call">Call</span></a>
+  <a class="pp-bar-wa" href="<?= e($waLink) ?>" target="_blank" rel="noopener"><?= $waIcon ?> <span data-i18n="pp.wa">WhatsApp</span></a>
 </div>
 <?php endif; ?>
 </body>

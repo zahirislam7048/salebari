@@ -25,9 +25,9 @@ $fields = [
     'newsletter_heading' => ['Newsletter heading', false],
     'newsletter_sub'     => ['Newsletter subtext', false],
     'footer_brand_desc'  => ['Footer brand description', true],
-    'contact_phone'      => ['Contact phone', false],
+    'contact_phone'      => ['Contact number 1 (works as phone AND WhatsApp), e.g. +8801515286327', false],
     'contact_email'      => ['Contact email', false],
-    'contact_whatsapp'   => ['WhatsApp number (with country code, e.g. 8801644842785 — no + or spaces)', false],
+    'contact_whatsapp'   => ['Contact number 2 (works as phone AND WhatsApp), e.g. +8801644842785', false],
 ];
 
 if (is_post()) {

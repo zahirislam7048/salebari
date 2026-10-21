@@ -300,3 +300,65 @@ function redirect_to_canonical(string $canonical): void
         exit;
     }
 }
+
+/* --- Site contact numbers ---------------------------------------- */
+/* Two numbers, and each one is both a phone number and a WhatsApp number.
+   They live in Site Settings (contact_phone, contact_whatsapp). */
+
+const DEFAULT_CONTACT_NUMBERS = ['+8801515286327', '+8801644842785'];
+
+/** [['display' => '+880 1515-286327', 'tel' => '+8801515286327', 'wa' => '8801515286327'], ...] */
+function site_numbers(): array
+{
+    $raw = [setting('contact_phone', 'en', DEFAULT_CONTACT_NUMBERS[0]), setting('contact_whatsapp', 'en', DEFAULT_CONTACT_NUMBERS[1])];
+    $out = [];
+    foreach ($raw as $r) {
+        $bd = normalize_bd_phone((string) $r);
+        if ($bd !== null) {
+            $item = ['display' => '+880 ' . substr($bd, 1, 4) . '-' . substr($bd, 5), 'tel' => '+880' . substr($bd, 1), 'wa' => '880' . substr($bd, 1)];
+        } else {
+            $digits = preg_replace('/\D+/', '', (string) $r);
+            if ($digits === '') {
+                continue;
+            }
+            $item = ['display' => '+' . $digits, 'tel' => '+' . $digits, 'wa' => $digits];
+        }
+        $out[$item['wa']] = $item; // de-duplicate
+    }
+    return array_values($out ?: array_map(function ($n) {
+        $d = preg_replace('/\D+/', '', $n);
+        return ['display' => $n, 'tel' => $n, 'wa' => $d];
+    }, DEFAULT_CONTACT_NUMBERS));
+}
+
+/** Once: make the live database hold the two real numbers instead of one repeated number. */
+function ensure_contact_numbers(): void
+{
+    try {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'contacts_v2'")) {
+            return;
+        }
+        $digits = function ($k) {
+            return preg_replace('/\D+/', '', (string) scalar('SELECT v_en FROM settings WHERE k = ?', [$k]));
+        };
+        $phone = $digits('contact_phone');
+        $wa    = $digits('contact_whatsapp');
+        $set   = function ($k, $v) {
+            if (scalar('SELECT COUNT(*) FROM settings WHERE k = ?', [$k])) {
+                update('settings', ['v_en' => $v, 'v_bn' => $v], 'k = ?', [$k]);
+            } else {
+                insert('settings', ['k' => $k, 'v_en' => $v, 'v_bn' => $v]);
+            }
+        };
+        // Only replace values that are empty or still the old single placeholder number.
+        if ($phone === '' || $phone === '8801644842785') {
+            $set('contact_phone', DEFAULT_CONTACT_NUMBERS[0]);
+        }
+        if ($wa === '' || $wa === '8801644842785' || $wa === $phone) {
+            $set('contact_whatsapp', DEFAULT_CONTACT_NUMBERS[1]);
+        }
+        insert('settings', ['k' => 'contacts_v2', 'v_en' => '1', 'v_bn' => null]);
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_contact_numbers: ' . $e->getMessage());
+    }
+}

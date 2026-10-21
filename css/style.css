@@ -1863,3 +1863,26 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 .pp-overview > div h3, .blog-post-content h3, .brand-about-body h3 { font-size: 1.3rem; }
 .pp-overview > div h4, .blog-post-content h4, .brand-about-body h4 { font-size: 1.12rem; }
 .pp-overview > div h5, .blog-post-content h5, .brand-about-body h5 { font-size: 1rem; letter-spacing: 0.02em; text-transform: uppercase; }
+
+/* ---- two contact numbers: Call + WhatsApp for each ---- */
+.util-num2::before { content: " • "; opacity: 0.6; }
+.footer-phone a { color: inherit; }
+.footer-phone .ft-wa { margin-left: 8px; font-size: 0.78rem; font-weight: 700; color: #25D366; border: 1px solid currentColor; border-radius: 999px; padding: 1px 9px; }
+.pp-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.pp-contact-grid .pp-whatsapp-btn { margin-top: 0; }
+.pp-call-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 6px 12px;
+  border-radius: 999px; background: var(--ink); color: var(--paper); font-weight: 700;
+  box-shadow: 0 4px 0 var(--ink-deep); transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.pp-call-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--ink-deep); }
+.pp-call-ico { font-size: 1.15rem; line-height: 1; }
+.pp-btn-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; text-align: left; }
+.pp-btn-text small { font-size: 0.74rem; font-weight: 500; opacity: 0.9; white-space: nowrap; }
+@media (max-width: 640px) {
+  .util-num2 { display: none; }
+  .pp-contact-grid { gap: 8px; }
+  .pp-contact-grid .pp-whatsapp-btn, .pp-call-btn { padding: 6px 8px; gap: 6px; }
+  .pp-btn-text small { font-size: 0.68rem; }
+}
+@media (max-width: 340px) { .pp-contact-grid { grid-template-columns: 1fr; } }

@@ -325,9 +325,9 @@ function seed_settings(): void
             "Bangladesh's digital bazaar — verified stalls, instant price comparison, one address for everything you need.",
             'বাংলাদেশের ডিজিটাল বাজার — ভেরিফায়েড স্টল, তাৎক্ষণিক দাম তুলনা, আপনার সব প্রয়োজনের এক ঠিকানা।',
         ],
-        'contact_phone'      => [CONTACT_PHONE, CONTACT_PHONE],
+        'contact_phone'      => ['+8801515286327', '+8801515286327'],
         'contact_email'      => [CONTACT_EMAIL, CONTACT_EMAIL],
-        'contact_whatsapp'   => [ltrim(CONTACT_PHONE, '+'), ltrim(CONTACT_PHONE, '+')],
+        'contact_whatsapp'   => ['+8801644842785', '+8801644842785'],
     ];
 
     foreach ($settings as $k => [$en, $bn]) {
