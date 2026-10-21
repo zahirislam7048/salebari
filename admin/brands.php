@@ -53,6 +53,7 @@ if (is_post()) {
 
             if ($id) {
                 $data['name'] = $name;
+                $data['slug'] = slug_after_rename('brands', $id, $name, (string) scalar('SELECT slug FROM brands WHERE id = ?', [$id]));
                 update('brands', $data, 'id = ?', [$id]);
                 flash('success', 'Brand updated.');
             } else {

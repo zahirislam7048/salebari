@@ -55,6 +55,7 @@ function installed(): bool
     if ($ok) {
         auto_migrate();
         ensure_contact_numbers();
+        ensure_name_slugs();
     }
     return $ok;
 }

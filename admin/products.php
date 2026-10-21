@@ -82,6 +82,7 @@ if (is_post()) {
             $data['images'] = json_encode(array_values(array_merge($keep, $newImages)));
 
             if ($id) {
+                $data['slug'] = slug_after_rename('products', $id, $titleEn, (string) scalar('SELECT slug FROM products WHERE id = ?', [$id]));
                 update('products', $data, 'id = ?', [$id]);
                 flash('success', 'Product updated.');
             } else {

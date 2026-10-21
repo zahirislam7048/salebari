@@ -331,6 +331,27 @@ function site_numbers(): array
     }, DEFAULT_CONTACT_NUMBERS));
 }
 
+/** Once: bring existing brands/stalls/malls/products URLs in line with their current names. */
+function ensure_name_slugs(): void
+{
+    try {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'slugs_v2'")) {
+            return;
+        }
+        foreach ([['brands', 'name'], ['stalls', 'name'], ['malls', 'name'], ['products', 'title_en']] as [$table, $col]) {
+            foreach (rows("SELECT id, slug, $col AS label FROM $table") as $r) {
+                $new = slug_after_rename($table, (int) $r['id'], (string) $r['label'], (string) $r['slug']);
+                if ($new !== $r['slug']) {
+                    update($table, ['slug' => $new], 'id = ?', [$r['id']]);
+                }
+            }
+        }
+        insert('settings', ['k' => 'slugs_v2', 'v_en' => '1', 'v_bn' => null]);
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_name_slugs: ' . $e->getMessage());
+    }
+}
+
 /** Once: make the live database hold the two real numbers instead of one repeated number. */
 function ensure_contact_numbers(): void
 {
@@ -361,4 +382,22 @@ function ensure_contact_numbers(): void
     } catch (Throwable $e) {
         error_log('SaleBari ensure_contact_numbers: ' . $e->getMessage());
     }
+}
+
+/**
+ * Slug to use when a record is renamed, so its page URL always follows its current name.
+ * Old URLs keep working (the id in the URL still finds the record and 301-redirects).
+ * Bangla-only names can't be turned into a readable slug, so they keep the current one.
+ */
+function slug_after_rename(string $table, int $id, string $name, string $currentSlug): string
+{
+    $base = strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/u', '-', trim($name)), '-'));
+    if ($base === '') {
+        return $currentSlug;
+    }
+    $base = substr($base, 0, 80);
+    if ($currentSlug === $base || preg_match('/^' . preg_quote($base, '/') . '-\d+$/', $currentSlug)) {
+        return $currentSlug;
+    }
+    return unique_slug($table, $base, $id);
 }

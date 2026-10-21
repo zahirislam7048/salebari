@@ -52,6 +52,7 @@ if (is_post()) {
                 if ($editing['review_status'] === 'rejected') {
                     $data['review_status'] = 'pending'; // resubmitted
                 }
+                $data['slug'] = slug_after_rename('brands', (int) $editing['id'], $name, (string) $editing['slug']);
                 update('brands', $data, 'id = ? AND seller_id = ?', [$editing['id'], $me['id']]);
                 flash('success', 'Brand saved.');
             } else {
