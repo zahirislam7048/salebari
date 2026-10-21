@@ -21,7 +21,7 @@ $pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((st
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3">
 </head>
 <body>
 
@@ -226,9 +226,9 @@ $pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((st
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="js/nav-data.js"></script>
-<script src="js/catalog-data.js"></script>
-<script src="js/main.js"></script>
+<script src="js/nav-data.js?v=3"></script>
+<script src="js/catalog-data.js?v=3"></script>
+<script src="js/main.js?v=3"></script>
 <?php if ($post): ?>
 <script>
   Object.assign(window.I18N.dict, {

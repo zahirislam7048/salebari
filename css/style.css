@@ -1886,3 +1886,6 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
   .pp-btn-text small { font-size: 0.68rem; }
 }
 @media (max-width: 340px) { .pp-contact-grid { grid-template-columns: 1fr; } }
+
+.pp-btn-text small { margin-top: 3px; }
+.pp-contact-grid .pp-whatsapp-btn, .pp-call-btn { text-align: left; }
