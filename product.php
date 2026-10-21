@@ -27,6 +27,25 @@ $similar = $product ? rows(
     [$product['category_id'], $product['id'], 'active']
 ) : [];
 
+/* Specifications: one "Name: Value" per line. */
+$specs = [];
+if ($product && trim((string) ($product['specs'] ?? '')) !== '') {
+    foreach (preg_split('/\r?\n/', (string) $product['specs']) as $line) {
+        $line = trim($line);
+        if ($line === '') continue;
+        $pos = strpos($line, ':');
+        if ($pos === false) { $specs[] = [$line, '']; continue; }
+        $specs[] = [trim(substr($line, 0, $pos)), trim(substr($line, $pos + 1))];
+    }
+}
+
+/* WhatsApp is the only contact route on a product page. */
+$phone     = setting('contact_phone', 'en', CONTACT_PHONE);
+$whatsapp  = preg_replace('/[^0-9]/', '', setting('contact_whatsapp', 'en', $phone));
+$waMessage = $product ? "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari." : '';
+$waLink    = $whatsapp ? 'https://wa.me/' . $whatsapp . '?text=' . urlencode($waMessage) : '';
+$waIcon    = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg>';
+
 $pageTitle = $product ? ($product['meta_title'] ?: $product['title_en']) . ' — SaleBari' : 'Product not found — SaleBari';
 $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $product['description_en'], 0, 160)) : '';
 ?><!DOCTYPE html>
@@ -170,8 +189,15 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       <span class="breadcrumb-current" data-i18n="pp.title.<?= (int) $product['id'] ?>"><?= e($product['title_en']) ?></span>
     </nav>
 
+    <nav class="pp-tabs" id="ppTabs" aria-label="Product sections">
+      <a href="#pp-seller" data-i18n="pp.tab.seller">Seller</a>
+      <?php if ($specs): ?><a href="#pp-specs" data-i18n="pp.tab.specs">Specs</a><?php endif; ?>
+      <?php if ($product['description_en']): ?><a href="#pp-overview" data-i18n="pp.tab.overview">Overview</a><?php endif; ?>
+      <?php if ($similar): ?><a href="#pp-related" data-i18n="pp.tab.related">Related</a><?php endif; ?>
+    </nav>
+
     <div class="product-page-layout">
-      <div>
+      <div class="pp-panel">
         <div class="pp-gallery-main" id="ppMainImage">
           <?php if ($images): ?>
             <img src="<?= e(asset($images[0])) ?>" alt="<?= e($product['title_en']) ?>" id="ppMainImg">
@@ -191,54 +217,77 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       </div>
 
       <div class="pp-info">
-        <span class="pp-category-chip"><?= e($category['name_en'] ?? '') ?></span>
-        <?php if ($brand): ?>
-          <a class="pp-category-chip" href="brand/show.php?slug=<?= e($brand['slug']) ?>" style="margin-left:6px">🏷️ <?= e($brand['name']) ?></a>
-        <?php endif; ?>
         <h1 data-i18n="pp.title.<?= (int) $product['id'] ?>"><?= e($product['title_en']) ?></h1>
+
+        <div class="pp-meta">
+          <span class="pp-meta-item">SKU <?= (int) $product['id'] ?></span>
+          <span class="pp-meta-item">Posted <?= e(date('j M Y', strtotime((string) $product['created_at']))) ?></span>
+          <button type="button" class="pp-share" id="ppShare" data-title="<?= e($product['title_en']) ?>">↗ <span data-i18n="pp.share">Share</span></button>
+        </div>
+
+        <div class="pp-chips">
+          <?php if ($category): ?><span class="pp-category-chip"><?= e($category['name_en']) ?></span><?php endif; ?>
+          <?php if ($brand): ?><a class="pp-category-chip" href="brand/show.php?slug=<?= e($brand['slug']) ?>">🏷️ <?= e($brand['name']) ?></a><?php endif; ?>
+        </div>
+
         <?php if ($product['price_display']): ?>
-          <p class="pp-price"><?= e($product['price_display']) ?></p>
+          <div class="pp-pricebox"><span class="pp-pricebox-label" data-i18n="pp.price">Price</span><span class="pp-pricebox-amount"><?= e($product['price_display']) ?></span></div>
+          <p class="pp-blurb"><span data-i18n="pp.blurb1">The price of</span> <?= e($product['title_en']) ?> <span data-i18n="pp.blurb2">in Bangladesh is</span> <?= e($product['price_display']) ?>. <span data-i18n="pp.blurb3">Message the seller on WhatsApp to confirm the latest price and availability.</span></p>
         <?php endif; ?>
 
-        <?php if ($stall): ?>
-          <p class="muted" style="margin:0 0 14px">
-            Sold by <a href="stall/show.php?slug=<?= e($stall['slug']) ?>" style="color:var(--gold-deep);font-weight:600"><?= e($stall['name']) ?></a>
-            <?php if ($stall['verified']): ?><span class="vbadge" title="Verified Seller" style="display:inline-grid;vertical-align:middle">✓</span><?php endif; ?>
-          </p>
-        <?php endif; ?>
+        <div class="pp-sellercard" id="pp-seller">
+          <?php if ($stall): ?>
+            <a class="pp-seller-head" href="stall/show.php?slug=<?= e($stall['slug']) ?>">
+              <span class="pp-seller-logo">
+                <?php if ($stall['logo_image']): ?><img src="<?= e(asset($stall['logo_image'])) ?>" alt=""><?php else: ?><?= e($stall['logo_emoji'] ?: '🏬') ?><?php endif; ?>
+              </span>
+              <span class="pp-seller-text">
+                <strong><?= e($stall['name']) ?></strong>
+                <small>
+                  <?php if ($stall['verified']): ?><span class="pp-verified"><span data-i18n="pp.verified">Verified Seller</span></span><?php endif; ?>
+                  <?php if ($stall['city']): ?>· 📍 <?= e($stall['city']) ?><?php endif; ?>
+                </small>
+              </span>
+            </a>
+          <?php else: ?>
+            <div class="pp-seller-head">
+              <span class="pp-seller-logo">🏬</span>
+              <span class="pp-seller-text"><strong>SaleBari</strong><small data-i18n="pp.sellerGeneric">Listed on SaleBari</small></span>
+            </div>
+          <?php endif; ?>
 
-        <div class="pp-contact-card">
-          <h3 data-i18n="pp.contactSeller">Contact seller directly</h3>
-          <div class="pp-contact-actions">
-            <?php
-              $phone = setting('contact_phone', 'en', CONTACT_PHONE);
-              $email = setting('contact_email', 'en', CONTACT_EMAIL);
-              $whatsapp = preg_replace('/[^0-9]/', '', setting('contact_whatsapp', 'en', $phone));
-              $waMessage = "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari.";
-            ?>
-            <a class="pp-contact-call" href="tel:<?= e($phone) ?>">☎ <?= e($phone) ?></a>
-            <?php if ($whatsapp): ?>
-              <a class="pp-contact-whatsapp" href="https://wa.me/<?= e($whatsapp) ?>?text=<?= urlencode($waMessage) ?>" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg>
-                WhatsApp
-              </a>
-            <?php endif; ?>
-            <a class="pp-contact-email" href="mailto:<?= e($email) ?>">✉ Email</a>
-          </div>
+          <?php if ($whatsapp): ?>
+            <a class="pp-whatsapp-btn" href="<?= e($waLink) ?>" target="_blank" rel="noopener">
+              <?= $waIcon ?>
+              <span data-i18n="pp.whatsapp">Message on WhatsApp</span>
+            </a>
+            <p class="pp-seller-note" data-i18n="pp.waNote">Chat directly with the seller — ask about price, stock, delivery or a visit.</p>
+          <?php endif; ?>
         </div>
       </div>
     </div>
 
+    <?php if ($specs): ?>
+      <section class="pp-section" id="pp-specs">
+        <h2><span class="pp-sec-ico">📋</span> <span data-i18n="pp.specs">Specifications</span></h2>
+        <table class="pp-spec-table">
+          <?php foreach ($specs as [$k, $v]): ?>
+            <tr><th><?= e($k) ?></th><td><?= e($v) ?></td></tr>
+          <?php endforeach; ?>
+        </table>
+      </section>
+    <?php endif; ?>
+
     <?php if ($product['description_en']): ?>
-      <div class="pp-overview">
-        <h2 data-i18n="pp.overview">Overview</h2>
+      <section class="pp-section pp-overview" id="pp-overview">
+        <h2><span class="pp-sec-ico">📖</span> <span data-i18n="pp.overview">Overview</span></h2>
         <div data-i18n-html="pp.desc.<?= (int) $product['id'] ?>"><?= $product['description_en'] ?></div>
-      </div>
+      </section>
     <?php endif; ?>
 
     <?php if ($similar): ?>
-      <div class="pp-similar">
-        <h2 data-i18n="pp.similar">Similar products</h2>
+      <section class="pp-section pp-similar" id="pp-related">
+        <h2><span class="pp-sec-ico">🔗</span> <span data-i18n="pp.similar">Similar products</span></h2>
         <div class="product-grid">
           <?php foreach ($similar as $s): $simgs = json_decode((string) $s['images'], true) ?: []; ?>
             <a class="product-card" href="product.php?slug=<?= e($s['slug']) ?>" style="text-decoration:none;color:inherit;display:block">
@@ -253,7 +302,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
             </a>
           <?php endforeach; ?>
         </div>
-      </div>
+      </section>
     <?php endif; ?>
   </div>
 </section>
@@ -340,9 +389,22 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   Object.assign(window.I18N.dict, {
     'pp.title.<?= (int) $product['id'] ?>': { en: <?= json_encode($product['title_en']) ?>, bn: <?= json_encode($product['title_bn'] ?: $product['title_en']) ?> },
     'pp.desc.<?= (int) $product['id'] ?>': { en: <?= json_encode((string) $product['description_en']) ?>, bn: <?= json_encode($product['description_bn'] ?: (string) $product['description_en']) ?> },
-    'pp.contactSeller': { en: 'Contact seller directly', bn: 'সরাসরি বিক্রেতার সাথে যোগাযোগ করুন' },
     'pp.overview': { en: 'Overview', bn: 'বিবরণ' },
-    'pp.similar': { en: 'Similar products', bn: 'একই ধরনের পণ্য' }
+    'pp.similar': { en: 'Similar products', bn: 'একই ধরনের পণ্য' },
+    'pp.specs': { en: 'Specifications', bn: 'স্পেসিফিকেশন' },
+    'pp.tab.seller': { en: 'Seller', bn: 'বিক্রেতা' },
+    'pp.tab.specs': { en: 'Specs', bn: 'স্পেসিফিকেশন' },
+    'pp.tab.overview': { en: 'Overview', bn: 'বিবরণ' },
+    'pp.tab.related': { en: 'Related', bn: 'সম্পর্কিত' },
+    'pp.share': { en: 'Share', bn: 'শেয়ার' },
+    'pp.price': { en: 'Price', bn: 'দাম' },
+    'pp.blurb1': { en: 'The price of', bn: '' },
+    'pp.blurb2': { en: 'in Bangladesh is', bn: 'এর বাংলাদেশে দাম' },
+    'pp.blurb3': { en: 'Message the seller on WhatsApp to confirm the latest price and availability.', bn: 'সর্বশেষ দাম ও স্টক নিশ্চিত করতে হোয়াটসঅ্যাপে বিক্রেতাকে মেসেজ করুন।' },
+    'pp.verified': { en: 'Verified Seller', bn: 'ভেরিফায়েড বিক্রেতা' },
+    'pp.sellerGeneric': { en: 'Listed on SaleBari', bn: 'SaleBari-তে তালিকাভুক্ত' },
+    'pp.whatsapp': { en: 'Message on WhatsApp', bn: 'হোয়াটসঅ্যাপে মেসেজ করুন' },
+    'pp.waNote': { en: 'Chat directly with the seller — ask about price, stock, delivery or a visit.', bn: 'সরাসরি বিক্রেতার সাথে কথা বলুন — দাম, স্টক, ডেলিভারি বা শোরুম ভিজিট সম্পর্কে জিজ্ঞেস করুন।' }
   });
   window.I18N.applyLanguage(window.I18N.currentLang());
 
@@ -355,12 +417,32 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       btn.classList.add('active');
     });
   });
+
+  /* Section tabs stick just under the site header. */
+  var tabs = document.getElementById('ppTabs');
+  var header = document.querySelector('.site-header');
+  function placeTabs() { if (tabs && header) { var h = header.offsetHeight; tabs.style.top = h + 'px'; document.documentElement.style.setProperty('--pp-sticky', (h + 60) + 'px'); } }
+  placeTabs();
+  window.addEventListener('resize', placeTabs);
+
+  var share = document.getElementById('ppShare');
+  if (share) {
+    share.addEventListener('click', function () {
+      var data = { title: share.getAttribute('data-title'), url: location.href };
+      if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(location.href).then(function () {
+          var label = share.querySelector('span'); var old = label.textContent;
+          label.textContent = 'Link copied'; setTimeout(function () { label.textContent = old; }, 1800);
+        });
+      }
+    });
+  }
 </script>
 <?php endif; ?>
-<?php if (!empty($whatsapp) || !empty($phone)): ?>
+<?php if ($product && $waLink): ?>
 <div class="pp-mobile-bar">
-  <?php if (!empty($phone)): ?><a class="pp-bar-call" href="tel:<?= e($phone) ?>">☎ Call</a><?php endif; ?>
-  <?php if (!empty($whatsapp)): ?><a class="pp-bar-wa" href="https://wa.me/<?= e($whatsapp) ?>?text=<?= urlencode($waMessage) ?>" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg> WhatsApp</a><?php endif; ?>
+  <a class="pp-bar-wa" href="<?= e($waLink) ?>" target="_blank" rel="noopener"><?= $waIcon ?> <span data-i18n="pp.whatsapp">Message on WhatsApp</span></a>
 </div>
 <?php endif; ?>
 </body>

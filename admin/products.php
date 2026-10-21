@@ -68,6 +68,7 @@ if (is_post()) {
             'description_en'   => input('description_en') ?: null,
             'description_bn'   => input('description_bn') ?: null,
             'price_display'    => input('price_display') ?: null,
+            'specs'            => input('specs') ?: null,
             'status'           => input('status', 'active'),
         ];
 
@@ -179,6 +180,8 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
 
     <label class="admin-field"><span>Price (e.g. "৳ 42 Lakh" or "৳ 1,850")</span>
       <input type="text" name="price_display" value="<?= e($editing['price_display'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Specifications (optional — one per line, written as "Name: Value", e.g. "Battery: 2200mAh")</span>
+      <textarea name="specs" rows="6" placeholder="Camera: 4K&#10;Flight time: 24 min&#10;Weight: 300 g"><?= e($editing['specs'] ?? '') ?></textarea></label>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
     <p class="muted" style="margin-top:0">SEO</p>

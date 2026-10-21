@@ -157,6 +157,7 @@ CREATE TABLE products (
   meta_description VARCHAR(320) NULL,
   description_en LONGTEXT NULL,
   description_bn LONGTEXT NULL,
+  specs TEXT NULL,
   price_display VARCHAR(60) NULL,
   images TEXT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'active',
