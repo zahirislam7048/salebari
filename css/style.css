@@ -1,18 +1,19 @@
 /* ============================================================
    SaleBari — design tokens
-   Palette derived from the S/B monogram: charcoal ink on paper,
-   with a single gold accent for calls-to-action and price tags.
+   Palette: "Midnight Emerald & Champagne" — deep emerald-black ink on warm
+   ivory, with a champagne-gold accent for calls-to-action and price tags.
+   (The earlier charcoal + gold scheme is saved in css/themes/classic-tokens.css.)
    ============================================================ */
 :root {
-  --paper: #FCFBF8;
-  --paper-warm: #F3EFE7;
-  --ink: #262321;
-  --ink-soft: #5C554D;
-  --ink-deep: #16140F;
-  --gold: #B9902E;
-  --gold-deep: #8F6D22;
-  --market-green: #3F7A5C;
-  --line: rgba(38, 35, 33, 0.14);
+  --paper: #FAF7F0;
+  --paper-warm: #F1EBDD;
+  --ink: #0F2A24;
+  --ink-soft: #55635C;
+  --ink-deep: #0A1D19;
+  --gold: #C9A961;
+  --gold-deep: #8F7335;
+  --market-green: #2E7D5B;
+  --line: rgba(15, 42, 36, 0.14);
 
   --font-display: "Times New Roman", Times, "Noto Sans Bengali", serif;
   --font-body: "Times New Roman", Times, "Noto Sans Bengali", serif;
@@ -20,8 +21,8 @@
 
   --radius-s: 8px;
   --radius-m: 14px;
-  --shadow-card: 0 6px 20px rgba(22, 20, 15, 0.08);
-  --shadow-lift: 0 16px 40px rgba(22, 20, 15, 0.16);
+  --shadow-card: 0 6px 20px rgba(15, 42, 36, 0.09);
+  --shadow-lift: 0 16px 40px rgba(15, 42, 36, 0.18);
 }
 
 * { box-sizing: border-box; }
@@ -113,7 +114,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
    ============================================================ */
 .utility-bar {
   background: var(--ink-deep);
-  color: rgba(252, 251, 248, 0.78);
+  color: rgba(250, 247, 240, 0.78);
   font-size: 0.8rem;
 }
 .utility-inner {
@@ -130,7 +131,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .sep { opacity: 0.5; }
 
 .lang-toggle {
-  border: 1px solid rgba(252, 251, 248, 0.35);
+  border: 1px solid rgba(250, 247, 240, 0.35);
   background: transparent;
   color: inherit;
   font-family: var(--font-body);
@@ -291,13 +292,13 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .cat-list > li > a {
   display: block;
   padding: 13px 16px;
-  color: rgba(252, 251, 248, 0.88);
+  color: rgba(250, 247, 240, 0.88);
   font-size: 0.86rem;
   font-weight: 600;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.cat-list > li > a:hover { background: rgba(252, 251, 248, 0.08); color: var(--gold); }
+.cat-list > li > a:hover { background: rgba(250, 247, 240, 0.08); color: var(--gold); }
 
 .deals-tag {
   flex-shrink: 0;
@@ -383,7 +384,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
    ============================================================ */
 .hero {
   background:
-    radial-gradient(circle at 88% 12%, rgba(185, 144, 46, 0.22), transparent 45%),
+    radial-gradient(circle at 88% 12%, rgba(201, 169, 97, 0.22), transparent 45%),
     var(--paper);
   padding: 72px 0 56px;
   overflow: hidden;
@@ -495,7 +496,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
   gap: 8px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: rgba(252, 251, 248, 0.9);
+  color: rgba(250, 247, 240, 0.9);
 }
 
 /* ============================================================
@@ -1223,7 +1224,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
   flex-wrap: wrap;
 }
 .seller-cta h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); max-width: 520px; }
-.hero-sub.light { color: rgba(252, 251, 248, 0.75); }
+.hero-sub.light { color: rgba(250, 247, 240, 0.75); }
 
 /* Newsletter */
 .newsletter-ticket {
@@ -1251,7 +1252,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .newsletter-ticket::before { left: -13px; }
 .newsletter-ticket::after { right: -13px; }
 .ticket-left h3 { font-size: 1.5rem; margin-bottom: 6px; color: var(--ink-deep); }
-.ticket-left p { margin: 0; color: rgba(38, 35, 33, 0.75); }
+.ticket-left p { margin: 0; color: rgba(15, 42, 36, 0.75); }
 .newsletter-form { display: flex; gap: 10px; }
 .newsletter-form input {
   border: 2px solid var(--ink);
@@ -1266,7 +1267,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 /* ============================================================
    Footer
    ============================================================ */
-.site-footer { background: var(--ink-deep); color: rgba(252, 251, 248, 0.75); }
+.site-footer { background: var(--ink-deep); color: rgba(250, 247, 240, 0.75); }
 .footer-inner {
   display: grid;
   grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
@@ -1281,7 +1282,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid rgba(252, 251, 248, 0.25);
+  border: 1px solid rgba(250, 247, 240, 0.25);
   display: grid;
   place-items: center;
   font-size: 0.9rem;
@@ -1309,7 +1310,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
   gap: 16px;
   flex-wrap: wrap;
   padding: 18px 0;
-  border-top: 1px solid rgba(252, 251, 248, 0.12);
+  border-top: 1px solid rgba(250, 247, 240, 0.12);
   font-size: 0.8rem;
 }
 .footer-badges { display: flex; gap: 18px; flex-wrap: wrap; }
@@ -1773,7 +1774,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .pp-share:hover { border-color: var(--gold-deep); color: var(--gold-deep); }
 .pp-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .pp-chips .pp-category-chip { margin: 0; }
-.pp-pricebox { display: flex; align-items: baseline; gap: 10px; background: #f4ecd2; border: 1px solid #e6d7a3; border-radius: var(--radius-m); padding: 14px 18px; margin-bottom: 12px; }
+.pp-pricebox { display: flex; align-items: baseline; gap: 10px; background: #F3EBD3; border: 1px solid #E4D5A8; border-radius: var(--radius-m); padding: 14px 18px; margin-bottom: 12px; }
 .pp-pricebox-label { font-size: 0.85rem; color: var(--ink-soft); }
 .pp-pricebox-amount { font-family: var(--font-mono); font-size: clamp(1.6rem, 4vw, 2.1rem); font-weight: 700; color: var(--ink); }
 .pp-blurb { margin: 0 0 16px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
@@ -1824,7 +1825,7 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 .pp-spec-table tr:nth-child(even) th, .pp-spec-table tr:nth-child(even) td { background: #fff; }
 .pp-reviews { text-align: center; }
 .pp-rev-empty { max-width: 520px; margin: 4px auto 18px; }
-.pp-rev-star { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: #fbf3dc; color: var(--gold-deep); font-size: 2rem; display: grid; place-items: center; }
+.pp-rev-star { width: 64px; height: 64px; margin: 0 auto 10px; border-radius: 50%; background: #F8F0DA; color: var(--gold-deep); font-size: 2rem; display: grid; place-items: center; }
 .pp-rev-empty h2 { display: block; margin: 0 0 8px; font-size: 1.2rem; }
 .pp-rev-empty p { margin: 0 0 14px; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.6; }
 .pp-rev-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }

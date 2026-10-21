@@ -1,0 +1,20 @@
+/* SaleBari "Classic" colour scheme — charcoal ink on warm paper with a gold accent.
+   Saved before the switch to "Midnight Emerald & Champagne".
+
+   To go back to it: paste this :root block over the colour variables at the top of
+   css/style.css, or restore the whole file from git:
+       git checkout theme-classic -- css/style.css
+   (This file is not loaded by the site; it is a reference copy.) */
+:root {
+  --paper: #FCFBF8;
+  --paper-warm: #F3EFE7;
+  --ink: #262321;
+  --ink-soft: #5C554D;
+  --ink-deep: #16140F;
+  --gold: #B9902E;
+  --gold-deep: #8F6D22;
+  --market-green: #3F7A5C;
+  --line: rgba(38, 35, 33, 0.14);
+  --shadow-card: 0 6px 20px rgba(22, 20, 15, 0.08);
+  --shadow-lift: 0 16px 40px rgba(22, 20, 15, 0.16);
+}

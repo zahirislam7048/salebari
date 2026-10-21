@@ -1,7 +1,7 @@
 <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-  <rect width="120" height="120" rx="24" fill="#FCFBF8"/>
-  <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="#262321">S</text>
-  <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="#262321">B</text>
-  <line x1="90" y1="10" x2="38" y2="106" stroke="#262321" stroke-width="6" stroke-linecap="round"/>
-  <line x1="2" y1="110" x2="112" y2="110" stroke="#262321" stroke-width="6" stroke-linecap="round"/>
+  <rect width="120" height="120" rx="24" fill="#FAF7F0"/>
+  <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="#0F2A24">S</text>
+  <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="#0F2A24">B</text>
+  <line x1="90" y1="10" x2="38" y2="106" stroke="#0F2A24" stroke-width="6" stroke-linecap="round"/>
+  <line x1="2" y1="110" x2="112" y2="110" stroke="#0F2A24" stroke-width="6" stroke-linecap="round"/>
 </svg>
