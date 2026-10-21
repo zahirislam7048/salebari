@@ -1469,7 +1469,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .pp-contact-email { background: transparent; border: 1px solid var(--line); color: var(--ink); }
 
 .pp-overview { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
-.pp-overview h2 { font-size: 1.1rem; margin: 0 0 14px; }
+.pp-overview > h2 { font-size: 1.1rem; margin: 0 0 14px; }
 /* Content here comes from the dashboard's rich-text editor, so it may
    include bold, lists, links etc., not just plain paragraphs. */
 .pp-overview > div { color: var(--ink-soft); line-height: 1.7; max-width: 760px; }
@@ -1481,7 +1481,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; 
 .pp-overview > div a { color: var(--gold-deep); }
 
 .pp-similar { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line); }
-.pp-similar h2 { font-size: 1.1rem; margin: 0 0 18px; }
+.pp-similar > h2 { font-size: 1.1rem; margin: 0 0 18px; }
 
 @media (max-width: 780px) {
   .product-page-layout { grid-template-columns: 1fr; }
@@ -1798,7 +1798,7 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 .pp-seller-note { margin: 10px 0 0; font-size: 0.82rem; color: var(--ink-soft); text-align: center; }
 
 .pp-section { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 24px; margin-top: 24px; scroll-margin-top: var(--pp-sticky, 130px); }
-.pp-section h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 1.15rem; }
+.pp-section > h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 1.15rem; }
 .pp-sec-ico { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--paper-warm); font-size: 1rem; }
 .pp-section.pp-overview, .pp-section.pp-similar { border-top: 1px solid var(--line); padding-top: 24px; margin-top: 24px; }
 .pp-overview > div { max-width: none; }
@@ -1852,3 +1852,14 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 @media (max-width: 640px) {
   .pp-rev-actions .btn { flex: 1 1 100%; justify-content: center; }
 }
+
+/* ---- Headings (H1-H5) written in the rich-text editors, shown on public pages ---- */
+.pp-overview > div, .blog-post-content, .brand-about-body { --rt-head: var(--font-display); }
+.pp-overview > div :is(h1, h2, h3, h4, h5),
+.blog-post-content :is(h1, h2, h3, h4, h5),
+.brand-about-body :is(h1, h2, h3, h4, h5) { font-family: var(--rt-head); color: var(--ink); line-height: 1.25; font-weight: 700; margin: 22px 0 10px; display: block; }
+.pp-overview > div h1, .blog-post-content h1, .brand-about-body h1 { font-size: 1.9rem; }
+.pp-overview > div h2, .blog-post-content h2, .brand-about-body h2 { font-size: 1.55rem; }
+.pp-overview > div h3, .blog-post-content h3, .brand-about-body h3 { font-size: 1.3rem; }
+.pp-overview > div h4, .blog-post-content h4, .brand-about-body h4 { font-size: 1.12rem; }
+.pp-overview > div h5, .blog-post-content h5, .brand-about-body h5 { font-size: 1rem; letter-spacing: 0.02em; text-transform: uppercase; }

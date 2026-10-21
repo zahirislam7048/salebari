@@ -122,12 +122,12 @@ admin_header('Blog', '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/
       <input type="file" name="cover_image" accept="image/*"></label>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-    <label class="admin-field"><span>Content (English)</span>
+    <div class="admin-field"><span>Content (English)</span>
       <div id="editor_content_en" class="admin-richtext"></div>
-      <textarea name="content_en" id="ta_content_en" hidden><?= e($editing['content_en'] ?? '') ?></textarea></label>
-    <label class="admin-field"><span>Content (Bangla)</span>
+      <textarea name="content_en" id="ta_content_en" hidden><?= e($editing['content_en'] ?? '') ?></textarea></div>
+    <div class="admin-field"><span>Content (Bangla)</span>
       <div id="editor_content_bn" class="admin-richtext"></div>
-      <textarea name="content_bn" id="ta_content_bn" hidden><?= e($editing['content_bn'] ?? '') ?></textarea></label>
+      <textarea name="content_bn" id="ta_content_bn" hidden><?= e($editing['content_bn'] ?? '') ?></textarea></div>
 
     <label class="admin-field"><span>Status</span>
       <select name="status">
@@ -184,7 +184,7 @@ admin_header('Blog', '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
 <script>
   mountRichText('editor_content_en', 'ta_content_en');
   mountRichText('editor_content_bn', 'ta_content_bn');

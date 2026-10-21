@@ -131,9 +131,9 @@ admin_header('Shopping Malls', '<link rel="stylesheet" href="https://cdnjs.cloud
       <input type="text" name="facebook" value="<?= e($editing['facebook'] ?? '') ?>"></label>
     <label class="admin-field"><span>Instagram</span>
       <input type="text" name="instagram" value="<?= e($editing['instagram'] ?? '') ?>"></label>
-    <label class="admin-field"><span>About the mall</span>
+    <div class="admin-field"><span>About the mall</span>
       <div id="editor_about" class="admin-richtext"></div>
-      <textarea name="about" id="ta_about" hidden><?= e($editing['about'] ?? '') ?></textarea></label>
+      <textarea name="about" id="ta_about" hidden><?= e($editing['about'] ?? '') ?></textarea></div>
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
 
     <?php if (!empty($editing['logo_image'])): ?>
@@ -184,7 +184,7 @@ admin_header('Shopping Malls', '<link rel="stylesheet" href="https://cdnjs.cloud
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
 <script>mountRichText('editor_about', 'ta_about');</script>
 <?php
 admin_footer();

@@ -138,9 +138,9 @@ admin_header('Brands', '<link rel="stylesheet" href="https://cdnjs.cloudflare.co
       <input type="text" name="linkedin" value="<?= e($editing['linkedin'] ?? '') ?>"></label>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-    <label class="admin-field"><span>About the company</span>
+    <div class="admin-field"><span>About the company</span>
       <div id="editor_description" class="admin-richtext"></div>
-      <textarea name="description" id="ta_description" hidden><?= e($editing['description'] ?? '') ?></textarea></label>
+      <textarea name="description" id="ta_description" hidden><?= e($editing['description'] ?? '') ?></textarea></div>
 
     <?php if (!empty($editing['logo_image'])): ?>
       <div class="admin-field">
@@ -201,7 +201,7 @@ admin_header('Brands', '<link rel="stylesheet" href="https://cdnjs.cloudflare.co
   <?php endif; ?>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
 <script>mountRichText('editor_description', 'ta_description');</script>
 <?php
 admin_footer();

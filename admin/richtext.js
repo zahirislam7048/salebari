@@ -7,7 +7,7 @@ function mountRichText(editorId, textareaId) {
     theme: 'snow',
     modules: {
       toolbar: [
-        [{ header: [2, 3, false] }],
+        [{ header: [1, 2, 3, 4, 5, false] }],
         ['bold', 'italic', 'underline'],
         [{ list: 'ordered' }, { list: 'bullet' }],
         ['link', 'image'],

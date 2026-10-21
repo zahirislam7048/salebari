@@ -130,7 +130,7 @@ site_header($id ? 'Edit brand' : 'Add a brand', '<link rel="stylesheet" href="ht
   </div>
 </section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="../admin/richtext.js"></script>
+<script src="../admin/richtext.js?v=2"></script>
 <script>mountRichText('editor_description', 'ta_description');</script>
 <?php
 site_footer();

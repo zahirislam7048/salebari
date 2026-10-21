@@ -191,12 +191,12 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
       <textarea name="meta_description" maxlength="320"><?= e($editing['meta_description'] ?? '') ?></textarea></label>
 
     <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
-    <label class="admin-field"><span>Description (English)</span>
+    <div class="admin-field"><span>Description (English)</span>
       <div id="editor_description_en" class="admin-richtext"></div>
-      <textarea name="description_en" id="ta_description_en" hidden><?= e($editing['description_en'] ?? '') ?></textarea></label>
-    <label class="admin-field"><span>Description (Bangla)</span>
+      <textarea name="description_en" id="ta_description_en" hidden><?= e($editing['description_en'] ?? '') ?></textarea></div>
+    <div class="admin-field"><span>Description (Bangla)</span>
       <div id="editor_description_bn" class="admin-richtext"></div>
-      <textarea name="description_bn" id="ta_description_bn" hidden><?= e($editing['description_bn'] ?? '') ?></textarea></label>
+      <textarea name="description_bn" id="ta_description_bn" hidden><?= e($editing['description_bn'] ?? '') ?></textarea></div>
 
     <?php if ($editingImages): ?>
       <div class="admin-field">
@@ -318,7 +318,7 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
   }
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=2"></script>
 <script>
   mountRichText('editor_description_en', 'ta_description_en');
   mountRichText('editor_description_bn', 'ta_description_bn');
