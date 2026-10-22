@@ -63,6 +63,10 @@ $faq = [
          'Check the item in person when you can, compare prices, and be careful with prices that look too good. Do not send advance money to someone you do not know. SaleBari will never ask for your password or an OTP.',
          'কেনার সময় কীভাবে নিরাপদ থাকব?',
          'সম্ভব হলে নিজে পণ্য দেখে নিন, দাম তুলনা করুন এবং অতিরিক্ত কম দামে সতর্ক থাকুন। অচেনা কাউকে অগ্রিম টাকা পাঠাবেন না। SaleBari কখনো আপনার পাসওয়ার্ড বা OTP চাইবে না।'],
+        ['What is the return and refund policy?',
+         'Returns and refunds for a product are decided by the seller you buy from, so ask before you pay. Seller package fees have their own refund rules. Read the full Return and Refund Policy for details.',
+         'রিটার্ন ও রিফান্ড নীতি কী?',
+         'কোনো পণ্যের রিটার্ন ও রিফান্ড যে বিক্রেতার কাছ থেকে কিনছেন তিনিই ঠিক করেন, তাই টাকা দেওয়ার আগে জিজ্ঞেস করুন। সেলার প্যাকেজ ফি-র রিফান্ডের নিয়ম আলাদা। বিস্তারিত জানতে পূর্ণ রিটার্ন ও রিফান্ড নীতি পড়ুন।'],
         ['How do I report a suspicious listing or seller?',
          'Message us on WhatsApp with the page link and what looks wrong. We check every report and remove listings that break our rules.',
          'সন্দেহজনক লিস্টিং বা বিক্রেতার খবর কীভাবে দেব?',
@@ -143,8 +147,8 @@ site_header('Help Center', $head, false);
           <?php foreach ($items as [$qEn, $aEn, $qBn, $aBn]): ?>
             <details class="faq-item">
               <summary><span data-lang="en"><?= e($qEn) ?></span><span data-lang="bn"><?= e($qBn) ?></span></summary>
-              <p data-lang="en"><?= e($aEn) ?><?php if ($group === 'Safety' && strpos($qEn, 'information') !== false): ?> <a href="<?= base_path() ?>/privacy.php">Privacy Policy →</a><?php endif; ?></p>
-              <p data-lang="bn"><?= e($aBn) ?><?php if ($group === 'Safety' && strpos($qEn, 'information') !== false): ?> <a href="<?= base_path() ?>/privacy.php">গোপনীয়তা নীতি →</a><?php endif; ?></p>
+              <p data-lang="en"><?= e($aEn) ?><?php if ($group === 'Safety' && strpos($qEn, 'information') !== false): ?> <a href="<?= base_path() ?>/privacy.php">Privacy Policy →</a><?php endif; ?><?php if (strpos($qEn, 'refund policy') !== false): ?> <a href="<?= base_path() ?>/return-and-refund-policy/">Return and Refund Policy →</a><?php endif; ?></p>
+              <p data-lang="bn"><?= e($aBn) ?><?php if ($group === 'Safety' && strpos($qEn, 'information') !== false): ?> <a href="<?= base_path() ?>/privacy.php">গোপনীয়তা নীতি →</a><?php endif; ?><?php if (strpos($qEn, 'refund policy') !== false): ?> <a href="<?= base_path() ?>/return-and-refund-policy/">রিটার্ন ও রিফান্ড নীতি →</a><?php endif; ?></p>
             </details>
           <?php endforeach; ?>
         </div>

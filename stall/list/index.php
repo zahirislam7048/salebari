@@ -21,7 +21,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=7">
+<link rel="stylesheet" href="../../css/style.css?v=8">
 </head>
 <body>
 
@@ -220,7 +220,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
       <h4 data-i18n="utility.help">Help</h4>
       <a href="/help/#contact" data-i18n="footer.contactUs">Contact us</a>
       <a href="/help/#faq" data-i18n="footer.faq">FAQ</a>
-      <a href="/help/#safety" data-i18n="footer.returnPolicy">Return &amp; refund policy</a>
+      <a href="/return-and-refund-policy/" data-i18n="footer.returnPolicy">Return &amp; refund policy</a>
       <a href="/help/#how-it-works" data-i18n="footer.trackOrder">Track an order</a>
     </div>
     <div class="footer-col">

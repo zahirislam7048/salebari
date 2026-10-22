@@ -67,7 +67,7 @@ switch ($type) {
     case 'pages':
         $b = base_path();
         $items[] = [$origin . $b . '/', date('Y-m-d'), 'daily', '1.0'];
-        foreach (['/stall/list/' => '0.7', '/market/list/' => '0.7', '/brand/list/' => '0.7', '/blog.php' => '0.6', '/package.html' => '0.6', '/sell/' => '0.6'] as $path => $prio) {
+        foreach (['/stall/list/' => '0.7', '/market/list/' => '0.7', '/brand/list/' => '0.7', '/blog.php' => '0.6', '/package.html' => '0.6', '/sell/' => '0.6', '/help/' => '0.6', '/return-and-refund-policy/' => '0.4', '/privacy.php' => '0.3'] as $path => $prio) {
             $items[] = [$origin . $b . $path, null, 'weekly', $prio];
         }
         break;

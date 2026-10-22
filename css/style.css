@@ -1953,3 +1953,7 @@ html[lang="bn"] .help-page [data-lang="en"], html:not([lang="bn"]) .help-page [d
 .help-contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
 @media (max-width: 900px) { .help-cards { grid-template-columns: repeat(2, 1fr); } .help-columns { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .help-cards { grid-template-columns: 1fr; } }
+.privacy-page ul { list-style: disc; padding-left: 22px; margin: 0 0 12px; color: var(--ink-soft); }
+.privacy-page ol { list-style: decimal; padding-left: 22px; margin: 0 0 12px; color: var(--ink-soft); }
+.privacy-page li { display: list-item; margin-bottom: 6px; }
+.privacy-page a { color: var(--gold-deep); font-weight: 600; }
