@@ -146,3 +146,71 @@ function ensure_extra_categories(): void
         error_log('SaleBari ensure_extra_categories: ' . $e->getMessage());
     }
 }
+
+/** One relevant icon per sub category and sub sub category (slug => emoji). */
+function category_icon_map(): array
+{
+    return [
+        // --- Car & Bike
+        'carAccessories' => '🚘', 'bikeAccessories' => '🏍️', 'threeWheeler' => '🛺', 'commercialVehicle' => '🚛', 'rental' => '🔑',
+        'carScratchRemover' => '🧽', 'engineOil' => '🛢️', 'carScanner' => '📟', 'dashcam' => '📹',
+        'motorcycleHelmet' => '⛑️', 'motorcycleTyre' => '⭕',
+        'cng' => '⛽', 'autoRickshaw' => '🛺',
+        'boat' => '🚤', 'truck' => '🚚', 'tractor' => '🚜', 'bus' => '🚌',
+        'pickupRental' => '🚙', 'ambulanceService' => '🚑',
+        // --- Real Estate
+        'apartment' => '🏢', 'land' => '🏞️', 'commercialSpace' => '🏬', 'sanitary' => '🚽', 'constructionMaterial' => '🧱',
+        'commode' => '🚽', 'basin' => '🚰', 'waterTap' => '💧',
+        'cement' => '📦', 'sand' => '🏖️', 'stone' => '⛰️', 'brick' => '🧱', 'rod' => '📏', 'constructionEquipment' => '🏗️',
+        // --- Agro
+        'livestock' => '🐄', 'fish' => '🐟', 'poultry' => '🐔', 'birds' => '🕊️',
+        'cow' => '🐄', 'goat' => '🐐', 'buffalo' => '🐃',
+        'rui' => '🐟', 'katla' => '🐠', 'tilapia' => '🐡', 'pangas' => '🐟', 'otherFish' => '🦐',
+        'chicken' => '🐔', 'duck' => '🦆', 'pigeon' => '🕊️', 'otherPermittedBirds' => '🦜',
+        // --- Travels
+        'airTicket' => '✈️', 'busTicket' => '🚌', 'tourPackage' => '🧳', 'umrahPackage' => '🕋', 'hajjPackage' => '🕌',
+        'hotelBooking' => '🏨', 'visaProcessing' => '🛂', 'doctorAppointment' => '🩺', 'trainTicket' => '🚆', 'saintMartinShipTicket' => '🚢',
+        'indianDoctorAppointment' => '👨‍⚕️',
+        // --- Household
+        'furniture' => '🛋️', 'officeFurniture' => '🗄️', 'bedding' => '🛏️', 'decoration' => '🖼️', 'furnitureAccessories' => '🔩',
+        'householdCleaner' => '🧹', 'pestControl' => '🐜', 'kitchenware' => '🍳', 'stationeryCraft' => '✏️', 'bathroomAccessories' => '🚿',
+        'furnitureBed' => '🛏️', 'furnitureBedsideTable' => '🕯️', 'furnitureAirBed' => '🎈', 'furnitureDiningTable' => '🍽️',
+        'furnitureDiningChair' => '🪑', 'furnitureSofaSet' => '🛋️', 'furnitureCenterTable' => '☕', 'furnitureDivan' => '🛌',
+        'furnitureDressingTable' => '💄', 'furnitureShowcase' => '🏺', 'furnitureShelf' => '📚', 'furnitureWardrobe' => '👗',
+        'furnitureAlmirah' => '🗄️', 'furnitureTrolley' => '🛒', 'furnitureStool' => '🪑', 'furnitureFurnitureSet' => '🏡',
+        'furnitureKitchenFurniture' => '🍴', 'furnitureShoeRack' => '👟',
+        'officeFurnitureOfficeTable' => '🖥️', 'officeFurnitureChair' => '💺', 'officeFurnitureDisplayRack' => '🛍️',
+        'beddingBedSheet' => '🛏️', 'beddingMosquitoNet' => '🦟', 'beddingMattress' => '🛌', 'beddingPillow' => '💤',
+        'beddingCushion' => '🟦', 'beddingSofaFoam' => '🧽', 'beddingBlanket' => '🧣',
+        'decorationCurtain' => '🎭', 'decorationFloorMat' => '🟫', 'decorationInteriorDesign' => '📐', 'decorationShowpiece' => '🏺',
+        'decorationMirror' => '🪞', 'decorationDoor' => '🚪', 'decorationTiles' => '⬜', 'decorationDecorAccessories' => '🏮',
+        'decorationOrganizer' => '🗃️',
+        'householdCleanerMop' => '🧹', 'householdCleanerHosePipe' => '🚿', 'householdCleanerFloorCleaner' => '🧴',
+        'householdCleanerGlassCleaner' => '🧼', 'householdCleanerAirFreshener' => '🌸', 'householdCleanerBasket' => '🧺',
+        'pestControlMosquitoKiller' => '🦟', 'pestControlPestControlService' => '🛠️',
+        'kitchenwareCrockeries' => '🍽️', 'kitchenwareVegetableCutter' => '🥕', 'kitchenwareFryPan' => '🍳', 'kitchenwareKorai' => '🥘',
+        'kitchenwarePressureCooker' => '🍲', 'kitchenwareCupMug' => '☕', 'kitchenwareWaterBottle' => '🥤', 'kitchenwareKitchenKnife' => '🔪',
+        'stationeryCraftPaperNotebook' => '📓', 'stationeryCraftWrappingPaper' => '🎁', 'stationeryCraftStapler' => '📎',
+        'stationeryCraftScotchTape' => '🩹', 'stationeryCraftPen' => '🖊️', 'stationeryCraftMeasuringTape' => '📏',
+        'bathroomAccessoriesToiletSeat' => '🚽',
+    ];
+}
+
+/** Give every sub / sub sub category its own relevant icon (once; edit icons in Admin afterwards). */
+function ensure_category_icons(): void
+{
+    try {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'cat_icons_v2'")) {
+            return;
+        }
+        if ((int) scalar('SELECT COUNT(*) FROM categories') === 0) {
+            return;
+        }
+        foreach (category_icon_map() as $slug => $icon) {
+            update('categories', ['icon' => $icon], 'slug = ?', [$slug]);
+        }
+        insert('settings', ['k' => 'cat_icons_v2', 'v_en' => '1', 'v_bn' => null]);
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_category_icons: ' . $e->getMessage());
+    }
+}

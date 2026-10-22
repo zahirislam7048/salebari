@@ -58,6 +58,7 @@ function installed(): bool
         ensure_contact_numbers();
         ensure_name_slugs();
         ensure_extra_categories();
+        ensure_category_icons();
         ensure_category_url_slugs();
     }
     return $ok;
