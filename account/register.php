@@ -50,13 +50,12 @@ if (is_post()) {
                 'email'         => $email,
                 'phone'         => $phone,
                 'password_hash' => password_hash($pass, PASSWORD_DEFAULT),
-                'status'        => 'active',
+                'status'        => 'pending',   // waits for admin approval and verification
                 'created_at'    => now(),
             ]);
-            login_seller(['id' => $id]);
             track_queue('sign_up', ['method' => $email ? 'email' : 'phone', 'user_data' => array_filter(['sha256_email_address' => track_hash_email($email), 'sha256_phone_number' => track_hash_phone($phone)])]);
-            flash('success', 'Welcome to SaleBari! Add your stall or brand below.');
-            redirect('account/');
+            flash('pending', 'Thank you! Your details have been submitted. Your account is now waiting for approval and verification by our team. You will be able to log in as soon as it is approved.');
+            redirect('account/login.php');
         } catch (Throwable $ex) {
             $errors[] = 'Could not create your account right now. Please try again in a moment.';
         }

@@ -18,7 +18,7 @@ $stats = [
     'Open orders' => (int) scalar("SELECT COUNT(*) FROM orders WHERE status NOT IN ('delivered','cancelled')"),
     'Reviews awaiting' => (int) scalar("SELECT COUNT(*) FROM product_reviews WHERE status = 'pending'"),
     'Seller accounts' => (int) scalar('SELECT COUNT(*) FROM sellers'),
-    'Awaiting approval' => (int) scalar("SELECT (SELECT COUNT(*) FROM stalls WHERE review_status = 'pending') + (SELECT COUNT(*) FROM brands WHERE review_status = 'pending')"),
+    'Awaiting approval' => (int) scalar("SELECT (SELECT COUNT(*) FROM stalls WHERE review_status = 'pending') + (SELECT COUNT(*) FROM brands WHERE review_status = 'pending') + (SELECT COUNT(*) FROM sellers WHERE status = 'pending')"),
 ];
 
 admin_header('Dashboard');

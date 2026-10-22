@@ -10,6 +10,7 @@ if (seller()) {
 
 $error = null;
 $ident = '';
+$pendingNotice = false;
 
 if (is_post()) {
     csrf_check();
@@ -28,11 +29,16 @@ if (is_post()) {
             track_queue('login', ['method' => valid_email(trim($ident)) ? 'email' : 'phone']);
             redirect('account/');
         }
-        $_SESSION['seller_fails'] = ['n' => ($fails['n'] >= 5 ? 0 : $fails['n']) + 1, 't' => time()];
-        usleep(300000);
-        $error = $s && $s['status'] !== 'active'
-            ? 'This account has been suspended. Please contact SaleBari support.'
-            : 'Wrong email/phone or password.';
+        $passwordOk = $s && password_verify($pass, $s['password_hash']);
+        if ($passwordOk && $s['status'] === 'pending') {
+            $pendingNotice = true;     // right password, but not approved yet
+        } else {
+            $_SESSION['seller_fails'] = ['n' => ($fails['n'] >= 5 ? 0 : $fails['n']) + 1, 't' => time()];
+            usleep(300000);
+            $error = $passwordOk && $s['status'] !== 'active'
+                ? 'This account has been suspended. Please contact SaleBari support.'
+                : 'Wrong email/phone or password.';
+        }
     }
 }
 
@@ -43,7 +49,16 @@ site_header('Log in');
     <div class="acct-card acct-card-narrow">
       <h1 class="listing-page-title">Log in</h1>
       <p class="acct-muted">Use the email or mobile number you signed up with.</p>
-      <?php foreach (take_flashes() as $f): ?><p class="acct-flash acct-flash-<?= e($f['type']) ?>"><?= e($f['msg']) ?></p><?php endforeach; ?>
+      <?php foreach (take_flashes() as $f): ?>
+        <?php if ($f['type'] === 'pending'): ?>
+          <div class="acct-pending"><span class="acct-pending-ico">⏳</span><div><strong>Waiting for approval and verification</strong><p><?= e($f['msg']) ?></p></div></div>
+        <?php else: ?>
+          <p class="acct-flash acct-flash-<?= e($f['type']) ?>"><?= e($f['msg']) ?></p>
+        <?php endif; ?>
+      <?php endforeach; ?>
+      <?php if ($pendingNotice): ?>
+        <div class="acct-pending"><span class="acct-pending-ico">⏳</span><div><strong>Waiting for approval and verification</strong><p>Your account has not been approved yet. We will contact you on the number you gave to verify your details, and you can log in as soon as it is approved.</p></div></div>
+      <?php endif; ?>
       <?php if ($error): ?><p class="acct-error"><?= e($error) ?></p><?php endif; ?>
 
       <form method="post" class="acct-form">
