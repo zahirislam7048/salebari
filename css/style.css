@@ -1957,3 +1957,29 @@ html[lang="bn"] .help-page [data-lang="en"], html:not([lang="bn"]) .help-page [d
 .privacy-page ol { list-style: decimal; padding-left: 22px; margin: 0 0 12px; color: var(--ink-soft); }
 .privacy-page li { display: list-item; margin-bottom: 6px; }
 .privacy-page a { color: var(--gold-deep); font-weight: 600; }
+
+/* ---- Track an order ---- */
+.trk-card { margin-bottom: 24px; }
+.trk-results { display: flex; flex-direction: column; gap: 16px; max-width: 760px; margin: 0 auto 24px; }
+.trk-order { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 20px; }
+.trk-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.trk-no { font-size: 1.1rem; margin-right: 10px; }
+.trk-date { color: var(--ink-soft); font-size: 0.85rem; }
+.trk-badge { font-weight: 700; font-size: 0.85rem; padding: 6px 14px; border-radius: 999px; background: var(--paper-warm); border: 1px solid var(--line); }
+.trk-on_the_way { background: #fff4d6; border-color: #e6d7a3; }
+.trk-delivered { background: #e8f5ea; border-color: #bfe0c5; color: #1d5b2b; }
+.trk-cancelled { background: #fdecea; border-color: #f3c1bc; color: #8a1f17; }
+.trk-item { font-weight: 600; margin: 0 0 8px; overflow-wrap: anywhere; }
+.trk-seller { font-weight: 400; color: var(--ink-soft); }
+.trk-message { margin: 0 0 8px; font-size: 1.05rem; color: var(--ink); }
+.trk-note { margin: 0 0 12px; background: var(--paper-warm); border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; color: var(--ink-soft); }
+.trk-timeline { list-style: none; margin: 14px 0 0; padding: 0 0 0 4px; border-left: 2px solid var(--line); }
+.trk-timeline li { position: relative; display: flex; gap: 12px; padding: 0 0 16px 18px; }
+.trk-timeline li:last-child { padding-bottom: 0; }
+.trk-dot { position: absolute; left: -17px; top: -2px; width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid var(--line); display: grid; place-items: center; font-size: 0.9rem; }
+.trk-timeline li.is-current .trk-dot { border-color: var(--gold); background: #fbf3dc; }
+.trk-timeline strong { display: block; font-size: 0.95rem; }
+.trk-timeline small { display: block; color: var(--ink-soft); font-size: 0.8rem; }
+.trk-evnote { color: var(--ink) !important; margin-top: 2px; }
+.trk-help { text-align: center; }
+.trk-help a { color: var(--gold-deep); font-weight: 600; }

@@ -738,3 +738,31 @@ function ensure_contact_email(): void
         error_log('SaleBari ensure_contact_email: ' . $e->getMessage());
     }
 }
+
+/* --- Orders ---------------------------------------------------------- */
+
+/** status key => [English label, Bangla label, icon, English message, Bangla message] */
+function order_statuses(): array
+{
+    return [
+        'placed'     => ['Order received', 'অর্ডার গ্রহণ করা হয়েছে', '📝', 'We have received your order and will confirm it shortly.', 'আমরা আপনার অর্ডার পেয়েছি, শীঘ্রই কনফার্ম করা হবে।'],
+        'confirmed'  => ['Order confirmed', 'অর্ডার কনফার্ম হয়েছে', '✅', 'Your order is confirmed and is being arranged.', 'আপনার অর্ডার কনফার্ম হয়েছে এবং প্রস্তুতি চলছে।'],
+        'processing' => ['Being prepared', 'প্রস্তুত করা হচ্ছে', '📦', 'Your order is being packed and made ready to send.', 'আপনার অর্ডার প্যাক করে পাঠানোর জন্য প্রস্তুত করা হচ্ছে।'],
+        'on_the_way' => ['On the way', 'পথে আছে', '🚚', 'Good news — your order is on the way to you.', 'সুখবর — আপনার অর্ডার আপনার কাছে আসছে।'],
+        'delivered'  => ['Delivered', 'ডেলিভারি হয়েছে', '🎉', 'Your order has been delivered. Thank you for shopping with SaleBari!', 'আপনার অর্ডার ডেলিভারি হয়েছে। SaleBari-তে কেনাকাটার জন্য ধন্যবাদ!'],
+        'cancelled'  => ['Cancelled', 'বাতিল হয়েছে', '⛔', 'This order was cancelled. Contact us if you have questions.', 'এই অর্ডারটি বাতিল হয়েছে। কোনো প্রশ্ন থাকলে আমাদের জানান।'],
+    ];
+}
+
+function order_number(int $id): string
+{
+    return 'SB' . (1000 + $id);
+}
+
+/** Add a row to an order's timeline and update the order's current status. */
+function order_set_status(int $orderId, string $status, ?string $note): void
+{
+    $now = now();
+    insert('order_events', ['order_id' => $orderId, 'status' => $status, 'note' => $note, 'created_at' => $now]);
+    update('orders', ['status' => $status, 'status_note' => $note, 'updated_at' => $now], 'id = ?', [$orderId]);
+}

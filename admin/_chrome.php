@@ -10,6 +10,7 @@ function admin_nav_items(): array
         'categories.php'  => 'Categories',
         'products.php'    => 'Products',
         'blog.php'        => 'Blog',
+        'orders.php'      => 'Orders',
         'reviews.php'     => 'Reviews',
         'stalls.php'      => 'Stalls',
         'malls.php'       => 'Shopping Malls',

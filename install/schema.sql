@@ -203,3 +203,27 @@ CREATE TABLE product_reviews (
   status VARCHAR(20) NOT NULL DEFAULT 'pending',
   created_at DATETIME NOT NULL
 );
+
+CREATE TABLE orders (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  customer_name VARCHAR(120) NULL,
+  phone VARCHAR(20) NOT NULL,
+  item_title VARCHAR(255) NOT NULL,
+  product_id INT UNSIGNED NULL,
+  stall_id INT UNSIGNED NULL,
+  quantity INT NOT NULL DEFAULT 1,
+  amount_display VARCHAR(60) NULL,
+  address VARCHAR(255) NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'placed',
+  status_note VARCHAR(255) NULL,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME NOT NULL
+);
+
+CREATE TABLE order_events (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  order_id INT UNSIGNED NOT NULL,
+  status VARCHAR(30) NOT NULL,
+  note VARCHAR(255) NULL,
+  created_at DATETIME NOT NULL
+);
