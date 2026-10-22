@@ -156,6 +156,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
         <option data-i18n="cat.agro">Agro</option>
         <option data-i18n="cat.travels">Travels</option>
         <option data-i18n="cat.jobs">Jobs</option>
+        <option data-i18n="cat.household">Household</option>
       </select>
       <input type="search" placeholder="Search for a product, brand or stall…" aria-label="Search" data-i18n-placeholder="search.placeholder">
       <button type="submit" aria-label="Search">

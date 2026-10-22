@@ -128,6 +128,7 @@
     'cat.agro': { en: 'Agro', bn: 'এগ্রো' },
     'cat.travels': { en: 'Travels', bn: 'ভ্রমণ' },
     'cat.jobs': { en: 'Jobs', bn: 'চাকরি' },
+    'cat.household': { en: 'Household', bn: 'গৃহস্থালি' },
     'deals.tag': { en: "Today's Deals", bn: 'আজকের অফার' },
 
     'mega.carAccessories': { en: 'Car Accessories', bn: 'কার অ্যাক্সেসরিজ' },
