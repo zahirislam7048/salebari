@@ -155,7 +155,7 @@ admin_header('Success Stories', '<link rel="stylesheet" href="https://cdnjs.clou
   </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>?v=3"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=5"></script>
 <script>mountRichText('editor_story', 'ta_story'); mountRichText('editor_story_bn', 'ta_story_bn');</script>
 <?php
 admin_footer();

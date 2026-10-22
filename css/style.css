@@ -2032,3 +2032,14 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .stock-badge { position: absolute; top: 10px; left: 10px; z-index: 2; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
 .stock-limited { background: #fff4d6; color: #8a5a00; }
 .stock-out { background: #8a1f17; color: #fff; }
+
+/* ---- tables written in the rich-text editors ---- */
+.pp-overview > div table, .blog-post-content table, .brand-about-body table, .ss-text table {
+  display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 16px 0; font-size: 0.95rem;
+}
+.pp-overview > div table td, .pp-overview > div table th,
+.blog-post-content table td, .blog-post-content table th,
+.brand-about-body table td, .brand-about-body table th,
+.ss-text table td, .ss-text table th { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; min-width: 90px; }
+.pp-overview > div table th, .blog-post-content table th, .brand-about-body table th, .ss-text table th { background: var(--paper-warm); color: var(--ink); font-weight: 700; }
+.pp-overview > div table tr:nth-child(even) td, .blog-post-content table tr:nth-child(even) td, .brand-about-body table tr:nth-child(even) td { background: rgba(15, 42, 36, 0.03); }

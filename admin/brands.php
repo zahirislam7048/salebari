@@ -202,7 +202,7 @@ admin_header('Brands', '<link rel="stylesheet" href="https://cdnjs.cloudflare.co
   <?php endif; ?>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-<script src="<?= asset('admin/richtext.js') ?>?v=3"></script>
+<script src="<?= asset('admin/richtext.js') ?>?v=5"></script>
 <script>mountRichText('editor_description', 'ta_description');</script>
 <?php
 admin_footer();
