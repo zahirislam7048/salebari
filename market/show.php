@@ -233,10 +233,8 @@ $stalls = $mall ? rows(
       </a>
       <p data-i18n="footer.brandDesc">Bangladesh's digital bazaar — verified stalls, instant price comparison, one address for everything you need.</p>
       <div class="social-row">
-        <a href="#" aria-label="Facebook">f</a>
-        <a href="#" aria-label="X / Twitter">𝕏</a>
-        <a href="#" aria-label="Instagram">◎</a>
-        <a href="#" aria-label="YouTube">▶</a>
+        <a href="https://www.facebook.com/thesalebari" target="_blank" rel="noopener" aria-label="SaleBari on Facebook" title="Facebook">f</a>
+        <a href="https://www.linkedin.com/company/sale-bari/" target="_blank" rel="noopener" aria-label="SaleBari on LinkedIn" title="LinkedIn"><b>in</b></a>
       </div>
     </div>
     <div class="footer-col">
