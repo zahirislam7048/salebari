@@ -2013,3 +2013,10 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .acct-pending-ico { font-size: 1.8rem; line-height: 1; }
 .acct-pending strong { display: block; font-size: 1.05rem; margin-bottom: 4px; color: #5d4500; }
 .acct-pending p { margin: 0; color: #5d4500; font-size: 0.92rem; line-height: 1.55; }
+
+/* ---- seller dashboard quick actions ---- */
+.acct-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 6px 0 16px; }
+.acct-quick-card { display: flex; flex-direction: column; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 18px; color: inherit; transition: transform 0.15s ease, border-color 0.15s ease; }
+.acct-quick-card:hover { transform: translateY(-3px); border-color: var(--gold-deep); }
+.acct-quick-card small { color: var(--ink-soft); }
+.acct-quick-ico { font-size: 1.6rem; }

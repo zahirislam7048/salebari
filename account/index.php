@@ -48,6 +48,10 @@ site_header('My account');
     </div>
 
     <?php foreach (take_flashes() as $f): ?><p class="acct-flash acct-flash-<?= e($f['type']) ?>"><?= e($f['msg']) ?></p><?php endforeach; ?>
+    <div class="acct-quick">
+      <a class="acct-quick-card" href="brand.php"><span class="acct-quick-ico">🏷️</span><strong>Add your brand</strong><small>Logo, contact details, map, social pages and About</small></a>
+      <a class="acct-quick-card" href="stall.php"><span class="acct-quick-ico">🏬</span><strong>Add a stall</strong><small>Your shop, its address and details</small></a>
+    </div>
     <p class="acct-note">New listings are reviewed by the SaleBari team before they appear on the public Stall and Brand pages — usually within a day.</p>
 
     <div class="acct-section-head">
