@@ -56,6 +56,7 @@ function installed(): bool
     if ($ok) {
         auto_migrate();
         ensure_contact_numbers();
+        ensure_contact_email();
         ensure_name_slugs();
         ensure_extra_categories();
         ensure_category_icons();

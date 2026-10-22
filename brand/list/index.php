@@ -189,7 +189,7 @@ $total = count($brands);
       <h4 data-i18n="footer.getInTouch">Get in touch</h4>
       <p class="footer-phone">☎ <a href="tel:+8801515286327">+880 1515-286327</a> <a class="ft-wa" href="https://wa.me/8801515286327" target="_blank" rel="noopener">WhatsApp</a></p>
       <p class="footer-phone">☎ <a href="tel:+8801644842785">+880 1644-842785</a> <a class="ft-wa" href="https://wa.me/8801644842785" target="_blank" rel="noopener">WhatsApp</a></p>
-      <p>islamzahirul7048@gmail.com</p>
+      <p>salebarirealestate@gmail.com</p>
     </div>
   </div>
 

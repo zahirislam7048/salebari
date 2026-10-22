@@ -716,3 +716,25 @@ function track_price(?string $text): ?float
     $clean = preg_replace('/[^0-9.]/', '', strtr((string) $text, ['০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4', '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9']));
     return $clean !== '' && is_numeric($clean) ? (float) $clean : null;
 }
+
+/** Once: the public contact email becomes salebarirealestate@gmail.com (only if it still holds the old address). */
+function ensure_contact_email(): void
+{
+    try {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'contact_email_v2'")) {
+            return;
+        }
+        $new = 'salebarirealestate@gmail.com';
+        $cur = strtolower(trim((string) scalar("SELECT v_en FROM settings WHERE k = 'contact_email'")));
+        if ($cur === '' || $cur === 'islamzahirul7048@gmail.com') {
+            if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'contact_email'")) {
+                update('settings', ['v_en' => $new, 'v_bn' => $new], 'k = ?', ['contact_email']);
+            } else {
+                insert('settings', ['k' => 'contact_email', 'v_en' => $new, 'v_bn' => $new]);
+            }
+        }
+        insert('settings', ['k' => 'contact_email_v2', 'v_en' => '1', 'v_bn' => null]);
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_contact_email: ' . $e->getMessage());
+    }
+}

@@ -23,7 +23,7 @@ define('SITE_NAME', 'SaleBari');
 define('BASE_URL', '');
 
 define('CONTACT_PHONE', '+8801644842785');
-define('CONTACT_EMAIL', 'islamzahirul7048@gmail.com');
+define('CONTACT_EMAIL', 'salebarirealestate@gmail.com');
 
 /* --- Product images -------------------------------------------- */
 define('MAX_IMAGES',       6);
