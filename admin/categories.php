@@ -25,6 +25,8 @@ if (is_post()) {
             'count_label_en' => input('count_label_en') ?: null,
             'count_label_bn' => input('count_label_bn') ?: null,
             'featured'       => input('featured') ? 1 : 0,
+            'meta_title'       => input('meta_title') ?: null,
+            'meta_description' => input('meta_description') ?: null,
         ];
         $urlInput = url_safe((string) input('url_slug'));
         if ($data['name_en'] === '') {
@@ -110,6 +112,10 @@ admin_header('Categories');
     <label class="admin-field"><span>URL name — the part used in the page address, e.g. <code>accessories</code> (leave empty to make it from the name)</span>
       <input type="text" name="url_slug" maxlength="90" placeholder="auto" value="<?= e($editing['url_slug'] ?? '') ?>"></label>
     <?php if ($editing): ?><p class="muted" style="margin-top:-6px">Address: <code><?= e(category_url($editing)) ?></code></p><?php endif; ?>
+    <label class="admin-field"><span>Page title for Google (optional) — leave empty for the automatic "Best … in Bangladesh {year}". <code>{year}</code> becomes the current year.</span>
+      <input type="text" name="meta_title" maxlength="200" placeholder="Best <?= e($editing['name_en'] ?? 'Category') ?> in Bangladesh {year}" value="<?= e($editing['meta_title'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Meta description for Google (optional) — leave empty for an automatic one, about 150 characters.</span>
+      <textarea name="meta_description" maxlength="320" rows="3"><?= e($editing['meta_description'] ?? '') ?></textarea></label>
     <label class="admin-field"><span>Name (Bangla) — optional</span>
       <input type="text" name="name_bn" value="<?= e($editing['name_bn'] ?? '') ?>"></label>
     <label class="admin-field"><span>Icon (emoji)</span>

@@ -25,6 +25,8 @@ CREATE TABLE categories (
   name_bn VARCHAR(160) NULL,
   icon VARCHAR(20) NULL,
   url_slug VARCHAR(100) NULL,
+  meta_title VARCHAR(200) NULL,
+  meta_description VARCHAR(320) NULL,
   count_label_en VARCHAR(60) NULL,
   count_label_bn VARCHAR(60) NULL,
   featured TINYINT NOT NULL DEFAULT 0,

@@ -535,3 +535,86 @@ function ensure_category_url_slugs(): void
         error_log('SaleBari ensure_category_url_slugs: ' . $e->getMessage());
     }
 }
+
+/* --- Category page titles and descriptions --------------------------- */
+
+/** Cut text to $max characters on a word boundary, without a dangling comma. */
+function trim_words(string $text, int $max): string
+{
+    if (mb_strlen($text) <= $max) {
+        return $text;
+    }
+    $cut = mb_substr($text, 0, $max);
+    $cut = mb_substr($cut, 0, (int) mb_strrpos($cut, ' '));
+    return rtrim($cut, " ,;:-—") . '…';
+}
+
+/** Join names as "A, B and C". */
+function natural_list(array $items): string
+{
+    $items = array_values(array_filter($items, 'strlen'));
+    $n = count($items);
+    if ($n <= 1) {
+        return $items[0] ?? '';
+    }
+    return implode(', ', array_slice($items, 0, $n - 1)) . ' and ' . $items[$n - 1];
+}
+
+/** "{year}" in an admin-written title/description becomes the current year. */
+function fill_year(string $text): string
+{
+    return str_replace('{year}', date('Y'), $text);
+}
+
+/**
+ * Page title for a category page, e.g. "Best Car Accessories in Bangladesh 2026".
+ * The admin can override it per category (meta_title); {year} is replaced automatically.
+ */
+function category_seo_title(array $cat): string
+{
+    if (trim((string) ($cat['meta_title'] ?? '')) !== '') {
+        return fill_year(trim($cat['meta_title']));
+    }
+    $name = (string) $cat['name_en'];
+    $year = date('Y');
+    if (stripos($name, 'other ') === 0) {
+        return "$name in Bangladesh $year";   // "Best Other Fish" would read oddly
+    }
+    return "Best $name in Bangladesh $year";
+}
+
+/**
+ * Meta description for a category page. Reads naturally, mentions the year, the sub
+ * categories (or how many listings there are) and the WhatsApp contact route.
+ * The admin can override it per category (meta_description).
+ */
+function category_seo_description(array $cat, array $children, int $listingCount): string
+{
+    if (trim((string) ($cat['meta_description'] ?? '')) !== '') {
+        return trim_words(fill_year(trim($cat['meta_description'])), 160);
+    }
+    $name   = (string) $cat['name_en'];
+    $year   = date('Y');
+    $level  = (int) $cat['level'];
+    $names  = array_column($children, 'name_en');
+    $best   = stripos($name, 'other ') === 0 ? $name : "the best $name";
+    $limit  = 155;
+
+    if ($children) {
+        // Name as many sub categories as fit in one search-result line.
+        for ($n = min(4, count($names)); $n >= 1; $n--) {
+            $subs = natural_list(array_slice($names, 0, $n));
+            $text = $level === 1
+                ? "Explore $best in Bangladesh for $year: $subs. Compare prices and message trusted sellers on WhatsApp."
+                : "Looking for $best in Bangladesh in $year? Find $subs. Compare prices and message sellers on WhatsApp.";
+            if (mb_strlen($text) <= $limit) {
+                break;
+            }
+        }
+    } elseif ($listingCount > 0) {
+        $text = "Browse $listingCount $name " . ($listingCount === 1 ? 'listing' : 'listings') . " in Bangladesh for $year. Compare prices and contact the seller directly on WhatsApp.";
+    } else {
+        $text = "Find $best in Bangladesh for $year. Compare prices from trusted sellers and contact them directly on WhatsApp.";
+    }
+    return trim_words($text, 160);
+}

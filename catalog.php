@@ -72,9 +72,8 @@ $icon     = $cat['icon'] ?: '🏷️';
 $isLeaf   = !$children;
 $origin   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
 $canon    = $origin . category_url($cat);
-$descr    = $isLeaf
-    ? "Browse $name listings from sellers across Bangladesh on SaleBari. Compare prices and contact the seller directly on WhatsApp."
-    : "Explore $name on SaleBari, Bangladesh's digital bazaar: " . implode(', ', array_slice(array_column($children, 'name_en'), 0, 6)) . '.';
+$descr    = category_seo_description($cat, $children, $total);
+$seoTitle = category_seo_title($cat);
 
 $crumbJson = [];
 foreach (array_merge([['name_en' => 'Home', 'url' => $origin . base_path() . '/']], $trail) as $i => $c) {
@@ -100,7 +99,7 @@ function catalog_page_url(array $cat, int $page): string
     return category_url($cat) . ($page > 1 ? '?page=' . $page : '');
 }
 
-site_header($name . ' in Bangladesh', $head, false);
+site_header($seoTitle, $head, false);
 ?>
 <section class="section category-page">
   <div class="wrap">
