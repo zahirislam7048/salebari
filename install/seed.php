@@ -9,6 +9,7 @@
 function run_seed(): void
 {
     seed_categories();
+    add_extra_categories();
     seed_stalls();
     seed_malls();
     seed_deals();

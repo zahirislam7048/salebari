@@ -26,6 +26,7 @@ require APP_ROOT . '/app/auth.php';
 require APP_ROOT . '/app/upload.php';
 require APP_ROOT . '/app/migrate.php';
 require APP_ROOT . '/app/layout.php';
+require APP_ROOT . '/app/extra_categories.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
@@ -56,6 +57,7 @@ function installed(): bool
         auto_migrate();
         ensure_contact_numbers();
         ensure_name_slugs();
+        ensure_extra_categories();
         ensure_category_url_slugs();
     }
     return $ok;

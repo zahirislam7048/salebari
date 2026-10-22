@@ -618,3 +618,64 @@ function category_seo_description(array $cat, array $children, int $listingCount
     }
     return trim_words($text, 160);
 }
+
+/* --- Category menu (header) ------------------------------------------ */
+
+/** The whole mega-menu list (<ul class="cat-list">), built from the categories table. */
+function category_nav_html(): string
+{
+    $idx = category_index();
+    $by  = [];
+    foreach ($idx as $v) {
+        $by[(int) ($v['row']['parent_id'] ?? 0)][] = $v;
+    }
+    foreach ($by as &$list) {
+        usort($list, function ($a, $b) {
+            return [(int) $a['row']['sort_order'], $a['row']['name_en']] <=> [(int) $b['row']['sort_order'], $b['row']['name_en']];
+        });
+    }
+    unset($list);
+
+    $link = function (array $v) {
+        $r = $v['row'];
+        return '<a href="' . e(base_path() . '/' . $v['path'] . '/') . '" data-i18n="cn.' . (int) $r['id'] . '">' . e($r['name_en']) . '</a>';
+    };
+
+    $html = '<ul class="cat-list">';
+    foreach ($by[0] ?? [] as $top) {
+        $subs = $by[(int) $top['row']['id']] ?? [];
+        if (!$subs) {
+            $html .= '<li>' . $link($top) . '</li>';
+            continue;
+        }
+        $html .= '<li class="has-mega">' . $link($top) . '<div class="mega mega-narrow"><div class="mega-col">';
+        foreach ($subs as $sub) {
+            $kids = $by[(int) $sub['row']['id']] ?? [];
+            if (!$kids) {
+                $html .= $link($sub);
+                continue;
+            }
+            $html .= '<span class="mega-item">' . $link($sub) . '<div class="flyout">'
+                . '<a class="flyout-all" href="' . e(base_path() . '/' . $sub['path'] . '/') . '" data-i18n="allin.' . (int) $sub['row']['id'] . '">All in ' . e($sub['row']['name_en']) . '</a>';
+            foreach ($kids as $kid) {
+                $html .= $link($kid);
+            }
+            $html .= '</div></span>';
+        }
+        $html .= '</div></div></li>';
+    }
+    return $html . '</ul>';
+}
+
+/** Dictionary entries (English / বাংলা) for every category name used in the menu and on category pages. */
+function category_i18n_dict(): array
+{
+    $dict = [];
+    foreach (category_index() as $v) {
+        $r = $v['row'];
+        $bn = $r['name_bn'] ?: $r['name_en'];
+        $dict['cn.' . $r['id']]    = ['en' => $r['name_en'], 'bn' => $bn];
+        $dict['allin.' . $r['id']] = ['en' => 'All in ' . $r['name_en'], 'bn' => 'সব ' . $bn];
+    }
+    return $dict;
+}

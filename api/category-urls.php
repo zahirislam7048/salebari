@@ -20,6 +20,21 @@ foreach (category_index() as $v) {
         }
     }
 }
+/* Menu + names for pages that are plain .html files: main.js swaps the menu in and merges the names. */
+$top = [];
+foreach (category_index() as $v) {
+    if (!$v['row']['parent_id']) {
+        $top[] = ['id' => (int) $v['row']['id'], 'key' => $v['row']['slug'], 'url' => base_path() . '/' . $v['path'] . '/',
+                  'icon' => $v['row']['icon'], 'order' => (int) $v['row']['sort_order']];
+    }
+}
+usort($top, function ($a, $b) { return $a['order'] <=> $b['order']; });
+echo 'window.CATEGORY_NAV_HTML = ' . json_encode(category_nav_html(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "
+";
+echo 'window.CATEGORY_I18N = ' . json_encode(category_i18n_dict(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "
+";
+echo 'window.CATEGORY_TOP = ' . json_encode($top, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "
+";
 echo 'window.CATEGORY_URLS = ' . json_encode($map, JSON_UNESCAPED_SLASHES) . ';' . "
 ";
 echo 'window.CATEGORY_CHILD_URLS = ' . json_encode($byParent, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';';

@@ -22,13 +22,14 @@ function products_under_category(string $slug): int
     return (int) scalar("SELECT COUNT(*) FROM products WHERE status = 'active' AND category_id IN ($in)", $ids);
 }
 
+$categoryCounts = [];
+foreach (rows('SELECT slug FROM categories WHERE parent_id IS NULL') as $topCat) {
+    $categoryCounts[$topCat['slug']] = products_under_category($topCat['slug']);
+}
+
 echo json_encode([
     'verifiedStalls' => (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' AND review_status = 'approved' AND verified = 1"),
     'districts'      => (int) scalar("SELECT COUNT(DISTINCT city) FROM stalls WHERE status = 'active' AND review_status = 'approved' AND city IS NOT NULL AND city <> ''"),
     'products'       => (int) scalar("SELECT COUNT(*) FROM products WHERE status = 'active'"),
-    'categories'     => [
-        'realestate' => products_under_category('realestate'),
-        'carbike'    => products_under_category('carbike'),
-        'agro'       => products_under_category('agro'),
-    ],
+    'categories'     => $categoryCounts,
 ]);

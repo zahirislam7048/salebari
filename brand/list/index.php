@@ -64,6 +64,8 @@ $total = count($brands);
         <option data-i18n="cat.realestate">Real Estate</option>
         <option data-i18n="cat.carbike">Car &amp; Bike</option>
         <option data-i18n="cat.agro">Agro</option>
+        <option data-i18n="cat.travels">Travels</option>
+        <option data-i18n="cat.jobs">Jobs</option>
       </select>
       <input type="search" placeholder="Search for a product, brand or stall…" aria-label="Search" data-i18n-placeholder="search.placeholder">
       <button type="submit" aria-label="Search">
@@ -93,11 +95,7 @@ $total = count($brands);
 
   <nav class="category-nav" aria-label="Categories">
     <div class="wrap cat-nav-inner">
-      <ul class="cat-list">
-        <li><a href="<?= base_path() ?>/car-bike/" data-i18n="cat.carbike">Car &amp; Bike</a></li>
-        <li><a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a></li>
-        <li><a href="<?= base_path() ?>/agro/" data-i18n="cat.agro">Agro</a></li>
-      </ul>
+      <?= category_nav_html() ?>
       <a class="deals-tag" href="../../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
   </nav>

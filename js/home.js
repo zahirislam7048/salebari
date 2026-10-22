@@ -15,6 +15,32 @@
       el.textContent = n.toLocaleString(lang === 'bn' ? 'bn-BD' : 'en-US') + ' ' + (n === 1 ? words[0] : words[1]);
     });
   }
+  /* "Shop by category" cards follow the dashboard's main categories. */
+  var LISTING_STYLE = { realestate: 1, travels: 1, jobs: 1 };
+  function renderTickets() {
+    var grid = document.querySelector('.cat-grid');
+    var top = window.CATEGORY_TOP;
+    if (!grid || !top || !top.length) return;
+    var lang = window.I18N ? window.I18N.currentLang() : 'en';
+    grid.innerHTML = '';
+    top.forEach(function (c) {
+      var entry = window.I18N && window.I18N.dict['cn.' + c.id];
+      var a = document.createElement('a');
+      a.className = 'cat-ticket';
+      a.href = c.url;
+      var icon = document.createElement('span'); icon.className = 'cat-icon'; icon.textContent = c.icon || '🏷️';
+      var name = document.createElement('span'); name.className = 'cat-name'; name.setAttribute('data-i18n', 'cn.' + c.id);
+      name.textContent = entry ? entry[lang] : c.key;
+      var count = document.createElement('span'); count.className = 'cat-count';
+      count.setAttribute('data-cat-count', c.key); count.setAttribute('data-unit', LISTING_STYLE[c.key] ? 'listing' : 'product');
+      count.innerHTML = '&nbsp;';
+      a.appendChild(icon); a.appendChild(name); a.appendChild(count);
+      grid.appendChild(a);
+    });
+    renderCatCounts();
+  }
+  renderTickets();
+
   var langBtn = document.getElementById('langToggle');
   if (langBtn) langBtn.addEventListener('click', renderCatCounts);
 
@@ -30,7 +56,7 @@
         if (statDistricts) statDistricts.textContent = s.districts.toLocaleString('en-US');
         if (statProducts) statProducts.textContent = s.products.toLocaleString('en-US');
         catCounts = s.categories || null;
-        renderCatCounts();
+        renderTickets();
       })
       .catch(function () {});
   }

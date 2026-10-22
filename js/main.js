@@ -1,4 +1,14 @@
 (function () {
+  /* The category menu comes from the dashboard's categories (api/category-urls.php). Pages that
+     are plain .html files carry a copy of it; swap in the live one so new categories show up. */
+  var liveList = window.CATEGORY_NAV_HTML;
+  var staticList = document.querySelector('.category-nav .cat-list');
+  if (liveList && staticList) {
+    var holder = document.createElement('div');
+    holder.innerHTML = liveList;
+    if (holder.firstChild) staticList.parentNode.replaceChild(holder.firstChild, staticList);
+  }
+
   var menuToggle = document.querySelector('.menu-toggle');
   var categoryNav = document.querySelector('.category-nav');
 
@@ -116,6 +126,8 @@
     'cat.carbike': { en: 'Car & Bike', bn: 'গাড়ি ও বাইক' },
     'cat.realestate': { en: 'Real Estate', bn: 'রিয়েল এস্টেট' },
     'cat.agro': { en: 'Agro', bn: 'এগ্রো' },
+    'cat.travels': { en: 'Travels', bn: 'ভ্রমণ' },
+    'cat.jobs': { en: 'Jobs', bn: 'চাকরি' },
     'deals.tag': { en: "Today's Deals", bn: 'আজকের অফার' },
 
     'mega.carAccessories': { en: 'Car Accessories', bn: 'কার অ্যাক্সেসরিজ' },
@@ -247,6 +259,11 @@
     'footer.terms': { en: 'Terms of Service', bn: 'সেবার শর্তাবলী' },
     'footer.sitemap': { en: 'Sitemap', bn: 'সাইটম্যাপ' }
   };
+
+  /* Category names (English / বাংলা) from the dashboard, for the menu and category pages. */
+  if (window.CATEGORY_I18N) {
+    Object.keys(window.CATEGORY_I18N).forEach(function (k) { dict[k] = window.CATEGORY_I18N[k]; });
+  }
 
   var STORAGE_KEY = 'salebari-lang';
   var toggleBtn = document.getElementById('langToggle');

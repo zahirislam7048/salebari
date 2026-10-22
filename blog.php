@@ -60,6 +60,8 @@ $posts   = rows(
         <option data-i18n="cat.realestate">Real Estate</option>
         <option data-i18n="cat.carbike">Car &amp; Bike</option>
         <option data-i18n="cat.agro">Agro</option>
+        <option data-i18n="cat.travels">Travels</option>
+        <option data-i18n="cat.jobs">Jobs</option>
       </select>
       <input type="search" placeholder="Search for a product, brand or stall…" aria-label="Search" data-i18n-placeholder="search.placeholder">
       <button type="submit" aria-label="Search">
@@ -89,32 +91,7 @@ $posts   = rows(
 
   <nav class="category-nav" aria-label="Categories">
     <div class="wrap cat-nav-inner">
-      <ul class="cat-list">
-        <li class="has-mega">
-          <a href="<?= base_path() ?>/car-bike/" data-i18n="cat.carbike">Car &amp; Bike</a>
-          <div class="mega mega-narrow">
-            <div class="mega-col">
-              <span class="mega-item" data-flyout="carAccessories"><a href="<?= base_path() ?>/car-bike/accessories/" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="<?= base_path() ?>/car-bike/bike-accessories/" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="<?= base_path() ?>/car-bike/three-wheeler/" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="<?= base_path() ?>/car-bike/commercial-vehicle/" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="<?= base_path() ?>/car-bike/rental/" data-i18n="mega.rental">Rental</a></span>
-            </div>
-          </div>
-        </li>
-        <li class="has-mega">
-          <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
-          <div class="mega mega-narrow">
-            <div class="mega-col">
-              <a href="<?= base_path() ?>/real-estate/apartment/" data-i18n="mega.apartment">Apartment</a><a href="<?= base_path() ?>/real-estate/land/" data-i18n="mega.land">Land</a><a href="<?= base_path() ?>/real-estate/commercial-space/" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="<?= base_path() ?>/real-estate/sanitary/" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="<?= base_path() ?>/real-estate/construction-material/" data-i18n="mega.constructionMaterial">Construction Material</a></span>
-            </div>
-          </div>
-        </li>
-        <li class="has-mega">
-          <a href="<?= base_path() ?>/agro/" data-i18n="cat.agro">Agro</a>
-          <div class="mega mega-narrow">
-            <div class="mega-col">
-              <span class="mega-item" data-flyout="livestock"><a href="<?= base_path() ?>/agro/livestock/" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="<?= base_path() ?>/agro/fish/" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="<?= base_path() ?>/agro/poultry/" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="<?= base_path() ?>/agro/birds/" data-i18n="mega.birds">Birds</a></span>
-            </div>
-          </div>
-        </li>
-      </ul>
+      <?= category_nav_html() ?>
       <a class="deals-tag" href="index.html#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
   </nav>
