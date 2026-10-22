@@ -31,7 +31,7 @@ $products = $brand ? rows(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=6">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=7">
 </head>
 <body>
 
@@ -46,7 +46,7 @@ $products = $brand ? rows(
     <div class="utility-right">
       <a href="<?= base_path() ?>/sell/" data-i18n="utility.sell">Sell on SaleBari</a>
       <span class="sep">•</span>
-      <a href="<?= base_path() ?>/index.html#help" data-i18n="utility.help">Help</a>
+      <a href="<?= base_path() ?>/help/" data-i18n="utility.help">Help</a>
       <span class="sep">•</span>
       <button type="button" id="langToggle" class="lang-toggle">বাংলা</button>
     </div>
@@ -247,16 +247,16 @@ $products = $brand ? rows(
       <h4 data-i18n="footer.forSellers">For Sellers</h4>
       <a href="<?= base_path() ?>/sell/" data-i18n="footer.startSelling">Start selling</a>
       <a href="<?= base_path() ?>/package.html" data-i18n="footer.package">Package</a>
-      <a href="#" data-i18n="footer.howItWorks">How it works</a>
-      <a href="#" data-i18n="footer.sellerFees">Seller fees</a>
+      <a href="/help/#how-it-works" data-i18n="footer.howItWorks">How it works</a>
+      <a href="/package.html" data-i18n="footer.sellerFees">Seller fees</a>
       <a href="#" data-i18n="footer.successStories">Success stories</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="utility.help">Help</h4>
-      <a href="#" data-i18n="footer.contactUs">Contact us</a>
-      <a href="#" data-i18n="footer.faq">FAQ</a>
-      <a href="#" data-i18n="footer.returnPolicy">Return &amp; refund policy</a>
-      <a href="#" data-i18n="footer.trackOrder">Track an order</a>
+      <a href="/help/#contact" data-i18n="footer.contactUs">Contact us</a>
+      <a href="/help/#faq" data-i18n="footer.faq">FAQ</a>
+      <a href="/help/#safety" data-i18n="footer.returnPolicy">Return &amp; refund policy</a>
+      <a href="/help/#how-it-works" data-i18n="footer.trackOrder">Track an order</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.getInTouch">Get in touch</h4>
@@ -279,7 +279,7 @@ $products = $brand ? rows(
     <div class="legal-links">
       <a href="/privacy.php" data-i18n="footer.privacy">Privacy Policy</a>
       <a href="#" data-i18n="footer.terms">Terms of Service</a>
-      <a href="#" data-i18n="footer.sitemap">Sitemap</a>
+      <a href="/sitemap_index.xml" data-i18n="footer.sitemap">Sitemap</a>
     </div>
   </div>
 </footer>

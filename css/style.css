@@ -1925,3 +1925,31 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
 .privacy-page h2 { font-size: 1.2rem; margin: 26px 0 8px; }
 .privacy-page p { margin: 0 0 12px; color: var(--ink-soft); }
 html[lang="bn"] [data-lang="en"], html:not([lang="bn"]) [data-lang="bn"] { display: none; }
+
+/* ---- Help Center ---- */
+html[lang="bn"] .help-page [data-lang="en"], html:not([lang="bn"]) .help-page [data-lang="bn"] { display: none; }
+.help-hero { margin: 8px 0 24px; }
+.help-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 36px; }
+.help-card, .help-contact-card { display: flex; flex-direction: column; gap: 6px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 20px; color: inherit; transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; }
+.help-card:hover, .help-contact-card:hover { transform: translateY(-3px); border-color: var(--gold-deep); box-shadow: var(--shadow-card); }
+.help-card small, .help-contact-card small { color: var(--ink-soft); font-size: 0.85rem; overflow-wrap: anywhere; }
+.help-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--paper-warm); display: grid; place-items: center; font-size: 1.3rem; margin-bottom: 4px; }
+.help-section { margin-bottom: 40px; scroll-margin-top: 100px; }
+.help-section > h2 { font-size: 1.5rem; margin: 0 0 16px; }
+.help-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.help-box { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 22px; }
+.help-box h3 { margin: 0 0 10px; font-size: 1.15rem; }
+.help-box ol { margin: 0 0 14px; padding-left: 22px; list-style: decimal; line-height: 1.7; color: var(--ink-soft); }
+.help-box li { display: list-item; margin-bottom: 6px; }
+.help-group { font-size: 1.05rem; margin: 22px 0 10px; color: var(--gold-deep); }
+.faq-list { display: flex; flex-direction: column; gap: 8px; max-width: 860px; }
+.faq-item { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 0 18px; }
+.faq-item summary { cursor: pointer; padding: 15px 0; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: "+"; font-size: 1.4rem; color: var(--gold-deep); flex-shrink: 0; }
+.faq-item[open] summary::after { content: "–"; }
+.faq-item p { margin: 0 0 16px; color: var(--ink-soft); line-height: 1.7; }
+.faq-item p a { color: var(--gold-deep); font-weight: 600; }
+.help-contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+@media (max-width: 900px) { .help-cards { grid-template-columns: repeat(2, 1fr); } .help-columns { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .help-cards { grid-template-columns: 1fr; } }
