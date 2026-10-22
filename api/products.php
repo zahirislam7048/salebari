@@ -12,7 +12,7 @@ $recent = input_int('recent', 0);
 
 if ($recent > 0) {
     $rows = rows(
-        'SELECT p.id, p.title_en, p.title_bn, p.slug, p.price_display, p.images, c.name_en AS category_name
+        'SELECT p.id, p.title_en, p.title_bn, p.slug, p.price_display, p.stock_status, p.stock_qty, p.images, c.name_en AS category_name
          FROM products p LEFT JOIN categories c ON c.id = p.category_id
          WHERE p.status = ? ORDER BY p.id DESC LIMIT ' . min($recent, 24),
         ['active']
@@ -20,7 +20,7 @@ if ($recent > 0) {
 } else {
     $category = $slug ? row('SELECT id FROM categories WHERE slug = ?', [$slug]) : null;
     $rows = $category ? rows(
-        'SELECT p.id, p.title_en, p.title_bn, p.slug, p.price_display, p.images, c.name_en AS category_name
+        'SELECT p.id, p.title_en, p.title_bn, p.slug, p.price_display, p.stock_status, p.stock_qty, p.images, c.name_en AS category_name
          FROM products p LEFT JOIN categories c ON c.id = p.category_id
          WHERE p.category_id = ? AND p.status = ? ORDER BY p.id DESC',
         [$category['id'], 'active']
@@ -36,6 +36,7 @@ foreach ($rows as $r) {
         'titleBn'  => $r['title_bn'],
         'slug'     => $r['slug'],
         'price'    => $r['price_display'],
+        'stock'    => stock_info($r)['status'],
         'image'    => $images ? asset($images[0]) : null,
         'category' => $r['category_name'],
     ];

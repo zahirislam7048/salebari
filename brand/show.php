@@ -31,7 +31,7 @@ $products = $brand ? rows(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=12">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=13">
 </head>
 <body>
 
@@ -201,6 +201,7 @@ $products = $brand ? rows(
         <?php foreach ($products as $prod): $pimgs = json_decode((string) $prod['images'], true) ?: []; ?>
           <a class="product-card" href="<?= e(product_url($prod)) ?>" style="text-decoration:none;color:inherit;display:block">
             <div class="product-media grad-1">
+              <?= stock_card_badge($prod) ?>
               <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
             </div>
             <div class="product-body">
@@ -289,7 +290,7 @@ $products = $brand ? rows(
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=5"></script>
+<script src="<?= base_path() ?>/js/main.js?v=6"></script>
 <script src="<?= base_path() ?>/api/tracking-config.php"></script>
 <script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 </body>

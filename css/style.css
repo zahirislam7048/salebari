@@ -2020,3 +2020,15 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .acct-quick-card:hover { transform: translateY(-3px); border-color: var(--gold-deep); }
 .acct-quick-card small { color: var(--ink-soft); }
 .acct-quick-ico { font-size: 1.6rem; }
+
+/* ---- stock / availability ---- */
+.pp-stock { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.88rem; padding: 4px 12px; border-radius: 999px; border: 1px solid transparent; }
+.pp-stock-dot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.pp-stock-qty { font-weight: 600; }
+.pp-stock-available { background: #e8f5ea; color: #1d6b33; border-color: #bfe0c5; }
+.pp-stock-limited { background: #fff4d6; color: #8a5a00; border-color: #e6d7a3; }
+.pp-stock-out { background: #fdecea; color: #8a1f17; border-color: #f3c1bc; }
+.pp-outnote { margin: 0 0 12px; background: #fdecea; color: #8a1f17; border-radius: 10px; padding: 10px 14px; font-size: 0.9rem; }
+.stock-badge { position: absolute; top: 10px; left: 10px; z-index: 2; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
+.stock-limited { background: #fff4d6; color: #8a5a00; }
+.stock-out { background: #8a1f17; color: #fff; }

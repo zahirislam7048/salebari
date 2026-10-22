@@ -162,6 +162,8 @@ CREATE TABLE products (
   description_bn LONGTEXT NULL,
   specs TEXT NULL,
   price_display VARCHAR(60) NULL,
+  stock_status VARCHAR(20) NOT NULL DEFAULT 'available',
+  stock_qty INT NULL,
   images TEXT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'active',
   sort_order INT NOT NULL DEFAULT 0,

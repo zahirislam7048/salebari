@@ -766,3 +766,37 @@ function order_set_status(int $orderId, string $status, ?string $note): void
     insert('order_events', ['order_id' => $orderId, 'status' => $status, 'note' => $note, 'created_at' => $now]);
     update('orders', ['status' => $status, 'status_note' => $note, 'updated_at' => $now], 'id = ?', [$orderId]);
 }
+
+/* --- Stock / availability --------------------------------------------- */
+
+/** status => [English, Bangla] */
+function stock_labels(): array
+{
+    return [
+        'available' => ['Available', 'স্টকে আছে'],
+        'limited'   => ['Stock limited', 'স্টক সীমিত'],
+        'out'       => ['Stock out', 'স্টক শেষ'],
+    ];
+}
+
+/** ['status' => 'available|limited|out', 'qty' => int|null] for a product row. */
+function stock_info(array $p): array
+{
+    $s = (string) ($p['stock_status'] ?? 'available');
+    if (!isset(stock_labels()[$s])) {
+        $s = 'available';
+    }
+    $q = $p['stock_qty'] ?? null;
+    return ['status' => $s, 'qty' => ($q === null || $q === '') ? null : max(0, (int) $q)];
+}
+
+/** Small badge laid over a product photo on cards: shown only for limited / out of stock. */
+function stock_card_badge(array $p): string
+{
+    $i = stock_info($p);
+    if ($i['status'] === 'available') {
+        return '';
+    }
+    $l = stock_labels()[$i['status']];
+    return '<span class="stock-badge stock-' . $i['status'] . '" data-i18n="stock.' . $i['status'] . '">' . e($l[0]) . '</span>';
+}

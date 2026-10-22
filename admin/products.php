@@ -68,6 +68,8 @@ if (is_post()) {
             'description_en'   => input('description_en') ?: null,
             'description_bn'   => input('description_bn') ?: null,
             'price_display'    => input('price_display') ?: null,
+            'stock_status'     => array_key_exists((string) input('stock_status'), stock_labels()) ? (string) input('stock_status') : 'available',
+            'stock_qty'        => input('stock_qty') !== '' && input('stock_qty') !== null ? max(0, input_int('stock_qty', 0)) : null,
             'specs'            => input('specs') ?: null,
             'status'           => input('status', 'active'),
         ];
@@ -181,6 +183,12 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
 
     <label class="admin-field"><span>Price (e.g. "৳ 42 Lakh" or "৳ 1,850")</span>
       <input type="text" name="price_display" value="<?= e($editing['price_display'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Availability</span>
+      <select name="stock_status">
+        <?php foreach (stock_labels() as $k => $lab): ?><option value="<?= e($k) ?>" <?= ($editing['stock_status'] ?? 'available') === $k ? 'selected' : '' ?>><?= e($lab[0]) ?></option><?php endforeach; ?>
+      </select></label>
+    <label class="admin-field"><span>Quantity available (optional — shown as "Available (12)" or "only 3 left"; leave empty to hide the number)</span>
+      <input type="number" name="stock_qty" min="0" value="<?= e((string) ($editing['stock_qty'] ?? '')) ?>"></label>
     <label class="admin-field"><span>Specifications (optional — one per line, written as "Name: Value", e.g. "Battery: 2200mAh")</span>
       <textarea name="specs" rows="6" placeholder="Camera: 4K&#10;Flight time: 24 min&#10;Weight: 300 g"><?= e($editing['specs'] ?? '') ?></textarea></label>
 
@@ -256,10 +264,10 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
   <div class="admin-toolbar"><strong><?= $p['total'] ?></strong><span class="muted">products total</span></div>
   <div class="admin-table-wrap">
     <table class="admin-table">
-      <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Stall</th><th>Brand</th><th>Price</th><th>Status</th><th></th></tr></thead>
+      <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Stall</th><th>Brand</th><th>Price</th><th>Stock</th><th>Status</th><th></th></tr></thead>
       <tbody>
         <?php if (!$rows): ?>
-          <tr><td colspan="8" class="muted">No products yet.</td></tr>
+          <tr><td colspan="9" class="muted">No products yet.</td></tr>
         <?php endif; ?>
         <?php foreach ($rows as $r): $imgs = json_decode((string) $r['images'], true) ?: []; ?>
           <tr>
@@ -269,6 +277,7 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
             <td><?= e($r['stall_name'] ?? '—') ?></td>
             <td><?= e($r['brand_name'] ?? '—') ?></td>
             <td><?= e($r['price_display'] ?? '—') ?></td>
+            <td><?php $si = stock_info($r); echo e(stock_labels()[$si['status']][0] . ($si['qty'] !== null ? ' (' . $si['qty'] . ')' : '')); ?></td>
             <td><?= e($r['status']) ?></td>
             <td class="admin-row-actions">
               <a class="admin-btn admin-btn-ghost admin-btn-sm" href="<?= e(product_url($r)) ?>" target="_blank">View</a>

@@ -95,6 +95,14 @@
         media.innerHTML = '<span>🛒</span>';
       }
 
+      if (p.stock === 'limited' || p.stock === 'out') {
+        var sb = document.createElement('span');
+        sb.className = 'stock-badge stock-' + p.stock;
+        sb.setAttribute('data-i18n', 'stock.' + p.stock);
+        sb.textContent = p.stock === 'out' ? 'Stock out' : 'Stock limited';
+        media.appendChild(sb);
+      }
+
       var body = document.createElement('div');
       body.className = 'product-body';
 

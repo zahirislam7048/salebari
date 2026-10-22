@@ -137,6 +137,7 @@ site_header($seoTitle, $head, false);
         <?php foreach ($products as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
           <a class="listing-card" href="<?= e(product_url($p)) ?>">
             <div class="listing-card-media">
+              <?= stock_card_badge($p) ?>
               <?php if ($imgs): ?><img src="<?= e(asset($imgs[0])) ?>" alt="<?= e($p['title_en']) ?>" loading="lazy"><?php else: ?><?= e($icon) ?><?php endif; ?>
             </div>
             <div class="listing-card-body">

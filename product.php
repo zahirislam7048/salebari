@@ -95,7 +95,7 @@ if ($product && trim((string) ($product['specs'] ?? '')) !== '') {
 /* Both site numbers work for calling and for WhatsApp. */
 $nums      = site_numbers();
 $whatsapp  = $nums[0]['wa'];
-$waMessage = $product ? "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari." : '';
+$waMessage = $product ? ((stock_info($product)['status'] === 'out' ? "Hi, \"" . $product['title_en'] . "\" shows as out of stock on SaleBari. When will it be available again?" : "Hi, I'm interested in \"" . $product['title_en'] . "\" on SaleBari.")) : '';
 $waLink    = 'https://wa.me/' . $whatsapp . '?text=' . urlencode($waMessage);
 $askMsg    = $product ? "Hi, I have a question about \"" . $product['title_en'] . "\" on SaleBari: " : '';
 $askLink   = 'https://wa.me/' . $whatsapp . '?text=' . urlencode($askMsg);
@@ -114,7 +114,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=12">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=13">
 </head>
 <body class="has-pp-bar">
 
@@ -254,6 +254,8 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
         <h1 data-i18n="pp.title.<?= (int) $product['id'] ?>"><?= e($product['title_en']) ?></h1>
 
         <div class="pp-meta">
+          <?php $stock = stock_info($product); $stockLab = stock_labels()[$stock['status']]; ?>
+          <span class="pp-stock pp-stock-<?= e($stock['status']) ?>"><span class="pp-stock-dot"></span><span data-i18n="stock.<?= e($stock['status']) ?>"><?= e($stockLab[0]) ?></span><?php if ($stock['qty'] !== null && $stock['status'] !== 'out'): ?> <span class="pp-stock-qty" data-qty="<?= (int) $stock['qty'] ?>" data-mode="<?= e($stock['status']) ?>"><?= $stock['status'] === 'limited' ? '— only ' . (int) $stock['qty'] . ' left' : '(' . (int) $stock['qty'] . ')' ?></span><?php endif; ?></span>
           <span class="pp-meta-item">SKU <?= (int) $product['id'] ?></span>
           <?php if ($ratingCount): ?><a class="pp-meta-item pp-meta-rating" href="#pp-reviews">★ <?= number_format($ratingAvg, 1) ?> (<?= $ratingCount ?>)</a><?php endif; ?>
           <span class="pp-meta-item">Posted <?= e(date('j M Y', strtotime((string) $product['created_at']))) ?></span>
@@ -291,6 +293,9 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
             </div>
           <?php endif; ?>
 
+          <?php if (($stock['status'] ?? 'available') === 'out'): ?>
+            <p class="pp-outnote" data-i18n="pp.outNote">This item is out of stock right now. Message the seller to ask when it will be back.</p>
+          <?php endif; ?>
           <div class="pp-contact-grid">
             <?php foreach ($nums as $n): ?>
               <a class="pp-whatsapp-btn" href="https://wa.me/<?= e($n['wa']) ?>?text=<?= urlencode($waMessage) ?>" target="_blank" rel="noopener">
@@ -388,6 +393,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
           <?php foreach ($similar as $s): $simgs = json_decode((string) $s['images'], true) ?: []; ?>
             <a class="product-card" href="<?= e(product_url($s)) ?>" style="text-decoration:none;color:inherit;display:block">
               <div class="product-media grad-1">
+                <?= stock_card_badge($s) ?>
                 <?php if ($simgs): ?><img src="<?= e(asset($simgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
               </div>
               <div class="product-body">
@@ -484,7 +490,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=5"></script>
+<script src="<?= base_path() ?>/js/main.js?v=6"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {
@@ -512,6 +518,11 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     'pp.tab.overview': { en: 'Overview', bn: 'বিবরণ' },
     'pp.tab.related': { en: 'Related', bn: 'সম্পর্কিত' },
     'pp.share': { en: 'Share', bn: 'শেয়ার' },
+    'stock.available': { en: 'Available', bn: 'স্টকে আছে' },
+    'stock.limited': { en: 'Stock limited', bn: 'স্টক সীমিত' },
+    'stock.out': { en: 'Stock out', bn: 'স্টক শেষ' },
+    'stock.left': { en: 'only {n} left', bn: 'মাত্র {n}টি বাকি' },
+    'pp.outNote': { en: 'This item is out of stock right now. Message the seller to ask when it will be back.', bn: 'পণ্যটি এখন স্টকে নেই। কবে আসবে জানতে বিক্রেতাকে মেসেজ করুন।' },
     'pp.price': { en: 'Price', bn: 'দাম' },
     'pp.blurb1': { en: 'The price of', bn: '' },
     'pp.blurb2': { en: 'in Bangladesh is', bn: 'এর বাংলাদেশে দাম' },
@@ -524,6 +535,21 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     'pp.waNote': { en: 'Chat or call the seller directly — ask about price, stock, delivery or a visit.', bn: 'সরাসরি বিক্রেতাকে কল বা মেসেজ করুন — দাম, স্টক, ডেলিভারি বা শোরুম ভিজিট সম্পর্কে জিজ্ঞেস করুন।' }
   });
   window.I18N.applyLanguage(window.I18N.currentLang());
+
+  /* "(12)" / "only 3 left" next to the availability label, in the visitor's language */
+  function paintStockQty() {
+    var el = document.querySelector('.pp-stock-qty');
+    if (!el) return;
+    var n = el.getAttribute('data-qty'), lang = window.I18N.currentLang();
+    var bnDigits = String(n).replace(/[0-9]/g, function (d) { return '০১২৩৪৫৬৭৮৯'[d]; });
+    var num = lang === 'bn' ? bnDigits : n;
+    el.textContent = el.getAttribute('data-mode') === 'limited'
+      ? '— ' + window.I18N.dict['stock.left'][lang].replace('{n}', num)
+      : '(' + num + ')';
+  }
+  paintStockQty();
+  var langBtnStock = document.getElementById('langToggle');
+  if (langBtnStock) langBtnStock.addEventListener('click', function () { setTimeout(paintStockQty, 0); });
 
   var thumbs = document.querySelectorAll('.pp-thumb');
   var mainImg = document.getElementById('ppMainImg');
@@ -588,6 +614,16 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     });
   }
 </script>
+<?php endif; ?>
+<?php if ($product && track_price($product['price_display']) !== null):
+  $ldStock = stock_info($product)['status'];
+  $ld = ['@context' => 'https://schema.org', '@type' => 'Product', 'name' => $product['title_en'], 'sku' => (string) $product['id'],
+         'description' => trim(strip_tags((string) $product['description_en'])) ?: $product['title_en'],
+         'offers' => ['@type' => 'Offer', 'priceCurrency' => 'BDT', 'price' => track_price($product['price_display']),
+                      'availability' => $ldStock === 'out' ? 'https://schema.org/OutOfStock' : ($ldStock === 'limited' ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock')]];
+  if ($images) { $ld['image'] = [(!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com') . asset($images[0])]; }
+  if ($brand) { $ld['brand'] = ['@type' => 'Brand', 'name' => $brand['name']]; } ?>
+<script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
 <?php endif; ?>
 <?php if ($product): ?>
 <?= track_page_script([
