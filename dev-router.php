@@ -19,4 +19,32 @@ foreach ($rules as [$re, $target, $param]) {
         return true;
     }
 }
+
+/* Old category/listing links and clean category paths (mirrors the .htaccess rules). */
+$q = $_GET;
+if ($path === '/category.html' && (isset($q['cat']) || isset($q['sub']))) {
+    $_GET['legacy'] = $q['cat'] ?? $q['sub'];
+    $_SERVER['SCRIPT_NAME'] = '/catalog.php';
+    chdir(__DIR__);
+    require __DIR__ . '/catalog.php';
+    return true;
+}
+if ($path === '/listing.html' && isset($q['item'])) {
+    $_GET['legacy'] = $q['item'];
+    $_SERVER['SCRIPT_NAME'] = '/catalog.php';
+    chdir(__DIR__);
+    require __DIR__ . '/catalog.php';
+    return true;
+}
+if (!file_exists(__DIR__ . $path) && preg_match('#^/([a-z0-9-]+)(?:/([a-z0-9-]+))?(?:/([a-z0-9-]+))?/?$#', $path, $m)) {
+    foreach ([1 => 'c1', 2 => 'c2', 3 => 'c3'] as $i => $k) {
+        if (!empty($m[$i])) {
+            $_GET[$k] = $m[$i];
+        }
+    }
+    $_SERVER['SCRIPT_NAME'] = '/catalog.php';
+    chdir(__DIR__);
+    require __DIR__ . '/catalog.php';
+    return true;
+}
 return false;

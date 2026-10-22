@@ -3,20 +3,20 @@
    the other public pages; paths assume the page sits one folder below the
    site root. */
 
-function site_header(string $title, string $extraHead = ''): void
+function site_header(string $title, string $extraHead = '', bool $noindex = true): void
 {
     ?><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
+<?= $noindex ? '<meta name="robots" content="noindex">' : '' ?>
 <title><?= e($title) ?> — SaleBari</title>
-<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css?v=3">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=4">
 <?= $extraHead ?>
 </head>
 <body>
@@ -30,9 +30,9 @@ function site_header(string $title, string $extraHead = ''): void
       <span data-i18n="utility.helpline">☎ +8801515286327</span><span class="util-num2">+8801644842785</span>
     </div>
     <div class="utility-right">
-      <a href="../sell/" data-i18n="utility.sell">Sell on SaleBari</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="utility.sell">Sell on SaleBari</a>
       <span class="sep">•</span>
-      <a href="../index.html#help" data-i18n="utility.help">Help</a>
+      <a href="<?= base_path() ?>/index.html#help" data-i18n="utility.help">Help</a>
       <span class="sep">•</span>
       <button type="button" id="langToggle" class="lang-toggle">বাংলা</button>
     </div>
@@ -42,7 +42,7 @@ function site_header(string $title, string $extraHead = ''): void
 <!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="../index.html" class="logo">
+    <a href="<?= base_path() ?>/index.html" class="logo">
       <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
         <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -66,15 +66,15 @@ function site_header(string $title, string $extraHead = ''): void
     </form>
 
     <div class="header-actions">
-      <a href="../account/" class="icon-link">
+      <a href="<?= base_path() ?>/account/" class="icon-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg>
         <span data-i18n="header.account">Account</span>
       </a>
-      <a href="../sell/" class="icon-link sell-link">
+      <a href="<?= base_path() ?>/sell/" class="icon-link sell-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 10 5 4h14l1 6M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0M5 10v9h14v-9"/></svg>
         <span data-i18n="header.sell">Sell</span>
       </a>
-      <a href="../index.html#cart" class="icon-link cart-link">
+      <a href="<?= base_path() ?>/index.html#cart" class="icon-link cart-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h2l2.2 11.6a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 8H6"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
         <span data-i18n="header.cart">Cart</span>
         <b class="cart-count">0</b>
@@ -88,11 +88,32 @@ function site_header(string $title, string $extraHead = ''): void
   <nav class="category-nav" aria-label="Categories">
     <div class="wrap cat-nav-inner">
       <ul class="cat-list">
-        <li><a href="../category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a></li>
-        <li><a href="../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a></li>
-        <li><a href="../category.html?cat=agro" data-i18n="cat.agro">Agro</a></li>
+        <li class="has-mega">
+          <a href="<?= base_path() ?>/car-bike/" data-i18n="cat.carbike">Car &amp; Bike</a>
+          <div class="mega mega-narrow">
+            <div class="mega-col">
+              <span class="mega-item" data-flyout="carAccessories"><a href="<?= base_path() ?>/car-bike/accessories/" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="<?= base_path() ?>/car-bike/bike-accessories/" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="<?= base_path() ?>/car-bike/three-wheeler/" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="<?= base_path() ?>/car-bike/commercial-vehicle/" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="<?= base_path() ?>/car-bike/rental/" data-i18n="mega.rental">Rental</a></span>
+            </div>
+          </div>
+        </li>
+        <li class="has-mega">
+          <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
+          <div class="mega mega-narrow">
+            <div class="mega-col">
+              <a href="<?= base_path() ?>/real-estate/apartment/" data-i18n="mega.apartment">Apartment</a><a href="<?= base_path() ?>/real-estate/land/" data-i18n="mega.land">Land</a><a href="<?= base_path() ?>/real-estate/commercial-space/" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="<?= base_path() ?>/real-estate/sanitary/" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="<?= base_path() ?>/real-estate/construction-material/" data-i18n="mega.constructionMaterial">Construction Material</a></span>
+            </div>
+          </div>
+        </li>
+        <li class="has-mega">
+          <a href="<?= base_path() ?>/agro/" data-i18n="cat.agro">Agro</a>
+          <div class="mega mega-narrow">
+            <div class="mega-col">
+              <span class="mega-item" data-flyout="livestock"><a href="<?= base_path() ?>/agro/livestock/" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="<?= base_path() ?>/agro/fish/" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="<?= base_path() ?>/agro/poultry/" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="<?= base_path() ?>/agro/birds/" data-i18n="mega.birds">Birds</a></span>
+            </div>
+          </div>
+        </li>
       </ul>
-      <a class="deals-tag" href="../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a class="deals-tag" href="#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
   </nav>
 </header>
@@ -106,7 +127,7 @@ function site_footer(string $afterScripts = ''): void
 <footer class="site-footer">
   <div class="wrap footer-inner">
     <div class="footer-col footer-brand">
-      <a href="../index.html" class="logo logo-footer">
+      <a href="<?= base_path() ?>/index.html" class="logo logo-footer">
         <svg class="logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <text x="2" y="86" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">S</text>
           <text x="44" y="98" font-family="Fraunces, Georgia, serif" font-weight="900" font-size="80" fill="currentColor">B</text>
@@ -125,17 +146,17 @@ function site_footer(string $afterScripts = ''): void
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.shop">Shop</h4>
-      <a href="../stall/list/" data-i18n="footer.allStalls">All stalls</a>
-      <a href="../market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
-      <a href="../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
-      <a href="../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
-      <a href="list/" data-i18n="footer.brands">Brands</a>
-      <a href="../blog.php" data-i18n="footer.blog">Blog</a>
+      <a href="<?= base_path() ?>/stall/list/" data-i18n="footer.allStalls">All stalls</a>
+      <a href="<?= base_path() ?>/market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
+      <a href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
+      <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
+      <a href="<?= base_path() ?>/list/" data-i18n="footer.brands">Brands</a>
+      <a href="<?= base_path() ?>/blog.php" data-i18n="footer.blog">Blog</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="footer.forSellers">For Sellers</h4>
-      <a href="../sell/" data-i18n="footer.startSelling">Start selling</a>
-      <a href="../package.html" data-i18n="footer.package">Package</a>
+      <a href="<?= base_path() ?>/sell/" data-i18n="footer.startSelling">Start selling</a>
+      <a href="<?= base_path() ?>/package.html" data-i18n="footer.package">Package</a>
       <a href="#" data-i18n="footer.howItWorks">How it works</a>
       <a href="#" data-i18n="footer.sellerFees">Seller fees</a>
       <a href="#" data-i18n="footer.successStories">Success stories</a>
@@ -175,9 +196,10 @@ function site_footer(string $afterScripts = ''): void
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="../js/nav-data.js?v=3"></script>
-<script src="../js/catalog-data.js?v=3"></script>
-<script src="../js/main.js?v=3"></script>
+<script src="<?= base_path() ?>/api/category-urls.php"></script>
+<script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
+<script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
+<script src="<?= base_path() ?>/js/main.js?v=4"></script>
 <?= $afterScripts ?>
 </body>
 </html>

@@ -401,3 +401,137 @@ function slug_after_rename(string $table, int $id, string $name, string $current
     }
     return unique_slug($table, $base, $id);
 }
+
+/* --- Category URLs ------------------------------------------------ */
+/* Clean, hierarchical addresses:
+     /car-bike/                                   main category
+     /car-bike/accessories/                       sub category
+     /car-bike/accessories/scratch-remover/       sub sub category
+   Each level has its own URL name (categories.url_slug). It starts from the category
+   name; a leading word that repeats the parent's first word is dropped ("Car
+   Accessories" under "Car & Bike" becomes "accessories"). It can be edited in Admin. */
+
+const RESERVED_TOP_PATHS = ['admin', 'account', 'sell', 'stall', 'market', 'brand', 'details', 'api', 'app', 'js', 'css', 'assets',
+    'uploads', 'install', 'data', 'blog', 'package', 'sitemap', 'index', 'category', 'listing', 'product', 'catalog', 'partials'];
+
+function url_safe(string $s): string
+{
+    return strtolower(trim((string) preg_replace('/[^A-Za-z0-9]+/', '-', $s), '-'));
+}
+
+/** Suggested URL name for a category, given its name and its parent's name. */
+function suggest_category_url_slug(string $name, ?string $parentName, int $level): string
+{
+    $s = url_safe($name);
+    if ($s === '') {
+        return '';
+    }
+    if ($parentName !== null && $parentName !== '') {
+        $first = strtok(url_safe($parentName), '-');
+        if ($first && strpos($s, $first . '-') === 0 && strlen($s) > strlen($first) + 1) {
+            $s = substr($s, strlen($first) + 1);
+        }
+    }
+    if ($level === 1 && in_array($s, RESERVED_TOP_PATHS, true)) {
+        $s .= '-category';
+    }
+    return substr($s, 0, 90);
+}
+
+/** A URL name that no sibling category already uses. */
+function unique_category_url_slug(string $base, ?int $parentId, ?int $ignoreId, string $fallback): string
+{
+    $base = $base !== '' ? $base : ($fallback !== '' ? $fallback : 'category');
+    $slug = $base;
+    $i    = 1;
+    while (true) {
+        $sql  = 'SELECT id FROM categories WHERE url_slug = ? AND ' . ($parentId ? 'parent_id = ?' : 'parent_id IS NULL');
+        $args = $parentId ? [$slug, $parentId] : [$slug];
+        if ($ignoreId) {
+            $sql   .= ' AND id <> ?';
+            $args[] = $ignoreId;
+        }
+        if (!row($sql, $args)) {
+            return $slug;
+        }
+        $slug = $base . '-' . (++$i);
+    }
+}
+
+/** id => ['row' => category, 'path' => 'car-bike/accessories'] for every category (built once per request). */
+function category_index(): array
+{
+    static $idx = null;
+    if ($idx !== null) {
+        return $idx;
+    }
+    $all = [];
+    foreach (rows('SELECT * FROM categories') as $r) {
+        $all[(int) $r['id']] = $r;
+    }
+    $idx = [];
+    foreach ($all as $id => $r) {
+        $parts = [];
+        $walk  = $r;
+        $guard = 0;
+        while ($walk && $guard++ < 5) {
+            array_unshift($parts, $walk['url_slug'] ?: url_safe((string) $walk['name_en']));
+            $walk = $walk['parent_id'] ? ($all[(int) $walk['parent_id']] ?? null) : null;
+        }
+        $idx[$id] = ['row' => $r, 'path' => implode('/', $parts)];
+    }
+    return $idx;
+}
+
+function category_url(array $cat): string
+{
+    $idx = category_index();
+    $id  = (int) $cat['id'];
+    return base_path() . '/' . ($idx[$id]['path'] ?? url_safe((string) $cat['name_en'])) . '/';
+}
+
+/** Find the category at /a/b/c ($segments = ['a','b','c']), or null. */
+function find_category_by_path(array $segments): ?array
+{
+    $parent = null;
+    $cat    = null;
+    foreach ($segments as $seg) {
+        $cat = row(
+            'SELECT * FROM categories WHERE url_slug = ? AND ' . ($parent ? 'parent_id = ?' : 'parent_id IS NULL'),
+            $parent ? [$seg, $parent['id']] : [$seg]
+        );
+        if (!$cat) {
+            return null;
+        }
+        $parent = $cat;
+    }
+    return $cat;
+}
+
+/** Once, and whenever categories without a URL name show up: fill them in, parents first. */
+function ensure_category_url_slugs(): void
+{
+    try {
+        if ((int) scalar("SELECT COUNT(*) FROM categories WHERE url_slug IS NULL OR url_slug = ''") === 0) {
+            return;
+        }
+        $names = [];
+        foreach (rows('SELECT id, name_en FROM categories') as $r) {
+            $names[(int) $r['id']] = $r['name_en'];
+        }
+        for ($level = 1; $level <= 3; $level++) {
+            foreach (rows("SELECT * FROM categories WHERE level = ? AND (url_slug IS NULL OR url_slug = '') ORDER BY sort_order, id", [$level]) as $r) {
+                $parentName = $r['parent_id'] ? ($names[(int) $r['parent_id']] ?? null) : null;
+                $slug = unique_category_url_slug(
+                    suggest_category_url_slug((string) $r['name_en'], $parentName, $level),
+                    $r['parent_id'] ? (int) $r['parent_id'] : null,
+                    (int) $r['id'],
+                    url_safe((string) $r['slug'])
+                );
+                update('categories', ['url_slug' => $slug], 'id = ?', [$r['id']]);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_category_url_slugs: ' . $e->getMessage());
+    }
+}

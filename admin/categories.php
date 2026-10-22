@@ -26,9 +26,17 @@ if (is_post()) {
             'count_label_bn' => input('count_label_bn') ?: null,
             'featured'       => input('featured') ? 1 : 0,
         ];
+        $urlInput = url_safe((string) input('url_slug'));
         if ($data['name_en'] === '') {
             flash('error', 'Name (English) is required.');
         } elseif ($id) {
+            $self       = row('SELECT * FROM categories WHERE id = ?', [$id]);
+            $ownParent  = $self && $self['parent_id'] ? (int) $self['parent_id'] : null;
+            $parentName = $ownParent ? (string) scalar('SELECT name_en FROM categories WHERE id = ?', [$ownParent]) : null;
+            $data['url_slug'] = unique_category_url_slug(
+                $urlInput !== '' ? $urlInput : suggest_category_url_slug($data['name_en'], $parentName, (int) ($self['level'] ?? 1)),
+                $ownParent, $id, url_safe((string) ($self['slug'] ?? ''))
+            );
             update('categories', $data, 'id = ?', [$id]);
             flash('success', 'Category updated.');
         } else {
@@ -38,6 +46,10 @@ if (is_post()) {
             } else {
                 $data['parent_id']  = $parentId;
                 $data['level']      = $level;
+                $data['url_slug']   = unique_category_url_slug(
+                    $urlInput !== '' ? $urlInput : suggest_category_url_slug($data['name_en'], $parent['name_en'] ?? null, $level),
+                    $parentId, null, url_safe($data['name_en'])
+                );
                 $data['slug']       = unique_slug('categories', slugify($data['name_en']));
                 $data['sort_order'] = (int) scalar('SELECT COUNT(*) FROM categories WHERE ' . ($parentId ? 'parent_id = ?' : 'parent_id IS NULL'), $parentId ? [$parentId] : []);
                 $data['created_at'] = now();
@@ -95,6 +107,9 @@ admin_header('Categories');
     <input type="hidden" name="id" value="<?= e((string) ($editing['id'] ?? 0)) ?>">
     <label class="admin-field"><span>Name (English)</span>
       <input type="text" name="name_en" required value="<?= e($editing['name_en'] ?? '') ?>"></label>
+    <label class="admin-field"><span>URL name — the part used in the page address, e.g. <code>accessories</code> (leave empty to make it from the name)</span>
+      <input type="text" name="url_slug" maxlength="90" placeholder="auto" value="<?= e($editing['url_slug'] ?? '') ?>"></label>
+    <?php if ($editing): ?><p class="muted" style="margin-top:-6px">Address: <code><?= e(category_url($editing)) ?></code></p><?php endif; ?>
     <label class="admin-field"><span>Name (Bangla) — optional</span>
       <input type="text" name="name_bn" value="<?= e($editing['name_bn'] ?? '') ?>"></label>
     <label class="admin-field"><span>Icon (emoji)</span>
@@ -119,15 +134,16 @@ admin_header('Categories');
 <div class="admin-card">
   <div class="admin-table-wrap">
     <table class="admin-table">
-      <thead><tr><th>Icon</th><th>Name</th><th>Bangla</th><th>Subcategories</th><th></th></tr></thead>
+      <thead><tr><th>Icon</th><th>Name</th><th>Page address</th><th>Bangla</th><th>Subcategories</th><th></th></tr></thead>
       <tbody>
         <?php if (!$rows): ?>
-          <tr><td colspan="5" class="muted">No categories here yet.</td></tr>
+          <tr><td colspan="6" class="muted">No categories here yet.</td></tr>
         <?php endif; ?>
         <?php foreach ($rows as $r): ?>
           <tr>
             <td><?= e($r['icon'] ?? '') ?></td>
             <td><?= e($r['name_en']) ?></td>
+            <td><a href="<?= e(category_url($r)) ?>" target="_blank"><code><?= e(category_url($r)) ?></code></a></td>
             <td><?= e($r['name_bn'] ?? '—') ?></td>
             <td>
               <?php if ($r['level'] < 3): ?>

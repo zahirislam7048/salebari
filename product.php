@@ -113,7 +113,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=3">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=4">
 </head>
 <body class="has-pp-bar">
 
@@ -185,26 +185,26 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     <div class="wrap cat-nav-inner">
       <ul class="cat-list">
         <li class="has-mega">
-          <a href="<?= base_path() ?>/category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a>
+          <a href="<?= base_path() ?>/car-bike/" data-i18n="cat.carbike">Car &amp; Bike</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <span class="mega-item" data-flyout="carAccessories"><a href="<?= base_path() ?>/category.html?sub=carAccessories" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="<?= base_path() ?>/category.html?sub=bikeAccessories" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="<?= base_path() ?>/category.html?sub=threeWheeler" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="<?= base_path() ?>/category.html?sub=commercialVehicle" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="<?= base_path() ?>/category.html?sub=rental" data-i18n="mega.rental">Rental</a></span>
+              <span class="mega-item" data-flyout="carAccessories"><a href="<?= base_path() ?>/car-bike/accessories/" data-i18n="mega.carAccessories">Car Accessories</a></span><span class="mega-item" data-flyout="bikeAccessories"><a href="<?= base_path() ?>/car-bike/bike-accessories/" data-i18n="mega.bikeAccessories">Bike Accessories</a></span><span class="mega-item" data-flyout="threeWheeler"><a href="<?= base_path() ?>/car-bike/three-wheeler/" data-i18n="mega.threeWheeler">Three Wheeler</a></span><span class="mega-item" data-flyout="commercialVehicle"><a href="<?= base_path() ?>/car-bike/commercial-vehicle/" data-i18n="mega.commercialVehicle">Commercial Vehicle</a></span><span class="mega-item" data-flyout="rental"><a href="<?= base_path() ?>/car-bike/rental/" data-i18n="mega.rental">Rental</a></span>
             </div>
           </div>
         </li>
         <li class="has-mega">
-          <a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+          <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <a href="<?= base_path() ?>/listing.html?item=apartment" data-i18n="mega.apartment">Apartment</a><a href="<?= base_path() ?>/listing.html?item=land" data-i18n="mega.land">Land</a><a href="<?= base_path() ?>/listing.html?item=commercialSpace" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="<?= base_path() ?>/category.html?sub=sanitary" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="<?= base_path() ?>/category.html?sub=constructionMaterial" data-i18n="mega.constructionMaterial">Construction Material</a></span>
+              <a href="<?= base_path() ?>/real-estate/apartment/" data-i18n="mega.apartment">Apartment</a><a href="<?= base_path() ?>/real-estate/land/" data-i18n="mega.land">Land</a><a href="<?= base_path() ?>/real-estate/commercial-space/" data-i18n="mega.commercialSpace">Commercial Space</a><span class="mega-item" data-flyout="sanitary"><a href="<?= base_path() ?>/real-estate/sanitary/" data-i18n="mega.sanitary">Sanitary</a></span><span class="mega-item" data-flyout="constructionMaterial"><a href="<?= base_path() ?>/real-estate/construction-material/" data-i18n="mega.constructionMaterial">Construction Material</a></span>
             </div>
           </div>
         </li>
         <li class="has-mega">
-          <a href="<?= base_path() ?>/category.html?cat=agro" data-i18n="cat.agro">Agro</a>
+          <a href="<?= base_path() ?>/agro/" data-i18n="cat.agro">Agro</a>
           <div class="mega mega-narrow">
             <div class="mega-col">
-              <span class="mega-item" data-flyout="livestock"><a href="<?= base_path() ?>/category.html?sub=livestock" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="<?= base_path() ?>/category.html?sub=fish" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="<?= base_path() ?>/category.html?sub=poultry" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="<?= base_path() ?>/category.html?sub=birds" data-i18n="mega.birds">Birds</a></span>
+              <span class="mega-item" data-flyout="livestock"><a href="<?= base_path() ?>/agro/livestock/" data-i18n="mega.livestock">Livestock</a></span><span class="mega-item" data-flyout="fish"><a href="<?= base_path() ?>/agro/fish/" data-i18n="mega.fish">Fish</a></span><span class="mega-item" data-flyout="poultry"><a href="<?= base_path() ?>/agro/poultry/" data-i18n="mega.poultry">Poultry</a></span><span class="mega-item" data-flyout="birds"><a href="<?= base_path() ?>/agro/birds/" data-i18n="mega.birds">Birds</a></span>
             </div>
           </div>
         </li>
@@ -235,9 +235,9 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
           $crumbI18nAttr = $crumbI18n ? ' data-i18n="' . e($crumbI18n) . '"' : '';
         ?>
         <?php if ($i < count($trail) - 1): ?>
-          <a href="<?= base_path() ?>/category.html?<?= $c['level'] === 1 ? 'cat=' . e($c['slug']) : 'sub=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
+          <a href="<?= e(category_url($c)) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
         <?php else: ?>
-          <a href="<?= base_path() ?>/<?= $c['level'] === 1 ? 'category.html?cat=' . e($c['slug']) : 'listing.html?item=' . e($c['slug']) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
+          <a href="<?= e(category_url($c)) ?>"<?= $crumbI18nAttr ?>><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span>
         <?php endif; ?>
       <?php endforeach; ?>
       <span class="breadcrumb-current" data-i18n="pp.title.<?= (int) $product['id'] ?>"><?= e($product['title_en']) ?></span>
@@ -456,7 +456,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
       <a href="<?= base_path() ?>/stall/list/" data-i18n="footer.allStalls">All stalls</a>
       <a href="<?= base_path() ?>/market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
       <a href="<?= base_path() ?>/index.html#deals" data-i18n="deals.tag">Today's Deals</a>
-      <a href="<?= base_path() ?>/category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+      <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
       <a href="#" data-i18n="footer.giftCards">Gift cards</a>
       <a href="<?= base_path() ?>/brand/list/" data-i18n="footer.brands">Brands</a>
       <a href="<?= base_path() ?>/blog.php" data-i18n="footer.blog">Blog</a>
@@ -504,9 +504,10 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="<?= base_path() ?>/js/nav-data.js?v=3"></script>
-<script src="<?= base_path() ?>/js/catalog-data.js?v=3"></script>
-<script src="<?= base_path() ?>/js/main.js?v=3"></script>
+<script src="<?= base_path() ?>/api/category-urls.php"></script>
+<script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
+<script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
+<script src="<?= base_path() ?>/js/main.js?v=4"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {

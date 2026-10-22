@@ -16,6 +16,24 @@ DirectoryIndex index.html index.php
   RewriteRule ^stall/(?:[^/]*-)?([0-9]{4,})/?$       stall/show.php?sid=$1  [L,QSA]
   RewriteRule ^market/(?:[^/]*-)?([0-9]{4,})/?$      market/show.php?mid=$1 [L,QSA]
   RewriteRule ^brand/(?:[^/]*-)?([0-9]{4,})/?$       brand/show.php?bid=$1  [L,QSA]
+
+  # Old category / listing addresses -> redirected to the new clean ones by catalog.php
+  RewriteCond %{QUERY_STRING} (?:^|&)(?:cat|sub)=([A-Za-z0-9]+)
+  RewriteRule ^category\.html$ catalog.php?legacy=%1 [L]
+  RewriteCond %{QUERY_STRING} (?:^|&)item=([A-Za-z0-9]+)
+  RewriteRule ^listing\.html$ catalog.php?legacy=%1 [L]
+
+  # Category pages: /car-bike/  /car-bike/accessories/  /car-bike/accessories/scratch-remover/
+  # (only for paths that are not real files or folders)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([a-z0-9-]+)/?$ catalog.php?c1=$1 [L,QSA]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/?$ catalog.php?c1=$1&c2=$2 [L,QSA]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)/?$ catalog.php?c1=$1&c2=$2&c3=$3 [L,QSA]
 </IfModule>
 
 <FilesMatch "^(config\.php)$">

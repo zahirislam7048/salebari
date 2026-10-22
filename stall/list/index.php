@@ -21,7 +21,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=3">
+<link rel="stylesheet" href="../../css/style.css?v=4">
 </head>
 <body>
 
@@ -92,9 +92,9 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
   <nav class="category-nav" aria-label="Categories">
     <div class="wrap cat-nav-inner">
       <ul class="cat-list">
-        <li><a href="../../category.html?cat=carbike" data-i18n="cat.carbike">Car &amp; Bike</a></li>
-        <li><a href="../../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a></li>
-        <li><a href="../../category.html?cat=agro" data-i18n="cat.agro">Agro</a></li>
+        <li><a href="<?= base_path() ?>/car-bike/" data-i18n="cat.carbike">Car &amp; Bike</a></li>
+        <li><a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a></li>
+        <li><a href="<?= base_path() ?>/agro/" data-i18n="cat.agro">Agro</a></li>
       </ul>
       <a class="deals-tag" href="../../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
     </div>
@@ -207,7 +207,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
       <a href="./" data-i18n="footer.allStalls">All stalls</a>
       <a href="../../market/list/" data-i18n="footer.shoppingMall">Shopping Mall</a>
       <a href="../../index.html#deals" data-i18n="deals.tag">Today's Deals</a>
-      <a href="../../category.html?cat=realestate" data-i18n="cat.realestate">Real Estate</a>
+      <a href="<?= base_path() ?>/real-estate/" data-i18n="cat.realestate">Real Estate</a>
       <a href="../../brand/list/" data-i18n="footer.brands">Brands</a>
       <a href="../../blog.php" data-i18n="footer.blog">Blog</a>
     </div>
@@ -254,8 +254,9 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
 
 <button class="scroll-top" aria-label="Scroll to top">↑</button>
 
-<script src="../../js/nav-data.js?v=3"></script>
-<script src="../../js/catalog-data.js?v=3"></script>
-<script src="../../js/main.js?v=3"></script>
+<script src="../../api/category-urls.php"></script>
+<script src="../../js/nav-data.js?v=4"></script>
+<script src="../../js/catalog-data.js?v=4"></script>
+<script src="../../js/main.js?v=4"></script>
 </body>
 </html>

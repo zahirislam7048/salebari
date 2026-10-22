@@ -1898,3 +1898,8 @@ a.pp-seller-head:hover strong { color: var(--gold-deep); }
   .ql-toolbar.ql-snow button { width: 36px; height: 34px; }
   .ql-toolbar.ql-snow .ql-picker { height: 34px; }
 }
+
+/* ---- category pages (/car-bike/, /car-bike/accessories/ …) ---- */
+.catalog-subheading { font-size: 1.2rem; margin: 34px 0 16px; }
+.catalog-pagination { margin-top: 24px; justify-content: center; }
+.catalog-grid .listing-card { text-decoration: none; color: inherit; display: block; }

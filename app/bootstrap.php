@@ -56,6 +56,7 @@ function installed(): bool
         auto_migrate();
         ensure_contact_numbers();
         ensure_name_slugs();
+        ensure_category_url_slugs();
     }
     return $ok;
 }

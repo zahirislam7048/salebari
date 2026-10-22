@@ -28,11 +28,13 @@
     entries.forEach(function (label, i) {
       var a = document.createElement('a');
       if (i === 0) {
-        a.href = 'category.html?sub=' + encodeURIComponent(key);
+        a.href = (window.CATEGORY_URLS && window.CATEGORY_URLS[key]) || ('category.html?sub=' + encodeURIComponent(key));
         a.className = 'flyout-all';
       } else {
         var listingKey = window.LABEL_TO_LISTING_KEY && window.LABEL_TO_LISTING_KEY[label];
-        a.href = listingKey ? 'listing.html?item=' + encodeURIComponent(listingKey) : '#';
+        var kids = window.CATEGORY_CHILD_URLS && window.CATEGORY_CHILD_URLS[key];
+        if (kids && kids[label]) { a.href = kids[label]; a.textContent = label; flyout.appendChild(a); return; }
+        a.href = listingKey ? ((window.CATEGORY_URLS && window.CATEGORY_URLS[listingKey]) || ('listing.html?item=' + encodeURIComponent(listingKey))) : '#';
       }
       a.textContent = label;
       flyout.appendChild(a);
