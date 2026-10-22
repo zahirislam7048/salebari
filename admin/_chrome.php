@@ -11,6 +11,7 @@ function admin_nav_items(): array
         'products.php'    => 'Products',
         'blog.php'        => 'Blog',
         'orders.php'      => 'Orders',
+        'stories.php'     => 'Success Stories',
         'reviews.php'     => 'Reviews',
         'stalls.php'      => 'Stalls',
         'malls.php'       => 'Shopping Malls',

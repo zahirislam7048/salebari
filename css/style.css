@@ -1983,3 +1983,27 @@ html[lang="bn"] .help-page [data-lang="en"], html:not([lang="bn"]) .help-page [d
 .trk-evnote { color: var(--ink) !important; margin-top: 2px; }
 .trk-help { text-align: center; }
 .trk-help a { color: var(--gold-deep); font-weight: 600; }
+
+/* ---- Success stories ---- */
+.ss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 22px; margin-bottom: 40px; }
+.ss-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); overflow: hidden; display: flex; flex-direction: column; }
+.ss-photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; background: var(--paper-warm); }
+.ss-photo-empty { display: grid; place-items: center; font-size: 3rem; }
+.ss-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.ss-body h2 { font-size: 1.25rem; margin: 0; line-height: 1.3; }
+.ss-highlight { align-self: flex-start; background: #e8f5ea; color: #1d5b2b; font-weight: 700; font-size: 0.8rem; padding: 5px 12px; border-radius: 999px; }
+.ss-quote { margin: 0; padding: 10px 14px; border-left: 3px solid var(--gold); background: var(--paper-warm); border-radius: 0 10px 10px 0; font-style: italic; color: var(--ink); }
+.ss-text { font-size: 0.95rem; }
+.ss-who { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.88rem; }
+html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-lang="bn"] { display: none; }
+.ss-empty { text-align: center; max-width: 560px; margin: 24px auto 40px; padding: 36px 24px; background: #fff; border: 1px dashed var(--line); border-radius: var(--radius-m); }
+.ss-empty-ico { font-size: 2.6rem; }
+.ss-empty h2 { margin: 8px 0; font-size: 1.4rem; }
+.ss-empty p { color: var(--ink-soft); line-height: 1.7; margin: 0; }
+.ss-cta { text-align: center; background: var(--ink); color: var(--paper); border-radius: var(--radius-m); padding: 36px 20px; margin-bottom: 10px; }
+.ss-cta h2 { margin: 0 0 8px; font-size: 1.6rem; color: var(--paper); }
+.ss-cta p { margin: 0 0 18px; color: rgba(250, 247, 240, 0.8); }
+.ss-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.ss-cta .btn-primary { background: var(--gold); color: var(--ink-deep); box-shadow: 0 4px 0 var(--gold-deep); }
+.ss-cta .btn-ghost { border-color: rgba(250, 247, 240, 0.6); color: var(--paper); }
+.ss-cta .btn-ghost:hover { background: rgba(250, 247, 240, 0.15); }

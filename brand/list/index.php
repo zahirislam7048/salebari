@@ -23,7 +23,7 @@ $total = count($brands);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=9">
+<link rel="stylesheet" href="../../css/style.css?v=10">
 </head>
 <body>
 
@@ -176,7 +176,7 @@ $total = count($brands);
       <a href="../../package.html" data-i18n="footer.package">Package</a>
       <a href="/help/#how-it-works" data-i18n="footer.howItWorks">How it works</a>
       <a href="/package.html" data-i18n="footer.sellerFees">Seller fees</a>
-      <a href="#" data-i18n="footer.successStories">Success stories</a>
+      <a href="/success-stories/" data-i18n="footer.successStories">Success stories</a>
     </div>
     <div class="footer-col">
       <h4 data-i18n="utility.help">Help</h4>

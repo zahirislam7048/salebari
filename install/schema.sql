@@ -227,3 +227,20 @@ CREATE TABLE order_events (
   note VARCHAR(255) NULL,
   created_at DATETIME NOT NULL
 );
+
+CREATE TABLE success_stories (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  business VARCHAR(160) NULL,
+  location VARCHAR(120) NULL,
+  headline VARCHAR(200) NOT NULL,
+  headline_bn VARCHAR(200) NULL,
+  story LONGTEXT NULL,
+  story_bn LONGTEXT NULL,
+  quote VARCHAR(400) NULL,
+  highlight VARCHAR(160) NULL,
+  photo VARCHAR(255) NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'published',
+  sort_order INT NOT NULL DEFAULT 0,
+  created_at DATETIME NOT NULL
+);
