@@ -1,0 +1,12 @@
+# SaleBari — https://salebari.com
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /app/
+Disallow: /install/
+Disallow: /install.php
+Disallow: /data/
+
+Sitemap: https://salebari.com/sitemap_index.xml

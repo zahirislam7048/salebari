@@ -11,6 +11,11 @@ DirectoryIndex index.html index.php
   RewriteRule ^(app|install|data)/ - [F,L]
   RewriteRule ^admin/_chrome\.php$ - [F,L]
 
+  # Sitemaps (built from the database)
+  RewriteRule ^sitemap_index\.xml$ sitemap.php?type=index [L]
+  RewriteRule ^sitemap\.xml$       sitemap.php?type=index [L]
+  RewriteRule ^sitemap-([a-z]+)\.xml$ sitemap.php?type=$1 [L]
+
   # Pretty detail-page URLs (like BDStall). Stalls, malls and brands are numbered from 1001.
   RewriteRule ^details/(?:[^/]*-)?([0-9]+)/?$        product.php?pid=$1     [L,QSA]
   RewriteRule ^stall/(?:[^/]*-)?([0-9]{4,})/?$       stall/show.php?sid=$1  [L,QSA]

@@ -20,6 +20,15 @@ foreach ($rules as [$re, $target, $param]) {
     }
 }
 
+/* Sitemaps */
+if (preg_match('#^/sitemap(?:_index|-([a-z]+))?\.xml$#', $path, $sm)) {
+    $_GET['type'] = $sm[1] ?? 'index';
+    $_SERVER['SCRIPT_NAME'] = '/sitemap.php';
+    chdir(__DIR__);
+    require __DIR__ . '/sitemap.php';
+    return true;
+}
+
 /* Old category/listing links and clean category paths (mirrors the .htaccess rules). */
 $q = $_GET;
 if ($path === '/category.html' && (isset($q['cat']) || isset($q['sub']))) {
