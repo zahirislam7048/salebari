@@ -54,6 +54,7 @@ if (is_post()) {
                 'created_at'    => now(),
             ]);
             login_seller(['id' => $id]);
+            track_queue('sign_up', ['method' => $email ? 'email' : 'phone', 'user_data' => array_filter(['sha256_email_address' => track_hash_email($email), 'sha256_phone_number' => track_hash_phone($phone)])]);
             flash('success', 'Welcome to SaleBari! Add your stall or brand below.');
             redirect('account/');
         } catch (Throwable $ex) {

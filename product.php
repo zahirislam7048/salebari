@@ -64,6 +64,7 @@ if ($product && is_post() && input('action') === 'review') {
             ]);
             $times[] = time();
             $_SESSION['review_times'] = array_values($times);
+            track_queue('submit_review', ['item_id' => (string) $product['id'], 'item_name' => $product['title_en'], 'rating' => $reviewOld['rating']]);
             flash('success', 'Thank you! Your review will appear after our team approves it.');
             header('Location: ' . product_url($product) . '#pp-reviews');
             exit;
@@ -113,7 +114,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=5">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=6">
 </head>
 <body class="has-pp-bar">
 
@@ -471,7 +472,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   <div class="wrap footer-legal">
     <p data-i18n="footer.copyright">© 2026 SaleBari.com — All rights reserved.</p>
     <div class="legal-links">
-      <a href="#" data-i18n="footer.privacy">Privacy Policy</a>
+      <a href="/privacy.php" data-i18n="footer.privacy">Privacy Policy</a>
       <a href="#" data-i18n="footer.terms">Terms of Service</a>
       <a href="#" data-i18n="footer.sitemap">Sitemap</a>
     </div>
@@ -483,7 +484,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=4"></script>
+<script src="<?= base_path() ?>/js/main.js?v=5"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {
@@ -588,6 +589,21 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   }
 </script>
 <?php endif; ?>
+<?php if ($product): ?>
+<?= track_page_script([
+    'type'    => 'product',
+    'product' => [
+        'id'       => (int) $product['id'],
+        'name'     => $product['title_en'],
+        'category' => implode(' / ', array_column($trail, 'name_en')),
+        'brand'    => $brand['name'] ?? '',
+        'seller'   => $stall['name'] ?? '',
+        'price'    => track_price($product['price_display']),
+    ],
+]) ?>
+<?php endif; ?>
+<script src="<?= base_path() ?>/api/tracking-config.php"></script>
+<script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 <?php if ($product): ?>
 <div class="pp-mobile-bar">
   <a class="pp-bar-call" href="tel:<?= e($nums[0]['tel']) ?>">📞 <span data-i18n="pp.call">Call</span></a>

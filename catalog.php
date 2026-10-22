@@ -160,7 +160,12 @@ site_header($seoTitle, $head, false);
   </div>
 </section>
 <?php
+$trackItems = [];
+foreach ($products as $i => $p) {
+    $trackItems[] = ['item_id' => (string) $p['id'], 'item_name' => $p['title_en'], 'item_category' => $name, 'price' => track_price($p['price_display']), 'index' => $i + 1];
+}
 ob_start();
+echo track_page_script(['type' => $isLeaf ? 'category_leaf' : 'category', 'list_name' => implode(' / ', array_column($trail, 'name_en')), 'items' => $trackItems]);
 ?>
 <script>
   (function () {

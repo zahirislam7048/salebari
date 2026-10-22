@@ -679,3 +679,40 @@ function category_i18n_dict(): array
     }
     return $dict;
 }
+
+/* --- Tracking (dataLayer / Google / Meta) ------------------------------ */
+
+function track_hash_email(?string $email): ?string
+{
+    $e = strtolower(trim((string) $email));
+    return $e !== '' ? hash('sha256', $e) : null;
+}
+
+function track_hash_phone(?string $phone): ?string
+{
+    $bd = normalize_bd_phone((string) $phone);
+    if ($bd === null) {
+        return null;
+    }
+    return hash('sha256', '+880' . substr($bd, 1));
+}
+
+/** Remember an event to be sent by the browser on the next page that loads (e.g. after a redirect). */
+function track_queue(string $name, array $params = []): void
+{
+    $_SESSION['track_queue'][] = ['name' => $name, 'params' => $params];
+    $_SESSION['track_queue'] = array_slice($_SESSION['track_queue'], -10);
+}
+
+/** Inline <script> that tells tracking.js what this page is (type, product, list …). */
+function track_page_script(array $page): string
+{
+    return '<script>window.SB_PAGE = ' . json_encode($page, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) . ';</script>';
+}
+
+/** Numeric price out of text like "৳ 5,820" or "45 Lakh" (returns null if there is none). */
+function track_price(?string $text): ?float
+{
+    $clean = preg_replace('/[^0-9.]/', '', strtr((string) $text, ['০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4', '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9']));
+    return $clean !== '' && is_numeric($clean) ? (float) $clean : null;
+}

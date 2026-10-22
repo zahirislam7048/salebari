@@ -125,6 +125,10 @@ if (is_post()) {
                 'sort_order'    => 0,
                 'created_at'    => now(),
             ]);
+            if (!$me) {
+                track_queue('sign_up', ['method' => $email ? 'email' : 'phone', 'user_data' => array_filter(['sha256_email_address' => track_hash_email($email), 'sha256_phone_number' => track_hash_phone($phone)])]);
+            }
+            track_queue('generate_lead', ['method' => 'open_stall', 'package' => $old['package'], 'district' => $old['district']]);
             flash('success', 'Your stall has been submitted. It will go live on SaleBari as soon as our team approves it. You can add more details from here.');
             redirect('account/');
         } catch (Throwable $ex) {

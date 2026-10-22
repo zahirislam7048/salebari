@@ -25,6 +25,7 @@ if (is_post()) {
         if ($s && $s['status'] === 'active' && password_verify($pass, $s['password_hash'])) {
             unset($_SESSION['seller_fails']);
             login_seller($s);
+            track_queue('login', ['method' => valid_email(trim($ident)) ? 'email' : 'phone']);
             redirect('account/');
         }
         $_SESSION['seller_fails'] = ['n' => ($fails['n'] >= 5 ? 0 : $fails['n']) + 1, 't' => time()];

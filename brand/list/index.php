@@ -23,7 +23,7 @@ $total = count($brands);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=5">
+<link rel="stylesheet" href="../../css/style.css?v=6">
 </head>
 <body>
 
@@ -204,7 +204,7 @@ $total = count($brands);
   <div class="wrap footer-legal">
     <p data-i18n="footer.copyright">© 2026 SaleBari.com — All rights reserved.</p>
     <div class="legal-links">
-      <a href="#" data-i18n="footer.privacy">Privacy Policy</a>
+      <a href="/privacy.php" data-i18n="footer.privacy">Privacy Policy</a>
       <a href="#" data-i18n="footer.terms">Terms of Service</a>
       <a href="#" data-i18n="footer.sitemap">Sitemap</a>
     </div>
@@ -216,6 +216,8 @@ $total = count($brands);
 <script src="../../api/category-urls.php"></script>
 <script src="../../js/nav-data.js?v=4"></script>
 <script src="../../js/catalog-data.js?v=4"></script>
-<script src="../../js/main.js?v=4"></script>
+<script src="../../js/main.js?v=5"></script>
+<script src="../../api/tracking-config.php"></script>
+<script src="../../js/tracking.js?v=1"></script>
 </body>
 </html>

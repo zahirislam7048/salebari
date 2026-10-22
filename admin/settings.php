@@ -27,6 +27,10 @@ $fields = [
     'footer_brand_desc'  => ['Footer brand description', true],
     'contact_phone'      => ['Contact number 1 (works as phone AND WhatsApp), e.g. +8801515286327', false],
     'contact_email'      => ['Contact email', false],
+    'ga4_id'             => ['Google Analytics 4 measurement ID, e.g. G-XXXXXXXXXX (tracking)', false],
+    'gtm_id'             => ['Google Tag Manager container ID, e.g. GTM-XXXXXXX (optional — if set, GTM is used instead of the direct GA4 tag)', false],
+    'meta_pixel_id'      => ['Meta (Facebook) Pixel ID — numbers only (tracking)', false],
+    'tracking_consent'   => ['Cookie banner: 1 = show (recommended), 0 = hide', false],
     'contact_whatsapp'   => ['Contact number 2 (works as phone AND WhatsApp), e.g. +8801644842785', false],
 ];
 

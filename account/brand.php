@@ -62,6 +62,7 @@ if (is_post()) {
                 $data['sort_order']    = (int) scalar('SELECT COUNT(*) FROM brands');
                 $data['created_at']    = now();
                 insert('brands', $data);
+                track_queue('generate_lead', ['method' => 'add_brand']);
                 flash('success', 'Brand submitted. It will appear on the Brand directory once the SaleBari team approves it.');
             }
             redirect('account/');

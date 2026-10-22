@@ -57,6 +57,7 @@ if (is_post()) {
                 $data['sort_order']    = 0;
                 $data['created_at']    = now();
                 insert('stalls', $data);
+                track_queue('generate_lead', ['method' => 'add_stall']);
                 flash('success', 'Stall submitted. It will appear on the Stall directory once the SaleBari team approves it.');
             }
             redirect('account/');

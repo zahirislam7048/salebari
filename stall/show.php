@@ -31,7 +31,7 @@ $products = $stall ? rows(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=5">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=6">
 </head>
 <body>
 
@@ -240,7 +240,7 @@ $products = $stall ? rows(
   <div class="wrap footer-legal">
     <p data-i18n="footer.copyright">© 2026 SaleBari.com — All rights reserved.</p>
     <div class="legal-links">
-      <a href="#" data-i18n="footer.privacy">Privacy Policy</a>
+      <a href="/privacy.php" data-i18n="footer.privacy">Privacy Policy</a>
       <a href="#" data-i18n="footer.terms">Terms of Service</a>
       <a href="#" data-i18n="footer.sitemap">Sitemap</a>
     </div>
@@ -252,6 +252,8 @@ $products = $stall ? rows(
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=4"></script>
+<script src="<?= base_path() ?>/js/main.js?v=5"></script>
+<script src="<?= base_path() ?>/api/tracking-config.php"></script>
+<script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 </body>
 </html>
