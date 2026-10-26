@@ -19,7 +19,7 @@ $posts   = rows(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=15">
 </head>
 <body>
 
@@ -63,6 +63,7 @@ $posts   = rows(
         <option data-i18n="cat.travels">Travels</option>
         <option data-i18n="cat.jobs">Jobs</option>
         <option data-i18n="cat.household">Household</option>
+        <option data-i18n="cat.electronics">Electronics</option>
       </select>
       <input type="search" placeholder="Search for a product, brand or stall…" aria-label="Search" data-i18n-placeholder="search.placeholder">
       <button type="submit" aria-label="Search">
@@ -218,7 +219,7 @@ $posts   = rows(
 <script src="api/category-urls.php"></script>
 <script src="js/nav-data.js?v=4"></script>
 <script src="js/catalog-data.js?v=4"></script>
-<script src="js/main.js?v=6"></script>
+<script src="js/main.js?v=7"></script>
 <script src="api/tracking-config.php"></script>
 <script src="js/tracking.js?v=1"></script>
 </body>

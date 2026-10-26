@@ -132,6 +132,7 @@
     'cat.travels': { en: 'Travels', bn: 'ভ্রমণ' },
     'cat.jobs': { en: 'Jobs', bn: 'চাকরি' },
     'cat.household': { en: 'Household', bn: 'গৃহস্থালি' },
+    'cat.electronics': { en: 'Electronics', bn: 'ইলেকট্রনিক্স' },
     'deals.tag': { en: "Today's Deals", bn: 'আজকের অফার' },
 
     'mega.carAccessories': { en: 'Car Accessories', bn: 'কার অ্যাক্সেসরিজ' },
