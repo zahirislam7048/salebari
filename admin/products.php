@@ -68,6 +68,9 @@ if (is_post()) {
             'description_en'   => input('description_en') ?: null,
             'description_bn'   => input('description_bn') ?: null,
             'price_display'    => input('price_display') ?: null,
+            'price_num'        => price_to_number(input('price_display')),
+            'condition_type'   => in_array((string) input('condition_type'), ['new', 'used'], true) ? (string) input('condition_type') : null,
+            'city'             => trim((string) input('city')) ?: null,
             'stock_status'     => array_key_exists((string) input('stock_status'), stock_labels()) ? (string) input('stock_status') : 'available',
             'stock_qty'        => input('stock_qty') !== '' && input('stock_qty') !== null ? max(0, input_int('stock_qty', 0)) : null,
             'specs'            => input('specs') ?: null,
@@ -183,6 +186,15 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
 
     <label class="admin-field"><span>Price (e.g. "৳ 42 Lakh" or "৳ 1,850")</span>
       <input type="text" name="price_display" value="<?= e($editing['price_display'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Condition</span>
+      <select name="condition_type">
+        <option value="">Not specified</option>
+        <option value="new" <?= ($editing['condition_type'] ?? '') === 'new' ? 'selected' : '' ?>>New</option>
+        <option value="used" <?= ($editing['condition_type'] ?? '') === 'used' ? 'selected' : '' ?>>Used</option>
+      </select></label>
+    <label class="admin-field"><span>City / district (optional — leave empty to use the stall's city)</span>
+      <input type="text" name="city" list="districtList" maxlength="80" value="<?= e($editing['city'] ?? '') ?>" placeholder="e.g. Dhaka">
+      <datalist id="districtList"><?php foreach (bd_districts() as $d): ?><option value="<?= e($d) ?>"><?php endforeach; ?></datalist></label>
     <label class="admin-field"><span>Availability</span>
       <select name="stock_status">
         <?php foreach (stock_labels() as $k => $lab): ?><option value="<?= e($k) ?>" <?= ($editing['stock_status'] ?? 'available') === $k ? 'selected' : '' ?>><?= e($lab[0]) ?></option><?php endforeach; ?>

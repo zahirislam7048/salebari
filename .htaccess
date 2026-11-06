@@ -50,6 +50,10 @@ DirectoryIndex index.html index.php
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)/?$ catalog.php?c1=$1&c2=$2&c3=$3 [L,QSA]
+  # ...and the same with a city on the end: /electronics/laptop/dhaka/
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)/([a-z0-9-]+)/?$ catalog.php?c1=$1&c2=$2&c3=$3&c4=$4 [L,QSA]
 </IfModule>
 
 <FilesMatch "^(config\.php)$">

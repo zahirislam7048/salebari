@@ -16,8 +16,19 @@ if ($legacy !== '') {
     }
 }
 
-$segments = array_values(array_filter([(string) input('c1', ''), (string) input('c2', ''), (string) input('c3', '')], 'strlen'));
-$cat = ($legacy === '' && $segments) ? find_category_by_path($segments) : null;
+$segments = array_values(array_filter([(string) input('c1', ''), (string) input('c2', ''), (string) input('c3', ''), (string) input('c4', '')], 'strlen'));
+$cat      = ($legacy === '' && $segments) ? find_category_by_path($segments) : null;
+$cityPage = null;   // /electronics/laptop/dhaka/  ->  ['slug' => 'dhaka', 'name' => 'Dhaka']
+if (!$cat && $legacy === '' && count($segments) >= 2) {
+    $districts = districts_by_slug();
+    $lastSeg   = end($segments);
+    if (isset($districts[$lastSeg])) {
+        $cat = find_category_by_path(array_slice($segments, 0, -1));
+        if ($cat) {
+            $cityPage = ['slug' => $lastSeg, 'name' => $districts[$lastSeg]];
+        }
+    }
+}
 
 if (!$cat) {
     http_response_code(404);
@@ -35,10 +46,21 @@ if (!$cat) {
     exit;
 }
 
+/* The filter form sends ?city=dhaka: send the visitor to the clean city page, keeping the other filters. */
+$filterKeep = array_diff_key($_GET, array_flip(['c1', 'c2', 'c3', 'c4', 'legacy', 'city', 'page']));
+$filterKeep = array_filter($filterKeep, function ($v) { return $v !== '' && $v !== null; });
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && array_key_exists('city', $_GET)) {
+    $wanted = strtolower((string) $_GET['city']);
+    $target = isset(districts_by_slug()[$wanted]) ? category_city_url($cat, $wanted) : category_url($cat);
+    header('Location: ' . $target . ($filterKeep ? '?' . http_build_query($filterKeep) : ''), true, 302);
+    exit;
+}
+
 /* /car-bike  ->  /car-bike/  (and fix any other non-canonical form) */
-$reqPath = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && $reqPath !== category_url($cat)) {
-    header('Location: ' . category_url($cat) . (isset($_GET['page']) && (int) $_GET['page'] > 1 ? '?page=' . (int) $_GET['page'] : ''), true, 301);
+$reqPath  = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+$selfPath = category_url($cat) . ($cityPage ? $cityPage['slug'] . '/' : '');
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET' && $reqPath !== $selfPath) {
+    header('Location: ' . $selfPath . (isset($_GET['page']) && (int) $_GET['page'] > 1 ? '?page=' . (int) $_GET['page'] : ''), true, 301);
     exit;
 }
 
@@ -60,19 +82,59 @@ for ($d = 0; $d < 3 && $frontier; $d++) {
 }
 $inIds   = implode(',', array_fill(0, count($ids), '?'));
 $perPage = 12;
-$total   = (int) scalar("SELECT COUNT(*) FROM products WHERE status = 'active' AND category_id IN ($inIds)", $ids);
-$pg      = paginate($total, $perPage, input_int('page', 1));
-$products = rows(
-    "SELECT * FROM products WHERE status = 'active' AND category_id IN ($inIds) ORDER BY id DESC LIMIT " . $pg['per'] . ' OFFSET ' . $pg['offset'],
-    $ids
-);
+
+/* Filters (price, condition, sort). The city comes from the URL (/dhaka/) — see above. */
+$fMin  = trim((string) input('min', '')) !== '' ? price_to_number((string) input('min')) : null;
+$fMax  = trim((string) input('max', '')) !== '' ? price_to_number((string) input('max')) : null;
+$fCond = in_array((string) input('cond', ''), ['new', 'used'], true) ? (string) input('cond') : '';
+$fSort = in_array((string) input('sort', ''), ['price_asc', 'price_desc'], true) ? (string) input('sort') : 'new';
+$isFiltered = $fMin !== null || $fMax !== null || $fCond !== '' || $fSort !== 'new';
+
+/* Which cities have listings in this category (drives the city filter and the "browse by city" links). */
+$cityExpr = "COALESCE(NULLIF(p.city, ''), s.city)";
+$from     = "FROM products p LEFT JOIN stalls s ON s.id = p.stall_id WHERE p.status = 'active' AND p.category_id IN ($inIds)";
+$cityCounts = [];
+foreach (rows("SELECT $cityExpr AS c, COUNT(*) AS n $from GROUP BY $cityExpr", $ids) as $cr) {
+    $d = district_for($cr['c']);
+    if (!$d) {
+        continue;
+    }
+    $cityCounts[$d['slug']] = $cityCounts[$d['slug']] ?? ['name' => $d['name'], 'n' => 0, 'raw' => []];
+    $cityCounts[$d['slug']]['n'] += (int) $cr['n'];
+    $cityCounts[$d['slug']]['raw'][] = $cr['c'];
+}
+uasort($cityCounts, function ($x, $y) { return $y['n'] <=> $x['n'] ?: strcmp($x['name'], $y['name']); });
+
+$where  = $from;
+$params = $ids;
+if ($cityPage) {
+    $raw = $cityCounts[$cityPage['slug']]['raw'] ?? [];
+    if ($raw) {
+        $where .= " AND $cityExpr IN (" . implode(',', array_fill(0, count($raw), '?')) . ')';
+        $params = array_merge($params, $raw);
+    } else {
+        $where .= ' AND 1 = 0';
+    }
+}
+$scopeTotal = $cityPage ? (int) ($cityCounts[$cityPage['slug']]['n'] ?? 0) : (int) scalar("SELECT COUNT(*) $from", $ids);
+if ($fMin !== null)  { $where .= ' AND p.price_num >= ?'; $params[] = $fMin; }
+if ($fMax !== null)  { $where .= ' AND p.price_num <= ?'; $params[] = $fMax; }
+if ($fCond !== '')   { $where .= ' AND p.condition_type = ?'; $params[] = $fCond; }
+$order = ['new' => 'p.id DESC', 'price_asc' => 'p.price_num IS NULL, p.price_num ASC, p.id DESC', 'price_desc' => 'p.price_num IS NULL, p.price_num DESC, p.id DESC'][$fSort];
+
+$total = (int) scalar("SELECT COUNT(*) $where", $params);
+$pg    = paginate($total, $perPage, input_int('page', 1));
+$products = rows("SELECT p.* $where ORDER BY $order LIMIT " . $pg['per'] . ' OFFSET ' . $pg['offset'], $params);
 
 $name     = (string) $cat['name_en'];
 $icon     = $cat['icon'] ?: '🏷️';
 $isLeaf   = !$children;
-$canonPath = category_url($cat) . ($pg['page'] > 1 ? '?page=' . $pg['page'] : '');
-$descr     = category_seo_description($cat, $children, $total);
-$seoTitle  = category_seo_title($cat);
+$canonPath = $selfPath . ($pg['page'] > 1 ? '?page=' . $pg['page'] : '');
+$descr     = $cityPage ? category_city_description($cat, $cityPage['name'], $scopeTotal) : category_seo_description($cat, $children, $total);
+$seoTitle  = $cityPage ? category_city_title($cat, $cityPage['name']) : category_seo_title($cat);
+$headingName = $cityPage ? $name . ' in ' . $cityPage['name'] : $name;
+// filtered / sorted views and empty city pages stay out of search results
+$noindex   = $isFiltered || ($cityPage && $scopeTotal === 0);
 if ($pg['page'] > 1) {
     $seoTitle .= ' — Page ' . $pg['page'];
 }
@@ -90,13 +152,17 @@ $crumbs = [['name' => 'Home', 'url' => base_path() . '/']];
 foreach ($trail as $c0) {
     $crumbs[] = ['name' => $c0['name_en'], 'url' => category_url($c0)];
 }
+if ($cityPage) {
+    $crumbs[] = ['name' => $cityPage['name']];
+}
 $head = seo_meta([
         'title'       => $seoTitle . ' — SaleBari',
         'description' => $descr,
         'url'         => $canonPath,
         'image'       => $firstImg ?: '/assets/og-default.png',
-        'prev'        => $pg['page'] > 1 ? category_url($cat) . ($pg['page'] > 2 ? '?page=' . ($pg['page'] - 1) : '') : null,
-        'next'        => $pg['page'] < $pg['pages'] ? category_url($cat) . '?page=' . ($pg['page'] + 1) : null,
+        'noindex'     => $noindex,
+        'prev'        => $pg['page'] > 1 ? $selfPath . ($pg['page'] > 2 ? '?page=' . ($pg['page'] - 1) : '') : null,
+        'next'        => $pg['page'] < $pg['pages'] ? $selfPath . '?page=' . ($pg['page'] + 1) : null,
     ])
     . ld_script(
         ld_breadcrumb($crumbs),
@@ -111,9 +177,17 @@ foreach (array_merge($trail, $children, $related) as $c) {
     $dict['cn.' . $c['id']] = ['en' => $c['name_en'], 'bn' => $c['name_bn'] ?: $c['name_en']];
 }
 
-function catalog_page_url(array $cat, int $page): string
+/** Link to page N of the current view, keeping the active filters. */
+function catalog_page_url(string $base, int $page): string
 {
-    return category_url($cat) . ($page > 1 ? '?page=' . $page : '');
+    global $fMin, $fMax, $fCond, $fSort;
+    $q = [];
+    if ($fMin !== null) { $q['min'] = $fMin; }
+    if ($fMax !== null) { $q['max'] = $fMax; }
+    if ($fCond !== '')  { $q['cond'] = $fCond; }
+    if ($fSort !== 'new') { $q['sort'] = $fSort; }
+    if ($page > 1) { $q['page'] = $page; }
+    return $base . ($q ? '?' . http_build_query($q) : '');
 }
 
 site_header($seoTitle, $head, false);
@@ -127,13 +201,14 @@ site_header($seoTitle, $head, false);
         <?php if ($i < count($trail) - 1): ?>
           <a href="<?= e(category_url($c)) ?>" data-i18n="cn.<?= (int) $c['id'] ?>"><?= e($c['name_en']) ?></a>
         <?php else: ?>
-          <span class="breadcrumb-current" data-i18n="cn.<?= (int) $c['id'] ?>"><?= e($c['name_en']) ?></span>
+          <?php if ($cityPage): ?><a href="<?= e(category_url($c)) ?>" data-i18n="cn.<?= (int) $c['id'] ?>"><?= e($c['name_en']) ?></a><span class="breadcrumb-sep">›</span><span class="breadcrumb-current"><?= e($cityPage['name']) ?></span>
+          <?php else: ?><span class="breadcrumb-current" data-i18n="cn.<?= (int) $c['id'] ?>"><?= e($c['name_en']) ?></span><?php endif; ?>
         <?php endif; ?>
       <?php endforeach; ?>
     </nav>
 
     <div class="listing-page-header">
-      <h1 class="listing-page-title" data-i18n="cn.<?= (int) $cat['id'] ?>"><?= e($name) ?></h1>
+      <h1 class="listing-page-title"<?= $cityPage ? '' : ' data-i18n="cn.' . (int) $cat['id'] . '"' ?>><?= e($headingName) ?></h1>
       <p class="listing-page-stat"><?= $total ?> <?= $total === 1 ? 'listing' : 'listings' ?></p>
     </div>
 
@@ -148,8 +223,36 @@ site_header($seoTitle, $head, false);
       </div>
     <?php endif; ?>
 
+    <?php if ($scopeTotal > 0 || $isFiltered): ?>
+      <form class="catalog-filter" method="get" action="<?= e(category_url($cat)) ?>">
+        <label><span>City</span>
+          <select name="city">
+            <option value="">All Bangladesh</option>
+            <?php foreach ($cityCounts as $slug => $cc): ?><option value="<?= e($slug) ?>"<?= $cityPage && $cityPage['slug'] === $slug ? ' selected' : '' ?>><?= e($cc['name']) ?> (<?= (int) $cc['n'] ?>)</option><?php endforeach; ?>
+          </select></label>
+        <label><span>Condition</span>
+          <select name="cond">
+            <option value="">Any</option>
+            <option value="new"<?= $fCond === 'new' ? ' selected' : '' ?>>New</option>
+            <option value="used"<?= $fCond === 'used' ? ' selected' : '' ?>>Used</option>
+          </select></label>
+        <label><span>Min price (৳)</span><input type="text" inputmode="numeric" name="min" value="<?= $fMin !== null ? e((string) $fMin) : '' ?>" placeholder="e.g. 5000"></label>
+        <label><span>Max price (৳)</span><input type="text" inputmode="numeric" name="max" value="<?= $fMax !== null ? e((string) $fMax) : '' ?>" placeholder="e.g. 5 lakh"></label>
+        <label><span>Sort</span>
+          <select name="sort">
+            <option value="new">Newest first</option>
+            <option value="price_asc"<?= $fSort === 'price_asc' ? ' selected' : '' ?>>Price: low to high</option>
+            <option value="price_desc"<?= $fSort === 'price_desc' ? ' selected' : '' ?>>Price: high to low</option>
+          </select></label>
+        <div class="catalog-filter-actions">
+          <button type="submit" class="btn btn-primary">Apply</button>
+          <?php if ($isFiltered || $cityPage): ?><a class="btn btn-ghost" href="<?= e(category_url($cat)) ?>">Reset</a><?php endif; ?>
+        </div>
+      </form>
+    <?php endif; ?>
+
     <?php if ($products): ?>
-      <?php if ($children): ?><h2 class="catalog-subheading">Latest in <?= e($name) ?></h2><?php endif; ?>
+      <?php if ($children): ?><h2 class="catalog-subheading">Latest in <?= e($headingName) ?></h2><?php endif; ?>
       <div class="listing-grid catalog-grid">
         <?php foreach ($products as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
           <a class="listing-card" href="<?= e(product_url($p)) ?>">
@@ -167,16 +270,31 @@ site_header($seoTitle, $head, false);
 
       <?php if ($pg['pages'] > 1): ?>
         <nav class="stall-detail-pagination catalog-pagination" aria-label="Pagination">
-          <?php if ($pg['page'] > 1): ?><a href="<?= e(catalog_page_url($cat, $pg['page'] - 1)) ?>" rel="prev">‹ Previous</a><?php endif; ?>
+          <?php if ($pg['page'] > 1): ?><a href="<?= e(catalog_page_url($selfPath, $pg['page'] - 1)) ?>" rel="prev">‹ Previous</a><?php endif; ?>
           <span><?= $pg['page'] ?> / <?= $pg['pages'] ?></span>
-          <?php if ($pg['page'] < $pg['pages']): ?><a href="<?= e(catalog_page_url($cat, $pg['page'] + 1)) ?>" rel="next">Next ›</a><?php endif; ?>
+          <?php if ($pg['page'] < $pg['pages']): ?><a href="<?= e(catalog_page_url($selfPath, $pg['page'] + 1)) ?>" rel="next">Next ›</a><?php endif; ?>
         </nav>
       <?php endif; ?>
+    <?php elseif ($isFiltered): ?>
+      <p class="listing-empty">No listings match these filters. <a href="<?= e($selfPath) ?>" style="color:var(--gold-deep);font-weight:600">Clear filters</a></p>
+    <?php elseif ($cityPage): ?>
+      <p class="listing-empty">No <?= e($name) ?> listings in <?= e($cityPage['name']) ?> yet. <a href="<?= e(category_url($cat)) ?>" style="color:var(--gold-deep);font-weight:600">See <?= e($name) ?> across Bangladesh →</a></p>
     <?php elseif ($isLeaf): ?>
       <p class="listing-empty">No listings in <?= e($name) ?> yet. <a href="<?= base_path() ?>/sell/" style="color:var(--gold-deep);font-weight:600">Open your stall and be the first →</a></p>
     <?php endif; ?>
     <section class="catalog-seo">
-      <div class="catalog-intro"><?= category_intro_html($cat, $children, $trail) ?></div>
+      <?php if ($cityPage): ?>
+        <div class="catalog-intro"><p>These are <?= e($name) ?> listings from sellers in <?= e($cityPage['name']) ?>. Open any listing to see photos, price and details, then message the seller directly on WhatsApp or by phone. Looking elsewhere? Pick another city below, or <a href="<?= e(category_url($cat)) ?>">see all <?= e($name) ?> in Bangladesh</a>.</p></div>
+      <?php else: ?>
+        <div class="catalog-intro"><?= category_intro_html($cat, $children, $trail) ?></div>
+      <?php endif; ?>
+      <?php $cityLinks = array_filter($cityCounts, function ($cc, $slug) use ($cityPage) { return !$cityPage || $cityPage['slug'] !== $slug; }, ARRAY_FILTER_USE_BOTH); ?>
+      <?php if ($cityLinks): ?>
+        <h2 class="catalog-subheading"><?= $cityPage ? 'Other cities' : 'Browse ' . e($name) . ' by city' ?></h2>
+        <div class="chip-row">
+          <?php foreach (array_slice($cityLinks, 0, 24, true) as $slug => $cc): ?><a class="chip" href="<?= e(category_city_url($cat, $slug)) ?>"><?= e($name) ?> in <?= e($cc['name']) ?> <small>(<?= (int) $cc['n'] ?>)</small></a><?php endforeach; ?>
+        </div>
+      <?php endif; ?>
       <?php if ($related): ?>
         <h2 class="catalog-subheading"><?= count($trail) > 1 ? 'More in ' . e($trail[count($trail) - 2]['name_en']) : 'Explore more categories' ?></h2>
         <div class="chip-row">

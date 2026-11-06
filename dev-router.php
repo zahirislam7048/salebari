@@ -71,8 +71,8 @@ if ($path === '/listing.html' && isset($q['item'])) {
     require __DIR__ . '/catalog.php';
     return true;
 }
-if (!file_exists(__DIR__ . $path) && preg_match('#^/([a-z0-9-]+)(?:/([a-z0-9-]+))?(?:/([a-z0-9-]+))?/?$#', $path, $m)) {
-    foreach ([1 => 'c1', 2 => 'c2', 3 => 'c3'] as $i => $k) {
+if (!file_exists(__DIR__ . $path) && preg_match('#^/([a-z0-9-]+)(?:/([a-z0-9-]+))?(?:/([a-z0-9-]+))?(?:/([a-z0-9-]+))?/?$#', $path, $m)) {
+    foreach ([1 => 'c1', 2 => 'c2', 3 => 'c3', 4 => 'c4'] as $i => $k) {
         if (!empty($m[$i])) {
             $_GET[$k] = $m[$i];
         }

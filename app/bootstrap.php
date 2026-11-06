@@ -28,6 +28,7 @@ require APP_ROOT . '/app/migrate.php';
 require APP_ROOT . '/app/layout.php';
 require APP_ROOT . '/app/extra_categories.php';
 require APP_ROOT . '/app/seo.php';
+require APP_ROOT . '/app/locations.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([
@@ -62,6 +63,7 @@ function installed(): bool
         ensure_extra_categories();
         ensure_category_icons();
         ensure_category_url_slugs();
+        ensure_price_numbers();
     }
     return $ok;
 }

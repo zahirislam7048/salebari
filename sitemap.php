@@ -77,6 +77,20 @@ switch ($type) {
             $level = (int) $v['row']['level'];
             $items[] = [$abs(category_url($v['row'])), sm_date($v['row']['created_at'] ?? null), $level === 1 ? 'daily' : 'weekly', $level === 1 ? '0.9' : ($level === 2 ? '0.8' : '0.7')];
         }
+        // "category in city" pages: only combinations that really have listings
+        $idx   = category_index();
+        $pairs = [];
+        foreach (rows("SELECT p.category_id, COALESCE(NULLIF(p.city, ''), s.city) AS c FROM products p LEFT JOIN stalls s ON s.id = p.stall_id WHERE p.status = 'active'") as $r) {
+            $d  = district_for($r['c']);
+            $id = (int) $r['category_id'];
+            while ($d && $id && isset($idx[$id])) {
+                $pairs[$id . '|' . $d['slug']] = [$idx[$id]['row'], $d['slug']];
+                $id = (int) ($idx[$id]['row']['parent_id'] ?? 0);
+            }
+        }
+        foreach (array_slice($pairs, 0, 40000) as [$crow, $cslug]) {
+            $items[] = [$abs(category_city_url($crow, $cslug)), null, 'weekly', '0.6'];
+        }
         break;
 
     case 'products':

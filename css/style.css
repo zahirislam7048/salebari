@@ -2060,3 +2060,12 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .footer-cat-col a { font-size: 0.82rem; color: rgba(250, 247, 240, 0.78); }
 .footer-cat-col a:hover { color: var(--gold); }
 .footer-cat-col .footer-cat-head { font-weight: 700; color: var(--paper); font-size: 0.9rem; margin-bottom: 2px; }
+
+/* ---- category filter bar ---- */
+.catalog-filter { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; align-items: end; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin: 0 0 22px; }
+.catalog-filter label { display: flex; flex-direction: column; gap: 5px; font-size: 0.78rem; font-weight: 700; color: var(--ink-soft); }
+.catalog-filter select, .catalog-filter input { width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; font: inherit; font-size: 0.92rem; color: var(--ink); }
+.catalog-filter-actions { display: flex; gap: 8px; }
+.catalog-filter-actions .btn { flex: 1; justify-content: center; padding: 10px 14px; }
+.chip small { color: var(--ink-soft); font-weight: 500; }
+@media (max-width: 560px) { .catalog-filter { grid-template-columns: 1fr 1fr; } .catalog-filter-actions { grid-column: 1 / -1; } }
