@@ -13,13 +13,20 @@ $posts   = rows(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Blog — SaleBari</title>
-<meta name="description" content="News, guides and market updates from SaleBari, Bangladesh's digital bazaar.">
+<title>Blog — Buying Guides, Tips & News<?= $p['page'] > 1 ? ' (Page ' . $p['page'] . ')' : '' ?> — SaleBari</title>
+<?= seo_meta([
+    'title'       => 'Blog — Buying Guides, Tips & News — SaleBari',
+    'description' => 'Buying guides, selling tips and market news from SaleBari, Bangladesh\'s digital bazaar.',
+    'url'         => base_path() . '/blog.php' . ($p['page'] > 1 ? '?page=' . $p['page'] : ''),
+    'prev'        => $p['page'] > 1 ? base_path() . '/blog.php' . ($p['page'] > 2 ? '?page=' . ($p['page'] - 1) : '') : null,
+    'next'        => $p['page'] < $p['pages'] ? base_path() . '/blog.php?page=' . ($p['page'] + 1) : null,
+]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Blog']])) ?>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=15">
+<link rel="stylesheet" href="css/style.css?v=16">
 </head>
 <body>
 
@@ -145,6 +152,14 @@ $posts   = rows(
   </div>
 </section>
 
+<section class="section">
+  <div class="wrap seo-block seo-links">
+    <h2>Browse the bazaar</h2>
+    <p>Ready to buy or sell? Jump straight to a category.</p>
+    <?= seo_category_chips_html(3) ?>
+  </div>
+</section>
+
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -196,6 +211,7 @@ $posts   = rows(
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -219,7 +235,7 @@ $posts   = rows(
 <script src="api/category-urls.php"></script>
 <script src="js/nav-data.js?v=4"></script>
 <script src="js/catalog-data.js?v=4"></script>
-<script src="js/main.js?v=7"></script>
+<script src="js/main.js?v=8"></script>
 <script src="api/tracking-config.php"></script>
 <script src="js/tracking.js?v=1"></script>
 </body>

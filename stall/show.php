@@ -20,18 +20,44 @@ $products = $stall ? rows(
     "SELECT * FROM products WHERE stall_id = ? AND status = 'active' ORDER BY id DESC",
     [$stall['id']]
 ) : [];
+
+/* SEO + internal links */
+$stallMall = ($stall && $stall['mall_id']) ? row('SELECT * FROM malls WHERE id = ?', [$stall['mall_id']]) : null;
+$sameCity  = ($stall && $stall['city']) ? rows(
+    "SELECT id, slug, name FROM stalls WHERE city = ? AND id <> ? AND status = 'active' AND review_status = 'approved' ORDER BY verified DESC, id DESC LIMIT 8",
+    [$stall['city'], $stall['id']]
+) : [];
+$stallCats = $stall ? categories_of_products('p.stall_id = ?', [$stall['id']]) : [];
+$seoName   = $stall ? $stall['name'] . ($stall['city'] ? ' in ' . $stall['city'] : '') : '';
+$seoDesc   = $stall ? seo_clean(
+    $stall['name'] . ($stall['city'] ? ' — verified stall in ' . $stall['city'] : '') . '. '
+    . ($stall['description'] ? seo_clean($stall['description'], 70) . ' ' : '')
+    . (count($products) ? 'Browse ' . count($products) . ' ' . (count($products) === 1 ? 'product' : 'products') . ', ' : '') . 'see the location and contact the seller on SaleBari.', 158) : '';
+$stallLd = [];
+if ($stall) {
+    $stallLd = ['@context' => 'https://schema.org', '@type' => 'LocalBusiness', 'name' => $stall['name'], 'url' => abs_url(stall_url($stall)),
+        'image' => $stall['logo_image'] ? abs_url(asset($stall['logo_image'])) : abs_url('/assets/og-default.png'),
+        'address' => array_filter(['@type' => 'PostalAddress', 'streetAddress' => $stall['address'], 'addressLocality' => $stall['city'], 'addressCountry' => 'BD'])];
+    if ($stall['description']) $stallLd['description'] = seo_clean($stall['description'], 300);
+    if ($stall['phone']) $stallLd['telephone'] = $stall['phone'];
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $stall ? e($stall['name']) . ' — SaleBari' : 'Stall not found — SaleBari' ?></title>
-<meta name="description" content="<?= $stall ? e($stall['name'] . ' on SaleBari, Bangladesh\'s digital bazaar.') : '' ?>">
+<title><?= $stall ? e($seoName) . ' — SaleBari' : 'Stall not found — SaleBari' ?></title>
+<?php if ($stall): ?>
+<?= seo_meta(['title' => $seoName . ' — SaleBari', 'description' => $seoDesc, 'url' => stall_url($stall), 'image' => $stall['logo_image'] ? asset($stall['logo_image']) : null]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Stall Directory', 'url' => base_path() . '/stall/list/'], ['name' => $stall['name']]]), $stallLd) ?>
+<?php else: ?>
+<meta name="robots" content="noindex,follow">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=15">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=16">
 </head>
 <body>
 
@@ -134,7 +160,7 @@ $products = $stall ? rows(
       <div class="wrap stall-identity-card">
         <div class="stall-logo stall-identity-logo c1<?= $stall['logo_image'] || $stall['logo_emoji'] ? '' : ' generic' ?>">
           <?php if ($stall['logo_image']): ?>
-            <img src="<?= e(asset($stall['logo_image'])) ?>" alt="">
+            <img src="<?= e(asset($stall['logo_image'])) ?>" alt="<?= e($stall['name']) ?> logo">
           <?php elseif ($stall['logo_emoji']): ?>
             <?= e($stall['logo_emoji']) ?>
           <?php else: ?>
@@ -165,7 +191,7 @@ $products = $stall ? rows(
             <a class="product-card" href="<?= e(product_url($prod)) ?>" style="text-decoration:none;color:inherit;display:block">
               <div class="product-media grad-1">
               <?= stock_card_badge($prod) ?>
-                <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
+                <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt="<?= e($prod['title_en']) ?>" loading="lazy"><?php else: ?><span>🛒</span><?php endif; ?>
               </div>
               <div class="product-body">
                 <h3 class="product-title"><?= e($prod['title_en']) ?></h3>
@@ -176,6 +202,19 @@ $products = $stall ? rows(
         </div>
       <?php endif; ?>
     </div>
+    <section class="seo-block seo-links">
+      <?php if ($stallCats): ?>
+        <h2>Categories at <?= e($stall['name']) ?></h2>
+        <div class="chip-row"><?php foreach ($stallCats as $sc): ?><a class="chip" href="<?= e(category_url($sc)) ?>"><?= e($sc['name_en']) ?></a><?php endforeach; ?></div>
+      <?php endif; ?>
+      <?php if ($stallMall): ?>
+        <p>📍 Find this stall in <a href="<?= e(mall_url($stallMall)) ?>"><?= e($stallMall['name']) ?></a>, <?= e($stallMall['city_name_en']) ?>.</p>
+      <?php endif; ?>
+      <?php if ($sameCity): ?>
+        <h2>More stalls in <?= e($stall['city']) ?></h2>
+        <div class="chip-row"><?php foreach ($sameCity as $sc): ?><a class="chip" href="<?= e(stall_url($sc)) ?>"><?= e($sc['name']) ?></a><?php endforeach; ?><a class="chip" href="<?= base_path() ?>/stall/list/">All stalls →</a></div>
+      <?php endif; ?>
+    </section>
   </div>
 </section>
 <?php endif; ?>
@@ -231,6 +270,7 @@ $products = $stall ? rows(
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -254,7 +294,7 @@ $products = $stall ? rows(
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=7"></script>
+<script src="<?= base_path() ?>/js/main.js?v=8"></script>
 <script src="<?= base_path() ?>/api/tracking-config.php"></script>
 <script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 </body>

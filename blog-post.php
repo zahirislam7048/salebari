@@ -9,19 +9,34 @@ if (!$post) {
 }
 
 $pageTitle = $post ? ($post['meta_title'] ?: $post['title_en']) . ' — SaleBari Blog' : 'Post not found — SaleBari';
-$pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((string) $post['content_en'])), 0, 160)) : '';
+$pageDesc  = $post ? ($post['meta_description'] ?: seo_clean((string) $post['content_en'], 158)) : '';
+$related   = $post ? rows("SELECT id, slug, title_en FROM blog_posts WHERE status = 'published' AND id <> ? ORDER BY published_at DESC LIMIT 4", [$post['id']]) : [];
+$postUrl   = $post ? base_path() . '/blog-post.php?slug=' . rawurlencode($post['slug']) : '';
+$postLd    = [];
+if ($post) {
+    $postLd = ['@context' => 'https://schema.org', '@type' => 'Article', 'headline' => $post['title_en'], 'description' => $pageDesc,
+        'mainEntityOfPage' => abs_url($postUrl), 'datePublished' => date('c', strtotime((string) ($post['published_at'] ?: $post['created_at']))),
+        'image' => $post['cover_image'] ? [abs_url(asset($post['cover_image']))] : [abs_url('/assets/og-default.png')],
+        'author' => ['@type' => 'Organization', 'name' => 'SaleBari'],
+        'publisher' => ['@type' => 'Organization', 'name' => 'SaleBari', 'logo' => ['@type' => 'ImageObject', 'url' => abs_url('/assets/og-default.png')]]];
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($pageTitle) ?></title>
-<meta name="description" content="<?= e($pageDesc) ?>">
+<?php if ($post): ?>
+<?= seo_meta(['title' => $pageTitle, 'description' => $pageDesc, 'url' => $postUrl, 'image' => $post['cover_image'] ? asset($post['cover_image']) : null, 'type' => 'article']) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Blog', 'url' => base_path() . '/blog.php'], ['name' => $post['title_en']]]), $postLd) ?>
+<?php else: ?>
+<meta name="robots" content="noindex,follow">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=15">
+<link rel="stylesheet" href="css/style.css?v=16">
 </head>
 <body>
 
@@ -133,6 +148,19 @@ $pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((st
 </section>
 <?php endif; ?>
 
+<?php if ($post): ?>
+<section class="section">
+  <div class="wrap seo-block seo-links">
+    <?php if ($related): ?>
+      <h2>More from the blog</h2>
+      <div class="chip-row"><?php foreach ($related as $rp): ?><a class="chip" href="blog-post.php?slug=<?= e($rp['slug']) ?>"><?= e($rp['title_en']) ?></a><?php endforeach; ?><a class="chip" href="blog.php">All posts →</a></div>
+    <?php endif; ?>
+    <h2>Browse the bazaar</h2>
+    <?= seo_category_chips_html(3) ?>
+  </div>
+</section>
+<?php endif; ?>
+
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -183,6 +211,7 @@ $pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((st
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -206,7 +235,7 @@ $pageDesc  = $post ? ($post['meta_description'] ?: mb_substr(trim(strip_tags((st
 <script src="api/category-urls.php"></script>
 <script src="js/nav-data.js?v=4"></script>
 <script src="js/catalog-data.js?v=4"></script>
-<script src="js/main.js?v=7"></script>
+<script src="js/main.js?v=8"></script>
 <script src="api/tracking-config.php"></script>
 <script src="js/tracking.js?v=1"></script>
 <?php if ($post): ?>

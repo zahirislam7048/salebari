@@ -17,19 +17,38 @@ $stalls = $mall ? rows(
     "SELECT * FROM stalls WHERE mall_id = ? AND status = 'active' AND review_status = 'approved' ORDER BY verified DESC, name",
     [$mall['id']]
 ) : [];
+
+/* SEO + internal links */
+$otherMalls = $mall ? rows('SELECT id, slug, name FROM malls WHERE city_name_en = ? AND id <> ? ORDER BY name LIMIT 10', [$mall['city_name_en'], $mall['id']]) : [];
+$seoName = $mall ? $mall['name'] . ', ' . $mall['city_name_en'] : '';
+$seoDesc = $mall ? seo_clean($mall['name'] . ' — shopping mall in ' . $mall['city_name_en'] . '. ' . ($mall['about'] ? seo_clean($mall['about'], 80) . ' ' : '')
+    . (count($stalls) ? 'Browse ' . count($stalls) . ' ' . (count($stalls) === 1 ? 'stall' : 'stalls') . ', ' : '') . 'address, opening hours and contact on SaleBari.', 158) : '';
+$mallLd = [];
+if ($mall) {
+    $mallLd = ['@context' => 'https://schema.org', '@type' => 'ShoppingCenter', 'name' => $mall['name'], 'url' => abs_url(mall_url($mall)),
+        'image' => $mall['logo_image'] ? abs_url(asset($mall['logo_image'])) : abs_url('/assets/og-default.png'),
+        'address' => array_filter(['@type' => 'PostalAddress', 'streetAddress' => $mall['address'] ?: $mall['description_en'], 'addressLocality' => $mall['city_name_en'], 'addressCountry' => 'BD'])];
+    if ($mall['opening_hours']) $mallLd['openingHours'] = $mall['opening_hours'];
+    if ($mall['phone'] || $mall['mobile']) $mallLd['telephone'] = $mall['mobile'] ?: $mall['phone'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $mall ? e($mall['name']) . ' — Shopping Mall — SaleBari' : 'Mall not found — SaleBari' ?></title>
-<meta name="description" content="<?= $mall ? e(mb_substr(trim(strip_tags((string) $mall['about'])), 0, 160) ?: $mall['name'] . ' — shopping mall in ' . $mall['city_name_en'] . ' on SaleBari.') : '' ?>">
+<title><?= $mall ? e($seoName) . ' — Shopping Mall — SaleBari' : 'Mall not found — SaleBari' ?></title>
+<?php if ($mall): ?>
+<?= seo_meta(['title' => $seoName . ' — Shopping Mall — SaleBari', 'description' => $seoDesc, 'url' => mall_url($mall), 'image' => $mall['logo_image'] ? asset($mall['logo_image']) : null]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Shopping Malls', 'url' => base_path() . '/market/list/'], ['name' => $mall['name']]]), $mallLd) ?>
+<?php else: ?>
+<meta name="robots" content="noindex,follow">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=15">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=16">
 </head>
 <body>
 
@@ -140,7 +159,7 @@ $stalls = $mall ? rows(
 
     <div class="brand-hero">
       <?php if ($mall['logo_image']): ?>
-        <img class="brand-hero-logo" src="<?= e(asset($mall['logo_image'])) ?>" alt="">
+        <img class="brand-hero-logo" src="<?= e(asset($mall['logo_image'])) ?>" alt="<?= e($mall['name']) ?>">
       <?php endif; ?>
       <div>
         <h1 class="listing-page-title" style="margin:0"><?= e($mall['name']) ?></h1>
@@ -214,6 +233,14 @@ $stalls = $mall ? rows(
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+    <section class="seo-block seo-links">
+      <?php if ($otherMalls): ?>
+        <h2>More shopping malls in <?= e($mall['city_name_en']) ?></h2>
+        <div class="chip-row"><?php foreach ($otherMalls as $om): ?><a class="chip" href="<?= e(mall_url($om)) ?>"><?= e($om['name']) ?></a><?php endforeach; ?><a class="chip" href="<?= base_path() ?>/market/list/">All malls →</a></div>
+      <?php endif; ?>
+      <h2>Browse categories</h2>
+      <?= seo_category_chips_html(2) ?>
+    </section>
   </div>
 </section>
 <?php endif; ?>
@@ -269,6 +296,7 @@ $stalls = $mall ? rows(
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -292,7 +320,7 @@ $stalls = $mall ? rows(
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=7"></script>
+<script src="<?= base_path() ?>/js/main.js?v=8"></script>
 <script src="<?= base_path() ?>/api/tracking-config.php"></script>
 <script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 </body>

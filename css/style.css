@@ -2043,3 +2043,20 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .ss-text table td, .ss-text table th { border: 1px solid var(--line); padding: 9px 12px; text-align: left; vertical-align: top; min-width: 90px; }
 .pp-overview > div table th, .blog-post-content table th, .brand-about-body table th, .ss-text table th { background: var(--paper-warm); color: var(--ink); font-weight: 700; }
 .pp-overview > div table tr:nth-child(even) td, .blog-post-content table tr:nth-child(even) td, .brand-about-body table tr:nth-child(even) td { background: rgba(15, 42, 36, 0.03); }
+
+/* ---- on-page SEO blocks: intro text, related categories, footer category links ---- */
+.catalog-seo { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line); max-width: 900px; }
+.catalog-intro p { color: var(--ink-soft); line-height: 1.75; margin: 0 0 14px; }
+.catalog-intro a, .catalog-back a, .seo-links a { color: var(--gold-deep); font-weight: 600; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.chip { display: inline-block; padding: 7px 14px; border: 1px solid var(--line); border-radius: 999px; background: #fff; font-size: 0.88rem; font-weight: 600; color: var(--ink); }
+.chip:hover { border-color: var(--gold-deep); color: var(--gold-deep); }
+.seo-block { margin-top: 34px; }
+.seo-block h2 { font-size: 1.25rem; margin: 0 0 12px; }
+.footer-cats { grid-column: 1 / -1; border-top: 1px solid rgba(250, 247, 240, 0.15); margin-top: 26px; padding-top: 22px; }
+.footer-cats h4 { color: var(--paper); font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
+.footer-cats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 18px 22px; }
+.footer-cat-col { display: flex; flex-direction: column; gap: 6px; }
+.footer-cat-col a { font-size: 0.82rem; color: rgba(250, 247, 240, 0.78); }
+.footer-cat-col a:hover { color: var(--gold); }
+.footer-cat-col .footer-cat-head { font-weight: 700; color: var(--paper); font-size: 0.9rem; margin-bottom: 2px; }

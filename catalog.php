@@ -21,7 +21,7 @@ $cat = ($legacy === '' && $segments) ? find_category_by_path($segments) : null;
 
 if (!$cat) {
     http_response_code(404);
-    site_header('Page not found');
+    site_header('Page not found', '<meta name="robots" content="noindex,follow">');
     ?>
 <section class="section category-page">
   <div class="wrap">
@@ -70,27 +70,44 @@ $products = rows(
 $name     = (string) $cat['name_en'];
 $icon     = $cat['icon'] ?: '🏷️';
 $isLeaf   = !$children;
-$origin   = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
-$canon    = $origin . category_url($cat);
-$descr    = category_seo_description($cat, $children, $total);
-$seoTitle = category_seo_title($cat);
-
-$crumbJson = [];
-foreach (array_merge([['name_en' => 'Home', 'url' => $origin . base_path() . '/']], $trail) as $i => $c) {
-    $crumbJson[] = [
-        '@type' => 'ListItem',
-        'position' => $i + 1,
-        'name' => $c['name_en'],
-        'item' => isset($c['url']) ? $c['url'] : $origin . category_url($c),
-    ];
+$canonPath = category_url($cat) . ($pg['page'] > 1 ? '?page=' . $pg['page'] : '');
+$descr     = category_seo_description($cat, $children, $total);
+$seoTitle  = category_seo_title($cat);
+if ($pg['page'] > 1) {
+    $seoTitle .= ' — Page ' . $pg['page'];
 }
-$head = '<meta name="description" content="' . e($descr) . '">' . "\n"
-    . '<link rel="canonical" href="' . e($canon) . '">' . "\n"
-    . '<script type="application/ld+json">' . json_encode(['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $crumbJson], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+$firstImg = null;
+foreach ($products as $p0) {
+    $im0 = json_decode((string) $p0['images'], true) ?: [];
+    if ($im0) { $firstImg = asset($im0[0]); break; }
+}
+
+$ldItems = [];
+foreach ($products as $i => $p0) {
+    $ldItems[] = ['@type' => 'ListItem', 'position' => $pg['offset'] + $i + 1, 'url' => abs_url(product_url($p0)), 'name' => $p0['title_en']];
+}
+$crumbs = [['name' => 'Home', 'url' => base_path() . '/']];
+foreach ($trail as $c0) {
+    $crumbs[] = ['name' => $c0['name_en'], 'url' => category_url($c0)];
+}
+$head = seo_meta([
+        'title'       => $seoTitle . ' — SaleBari',
+        'description' => $descr,
+        'url'         => $canonPath,
+        'image'       => $firstImg ?: '/assets/og-default.png',
+        'prev'        => $pg['page'] > 1 ? category_url($cat) . ($pg['page'] > 2 ? '?page=' . ($pg['page'] - 1) : '') : null,
+        'next'        => $pg['page'] < $pg['pages'] ? category_url($cat) . '?page=' . ($pg['page'] + 1) : null,
+    ])
+    . ld_script(
+        ld_breadcrumb($crumbs),
+        ['@context' => 'https://schema.org', '@type' => 'CollectionPage', 'name' => $seoTitle, 'url' => abs_url($canonPath), 'description' => $descr,
+         'mainEntity' => ['@type' => 'ItemList', 'numberOfItems' => $total, 'itemListElement' => $ldItems]]
+    );
 
 /* names for the EN / বাংলা toggle */
 $dict = [];
-foreach (array_merge($trail, $children) as $c) {
+$related = related_categories($cat);
+foreach (array_merge($trail, $children, $related) as $c) {
     $dict['cn.' . $c['id']] = ['en' => $c['name_en'], 'bn' => $c['name_bn'] ?: $c['name_en']];
 }
 
@@ -158,6 +175,18 @@ site_header($seoTitle, $head, false);
     <?php elseif ($isLeaf): ?>
       <p class="listing-empty">No listings in <?= e($name) ?> yet. <a href="<?= base_path() ?>/sell/" style="color:var(--gold-deep);font-weight:600">Open your stall and be the first →</a></p>
     <?php endif; ?>
+    <section class="catalog-seo">
+      <div class="catalog-intro"><?= category_intro_html($cat, $children, $trail) ?></div>
+      <?php if ($related): ?>
+        <h2 class="catalog-subheading"><?= count($trail) > 1 ? 'More in ' . e($trail[count($trail) - 2]['name_en']) : 'Explore more categories' ?></h2>
+        <div class="chip-row">
+          <?php foreach ($related as $rc): ?><a class="chip" href="<?= e(category_url($rc)) ?>" data-i18n="cn.<?= (int) $rc['id'] ?>"><?= e($rc['name_en']) ?></a><?php endforeach; ?>
+        </div>
+      <?php endif; ?>
+      <?php if (count($trail) > 1): $up = $trail[count($trail) - 2]; ?>
+        <p class="catalog-back">← <a href="<?= e(category_url($up)) ?>">All <?= e($up['name_en']) ?></a></p>
+      <?php endif; ?>
+    </section>
   </div>
 </section>
 <?php

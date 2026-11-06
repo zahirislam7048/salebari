@@ -27,6 +27,7 @@ require APP_ROOT . '/app/upload.php';
 require APP_ROOT . '/app/migrate.php';
 require APP_ROOT . '/app/layout.php';
 require APP_ROOT . '/app/extra_categories.php';
+require APP_ROOT . '/app/seo.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([

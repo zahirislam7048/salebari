@@ -4,8 +4,7 @@ require __DIR__ . '/../app/bootstrap.php';
 $nums  = site_numbers();
 $email = setting('contact_email', 'en', 'salebarirealestate@gmail.com');
 $origin = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
-$head = '<meta name="description" content="SaleBari Return and Refund Policy: how returns and refunds work when you buy from a seller, and how refunds work for seller package fees.">' . "\n"
-    . '<link rel="canonical" href="' . e($origin . base_path() . '/return-and-refund-policy/') . '">';
+$head = seo_meta(['title' => 'Return and Refund Policy — SaleBari', 'description' => 'SaleBari Return and Refund Policy: how returns and refunds work when you buy from a seller, and how refunds work for seller package fees.', 'url' => base_path() . '/return-and-refund-policy/']);
 
 $contact = function () use ($nums, $email) {
     $parts = [];
@@ -62,7 +61,7 @@ site_header('Return and Refund Policy', $head, false);
       </div>
 
       <div data-lang="bn">
-        <h1 class="listing-page-title">রিটার্ন ও রিফান্ড নীতি</h1>
+        <p class="listing-page-title" role="heading" aria-level="2">রিটার্ন ও রিফান্ড নীতি</p>
         <p class="acct-muted">সর্বশেষ হালনাগাদ: <?= date('j F Y') ?></p>
 
         <h2>১. SaleBari কীভাবে কাজ করে</h2>

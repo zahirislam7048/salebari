@@ -42,7 +42,7 @@ foreach ($statuses as $k => $s) {
 
 $phones = site_numbers();
 $origin = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
-site_header('Track your order', '<meta name="description" content="Track your SaleBari order with just your mobile number.">' . "\n" . '<link rel="canonical" href="' . e($origin . base_path() . '/track-order/') . '">', false);
+site_header('Track your order', '<meta name="robots" content="noindex,follow">', false);
 ?>
 <section class="section category-page">
   <div class="wrap">

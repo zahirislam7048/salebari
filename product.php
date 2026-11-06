@@ -101,20 +101,42 @@ $askMsg    = $product ? "Hi, I have a question about \"" . $product['title_en'] 
 $askLink   = 'https://wa.me/' . $whatsapp . '?text=' . urlencode($askMsg);
 $waIcon    = '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.45 1.32 4.95L2 22l5.24-1.37a9.9 9.9 0 0 0 4.8 1.22h.01c5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2Zm0 18.2h-.01a8.24 8.24 0 0 1-4.2-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.23 8.23 0 0 1-1.26-4.39c0-4.55 3.7-8.25 8.26-8.25 2.2 0 4.28.86 5.84 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.55-3.7 8.24-8.26 8.24Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.04-.38-1.98-1.22-.73-.65-1.23-1.46-1.37-1.7-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.4-.42-.56-.42-.14 0-.31-.01-.47-.01-.17 0-.44.06-.67.31-.23.25-.87.85-.87 2.08s.89 2.42 1.02 2.58c.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.19.2-.58.2-1.08.14-1.19-.06-.11-.23-.17-.48-.29Z"/></svg>';
 
-$pageTitle = $product ? ($product['meta_title'] ?: $product['title_en']) . ' — SaleBari' : 'Product not found — SaleBari';
-$pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $product['description_en'], 0, 160)) : '';
+$priceNum  = $product ? track_price($product['price_display']) : null;
+$seoName   = $product ? ($product['meta_title'] ?: ($priceNum !== null ? $product['title_en'] . ' Price in Bangladesh' : $product['title_en'])) : '';
+$pageTitle = $product ? $seoName . ' — SaleBari' : 'Product not found — SaleBari';
+$pageDesc  = '';
+if ($product) {
+    $pageDesc = trim((string) $product['meta_description']) !== '' ? (string) $product['meta_description'] : seo_clean(
+        $product['title_en'] . ($product['price_display'] ? ' — ' . $product['price_display'] : '') . '. '
+        . ($stall ? 'Sold by ' . $stall['name'] . ($stall['city'] ? ' in ' . $stall['city'] : '') . '. ' : '')
+        . 'See photos, details and availability' . ($category ? ', compare similar ' . $category['name_en'] : '') . ' and message the seller on WhatsApp.', 158);
+}
+
+/* more from the same seller + related categories: internal links */
+$moreFromStall = ($product && $stall) ? rows(
+    "SELECT * FROM products WHERE stall_id = ? AND id <> ? AND status = 'active' ORDER BY id DESC LIMIT 4",
+    [$stall['id'], $product['id']]
+) : [];
+$relatedCats = $category ? related_categories($category, 8) : [];
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= e($pageTitle) ?></title>
-<meta name="description" content="<?= e($pageDesc) ?>">
+<?php if ($product): ?>
+<?= seo_meta(['title' => $pageTitle, 'description' => $pageDesc, 'url' => product_url($product), 'image' => $images ? asset($images[0]) : null, 'type' => 'product']) ?>
+<?php if ($priceNum !== null): ?><meta property="product:price:amount" content="<?= e((string) $priceNum) ?>">
+<meta property="product:price:currency" content="BDT">
+<?php endif; ?>
+<?php else: ?>
+<meta name="robots" content="noindex,follow">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=15">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=16">
 </head>
 <body class="has-pp-bar">
 
@@ -395,7 +417,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
             <a class="product-card" href="<?= e(product_url($s)) ?>" style="text-decoration:none;color:inherit;display:block">
               <div class="product-media grad-1">
                 <?= stock_card_badge($s) ?>
-                <?php if ($simgs): ?><img src="<?= e(asset($simgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
+                <?php if ($simgs): ?><img src="<?= e(asset($simgs[0])) ?>" alt="<?= e($s['title_en']) ?>" loading="lazy"><?php else: ?><span>🛒</span><?php endif; ?>
               </div>
               <div class="product-body">
                 <p class="product-stall"><?= e($category['name_en'] ?? '') ?></p>
@@ -405,6 +427,36 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
             </a>
           <?php endforeach; ?>
         </div>
+      </section>
+    <?php endif; ?>
+
+    <?php if ($moreFromStall || $relatedCats || $category): ?>
+      <section class="pp-section seo-links" id="pp-links">
+        <?php if ($moreFromStall): ?>
+          <h2><span class="pp-sec-ico">🏬</span> More from <a href="<?= e(stall_url($stall)) ?>"><?= e($stall['name']) ?></a></h2>
+          <div class="product-grid">
+            <?php foreach ($moreFromStall as $ms): $mimgs = json_decode((string) $ms['images'], true) ?: []; ?>
+              <a class="product-card" href="<?= e(product_url($ms)) ?>" style="text-decoration:none;color:inherit;display:block">
+                <div class="product-media grad-1">
+                  <?= stock_card_badge($ms) ?>
+                  <?php if ($mimgs): ?><img src="<?= e(asset($mimgs[0])) ?>" alt="<?= e($ms['title_en']) ?>" loading="lazy"><?php else: ?><span>🛒</span><?php endif; ?>
+                </div>
+                <div class="product-body">
+                  <h3 class="product-title"><?= e($ms['title_en']) ?></h3>
+                  <?php if ($ms['price_display']): ?><div class="product-price"><span class="price-tag"><?= e($ms['price_display']) ?></span></div><?php endif; ?>
+                </div>
+              </a>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        <?php if ($category): ?>
+          <h2 class="seo-sub"><span class="pp-sec-ico">🧭</span> Explore more</h2>
+          <div class="chip-row">
+            <?php foreach ($trail as $tc): ?><a class="chip" href="<?= e(category_url($tc)) ?>">All <?= e($tc['name_en']) ?></a><?php endforeach; ?>
+            <?php foreach ($relatedCats as $rc): ?><a class="chip" href="<?= e(category_url($rc)) ?>"><?= e($rc['name_en']) ?></a><?php endforeach; ?>
+            <?php if ($brand): ?><a class="chip" href="<?= e(brand_url($brand)) ?>">More from <?= e($brand['name']) ?></a><?php endif; ?>
+          </div>
+        <?php endif; ?>
       </section>
     <?php endif; ?>
 
@@ -468,6 +520,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -491,7 +544,7 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=7"></script>
+<script src="<?= base_path() ?>/js/main.js?v=8"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {
@@ -616,14 +669,24 @@ $pageDesc  = $product ? ($product['meta_description'] ?: mb_substr((string) $pro
   }
 </script>
 <?php endif; ?>
+<?php if ($product):
+  $crumbLd = [['name' => 'Home', 'url' => base_path() . '/']];
+  foreach ($trail as $tc) { $crumbLd[] = ['name' => $tc['name_en'], 'url' => category_url($tc)]; }
+  $crumbLd[] = ['name' => $product['title_en']];
+  echo ld_script(ld_breadcrumb($crumbLd));
+endif; ?>
 <?php if ($product && track_price($product['price_display']) !== null):
   $ldStock = stock_info($product)['status'];
   $ld = ['@context' => 'https://schema.org', '@type' => 'Product', 'name' => $product['title_en'], 'sku' => (string) $product['id'],
+         'url' => abs_url(product_url($product)),
          'description' => trim(strip_tags((string) $product['description_en'])) ?: $product['title_en'],
-         'offers' => ['@type' => 'Offer', 'priceCurrency' => 'BDT', 'price' => track_price($product['price_display']),
+         'offers' => ['@type' => 'Offer', 'url' => abs_url(product_url($product)), 'priceCurrency' => 'BDT', 'price' => track_price($product['price_display']),
                       'availability' => $ldStock === 'out' ? 'https://schema.org/OutOfStock' : ($ldStock === 'limited' ? 'https://schema.org/LimitedAvailability' : 'https://schema.org/InStock')]];
-  if ($images) { $ld['image'] = [(!empty($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com') . asset($images[0])]; }
-  if ($brand) { $ld['brand'] = ['@type' => 'Brand', 'name' => $brand['name']]; } ?>
+  if ($category) { $ld['category'] = $category['name_en']; }
+  if ($stall) { $ld['offers']['seller'] = ['@type' => 'Organization', 'name' => $stall['name'], 'url' => abs_url(stall_url($stall))]; }
+  if ($images) { $ld['image'] = array_map(function ($im) { return abs_url(asset($im)); }, array_slice($images, 0, 4)); }
+  if ($brand) { $ld['brand'] = ['@type' => 'Brand', 'name' => $brand['name']]; }
+  if ($ratingCount) { $ld['aggregateRating'] = ['@type' => 'AggregateRating', 'ratingValue' => round($ratingAvg, 1), 'reviewCount' => $ratingCount]; } ?>
 <script type="application/ld+json"><?= json_encode($ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
 <?php endif; ?>
 <?php if ($product): ?>

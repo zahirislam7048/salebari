@@ -85,9 +85,8 @@ foreach ($faq as $items) {
     }
 }
 $origin = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
-$head = '<meta name="description" content="SaleBari Help Center: how to buy, how to open a stall, packages, account help, safety tips and how to contact us on WhatsApp or phone.">' . "\n"
-    . '<link rel="canonical" href="' . e($origin . base_path() . '/help/') . '">' . "\n"
-    . '<script type="application/ld+json">' . json_encode($ld, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) . '</script>';
+$head = seo_meta(['title' => 'Help Center — SaleBari', 'description' => 'SaleBari Help Center: how to buy, how to open a stall, seller packages, account help, safety tips and how to contact us on WhatsApp or phone.', 'url' => base_path() . '/help/'])
+    . ld_script($ld, ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Help Center']]));
 
 $groupLabels = [
     'Buying'  => ['Buying', 'কেনাকাটা'],

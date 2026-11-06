@@ -2,7 +2,7 @@
 require __DIR__ . '/app/bootstrap.php';
 
 $phones = site_numbers();
-site_header('Privacy Policy', '<meta name="description" content="How SaleBari uses cookies, analytics and advertising tools, and the choices you have.">', false);
+site_header('Privacy Policy', seo_meta(['title' => 'Privacy Policy — SaleBari', 'description' => 'How SaleBari uses cookies, analytics and advertising tools, and the choices you have.', 'url' => base_path() . '/privacy.php']), false);
 ?>
 <section class="section category-page">
   <div class="wrap">
@@ -33,7 +33,7 @@ site_header('Privacy Policy', '<meta name="description" content="How SaleBari us
       </div>
 
       <div data-lang="bn">
-        <h1 class="listing-page-title">গোপনীয়তা নীতি</h1>
+        <p class="listing-page-title" role="heading" aria-level="2">গোপনীয়তা নীতি</p>
         <p class="acct-muted">সর্বশেষ হালনাগাদ: <?= date('j F Y') ?></p>
 
         <h2>আমরা কী সংগ্রহ করি</h2>

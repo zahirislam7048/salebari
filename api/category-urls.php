@@ -29,6 +29,8 @@ foreach (category_index() as $v) {
     }
 }
 usort($top, function ($a, $b) { return $a['order'] <=> $b['order']; });
+echo 'window.CATEGORY_FOOTER_HTML = ' . json_encode(footer_categories_html(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "
+";
 echo 'window.CATEGORY_NAV_HTML = ' . json_encode(category_nav_html(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "
 ";
 echo 'window.CATEGORY_I18N = ' . json_encode(category_i18n_dict(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . ';' . "

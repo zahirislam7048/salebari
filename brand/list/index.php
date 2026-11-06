@@ -17,13 +17,18 @@ $total = count($brands);
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All Brands — SaleBari</title>
-<meta name="description" content="Browse every brand listed on SaleBari, Bangladesh's digital bazaar.">
+<title>All Brands — Shop Popular Brands in Bangladesh — SaleBari</title>
+<?= seo_meta([
+    'title'       => 'All Brands — Shop Popular Brands in Bangladesh — SaleBari',
+    'description' => 'Browse ' . count($brands) . ' brands on SaleBari, Bangladesh\'s digital bazaar. See each brand\'s products, contact details and location.',
+    'url'         => base_path() . '/brand/list/',
+]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Brands']])) ?>
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=15">
+<link rel="stylesheet" href="../../css/style.css?v=16">
 </head>
 <body>
 
@@ -143,6 +148,14 @@ $total = count($brands);
   </div>
 </section>
 
+<section class="section">
+  <div class="wrap seo-block seo-links">
+    <h2>Shop by category</h2>
+    <p>Looking for a product rather than a brand? Browse by category and compare prices from sellers across Bangladesh.</p>
+    <?= seo_category_chips_html(3) ?>
+  </div>
+</section>
+
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -194,6 +207,7 @@ $total = count($brands);
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -217,7 +231,7 @@ $total = count($brands);
 <script src="../../api/category-urls.php"></script>
 <script src="../../js/nav-data.js?v=4"></script>
 <script src="../../js/catalog-data.js?v=4"></script>
-<script src="../../js/main.js?v=7"></script>
+<script src="../../js/main.js?v=8"></script>
 <script src="../../api/tracking-config.php"></script>
 <script src="../../js/tracking.js?v=1"></script>
 </body>

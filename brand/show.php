@@ -20,18 +20,39 @@ $products = $brand ? rows(
     "SELECT * FROM products WHERE brand_id = ? AND status = 'active' ORDER BY id DESC",
     [$brand['id']]
 ) : [];
+
+/* SEO + internal links */
+$brandCats   = $brand ? categories_of_products('p.brand_id = ?', [$brand['id']]) : [];
+$otherBrands = $brand ? rows("SELECT id, slug, name FROM brands WHERE id <> ? AND review_status = 'approved' ORDER BY id DESC LIMIT 10", [$brand['id']]) : [];
+$seoName = $brand ? $brand['name'] . ($brand['location'] ? ' — ' . $brand['location'] : '') : '';
+$seoDesc = $brand ? seo_clean(($brand['description'] ? seo_clean($brand['description'], 110) . ' ' : $brand['name'] . ' on SaleBari. ')
+    . (count($products) ? 'See ' . count($products) . ' ' . (count($products) === 1 ? 'product' : 'products') . ', ' : '') . 'contact details and location.', 158) : '';
+$brandLd = [];
+if ($brand) {
+    $brandLd = ['@context' => 'https://schema.org', '@type' => 'Organization', 'name' => $brand['name'], 'url' => abs_url(brand_url($brand)),
+        'logo' => $brand['logo_image'] ? abs_url(asset($brand['logo_image'])) : abs_url('/assets/og-default.png')];
+    if ($brand['description']) $brandLd['description'] = seo_clean($brand['description'], 300);
+    if ($brand['website']) $brandLd['sameAs'] = array_values(array_filter([$brand['website'], $brand['facebook'], $brand['instagram'], $brand['youtube'], $brand['linkedin']]));
+    if ($brand['phone'] || $brand['mobile']) $brandLd['telephone'] = $brand['mobile'] ?: $brand['phone'];
+    if ($brand['address'] || $brand['location']) $brandLd['address'] = array_filter(['@type' => 'PostalAddress', 'streetAddress' => $brand['address'], 'addressLocality' => $brand['location'], 'addressCountry' => 'BD']);
+}
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?= $brand ? e($brand['name']) . ' — SaleBari' : 'Brand not found — SaleBari' ?></title>
-<meta name="description" content="<?= $brand ? e(mb_substr(trim(strip_tags((string) $brand['description'])), 0, 160) ?: $brand['name'] . ' products on SaleBari, Bangladesh\'s digital bazaar.') : '' ?>">
+<title><?= $brand ? e($seoName) . ' — SaleBari' : 'Brand not found — SaleBari' ?></title>
+<?php if ($brand): ?>
+<?= seo_meta(['title' => $seoName . ' — SaleBari', 'description' => $seoDesc, 'url' => brand_url($brand), 'image' => $brand['logo_image'] ? asset($brand['logo_image']) : null]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Brands', 'url' => base_path() . '/brand/list/'], ['name' => $brand['name']]]), $brandLd) ?>
+<?php else: ?>
+<meta name="robots" content="noindex,follow">
+<?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=15">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=16">
 </head>
 <body>
 
@@ -131,7 +152,7 @@ $products = $brand ? rows(
 
     <div class="brand-hero">
       <?php if ($brand['logo_image']): ?>
-        <img class="brand-hero-logo" src="<?= e(asset($brand['logo_image'])) ?>" alt="">
+        <img class="brand-hero-logo" src="<?= e(asset($brand['logo_image'])) ?>" alt="<?= e($brand['name']) ?> logo">
       <?php endif; ?>
       <div>
         <h1 class="listing-page-title" style="margin:0"><?= e($brand['name']) ?></h1>
@@ -203,7 +224,7 @@ $products = $brand ? rows(
           <a class="product-card" href="<?= e(product_url($prod)) ?>" style="text-decoration:none;color:inherit;display:block">
             <div class="product-media grad-1">
               <?= stock_card_badge($prod) ?>
-              <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt=""><?php else: ?><span>🛒</span><?php endif; ?>
+              <?php if ($pimgs): ?><img src="<?= e(asset($pimgs[0])) ?>" alt="<?= e($prod['title_en']) ?>" loading="lazy"><?php else: ?><span>🛒</span><?php endif; ?>
             </div>
             <div class="product-body">
               <h3 class="product-title"><?= e($prod['title_en']) ?></h3>
@@ -213,6 +234,16 @@ $products = $brand ? rows(
         <?php endforeach; ?>
       </div>
     <?php endif; ?>
+    <section class="seo-block seo-links">
+      <?php if ($brandCats): ?>
+        <h2>Shop <?= e($brand['name']) ?> by category</h2>
+        <div class="chip-row"><?php foreach ($brandCats as $bc): ?><a class="chip" href="<?= e(category_url($bc)) ?>"><?= e($bc['name_en']) ?></a><?php endforeach; ?></div>
+      <?php endif; ?>
+      <?php if ($otherBrands): ?>
+        <h2>Other brands</h2>
+        <div class="chip-row"><?php foreach ($otherBrands as $ob): ?><a class="chip" href="<?= e(brand_url($ob)) ?>"><?= e($ob['name']) ?></a><?php endforeach; ?><a class="chip" href="<?= base_path() ?>/brand/list/">All brands →</a></div>
+      <?php endif; ?>
+    </section>
   </div>
 </section>
 <?php endif; ?>
@@ -268,6 +299,7 @@ $products = $brand ? rows(
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -291,7 +323,7 @@ $products = $brand ? rows(
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=7"></script>
+<script src="<?= base_path() ?>/js/main.js?v=8"></script>
 <script src="<?= base_path() ?>/api/tracking-config.php"></script>
 <script src="<?= base_path() ?>/js/tracking.js?v=1"></script>
 </body>

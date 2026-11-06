@@ -6,8 +6,7 @@ $nums    = site_numbers();
 $wa      = $nums[0]['wa'];
 $shareWa = 'https://wa.me/' . $wa . '?text=' . urlencode("Hi SaleBari, I'd like to share my success story: ");
 $origin  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
-$head = '<meta name="description" content="Success stories from sellers who grew their business on SaleBari, Bangladesh\'s digital bazaar.">' . "\n"
-    . '<link rel="canonical" href="' . e($origin . base_path() . '/success-stories/') . '">';
+$head = seo_meta(['title' => 'Success Stories — SaleBari', 'description' => 'Success stories from sellers who grew their business on SaleBari, Bangladesh\'s digital bazaar.', 'url' => base_path() . '/success-stories/']);
 
 site_header('Success Stories', $head, false);
 ?>

@@ -140,7 +140,11 @@ if (is_post()) {
     }
 }
 
-site_header('Open your stall');
+site_header('Open Your Stall — Start Selling', seo_meta([
+    'title'       => 'Open Your Stall — Start Selling on SaleBari',
+    'description' => 'Open a stall on SaleBari in minutes. Choose a package, list your products and reach buyers across Bangladesh. Our team verifies every new stall.',
+    'url'         => base_path() . '/sell/',
+]), false);
 ?>
 <section class="section category-page">
   <div class="wrap">

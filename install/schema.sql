@@ -27,6 +27,7 @@ CREATE TABLE categories (
   url_slug VARCHAR(100) NULL,
   meta_title VARCHAR(200) NULL,
   meta_description VARCHAR(320) NULL,
+  seo_text TEXT NULL,
   count_label_en VARCHAR(60) NULL,
   count_label_bn VARCHAR(60) NULL,
   featured TINYINT NOT NULL DEFAULT 0,

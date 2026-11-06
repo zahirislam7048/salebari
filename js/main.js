@@ -9,6 +9,13 @@
     if (holder.firstChild) staticList.parentNode.replaceChild(holder.firstChild, staticList);
   }
 
+  var liveFooter = window.CATEGORY_FOOTER_HTML, staticFooter = document.querySelector('.footer-cats');
+  if (liveFooter && staticFooter) {
+    var fh = document.createElement('div');
+    fh.innerHTML = liveFooter;
+    if (fh.firstChild) staticFooter.parentNode.replaceChild(fh.firstChild, staticFooter);
+  }
+
   var menuToggle = document.querySelector('.menu-toggle');
   var categoryNav = document.querySelector('.category-nav');
 

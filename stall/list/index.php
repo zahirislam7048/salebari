@@ -15,13 +15,21 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stall Directory — SaleBari</title>
-<meta name="description" content="Browse every verified stall on SaleBari, Bangladesh's digital bazaar.">
+<title>Stall Directory — Verified Stalls in Bangladesh<?= $p['page'] > 1 ? ' (Page ' . $p['page'] . ')' : '' ?> — SaleBari</title>
+<?= seo_meta([
+    'title'       => 'Stall Directory — Verified Stalls in Bangladesh — SaleBari',
+    'description' => 'Browse ' . $grandTotal . ' verified stalls and shops across Bangladesh on SaleBari. Find sellers by name and city, see their products and contact them on WhatsApp.',
+    'url'         => base_path() . '/stall/list/' . ($p['page'] > 1 ? '?page=' . $p['page'] : ''),
+    'noindex'     => $q !== '',
+    'prev'        => $p['page'] > 1 ? base_path() . '/stall/list/' . ($p['page'] > 2 ? '?page=' . ($p['page'] - 1) : '') : null,
+    'next'        => $p['page'] < $p['pages'] ? base_path() . '/stall/list/?page=' . ($p['page'] + 1) : null,
+]) ?>
+<?= ld_script(ld_breadcrumb([['name' => 'Home', 'url' => base_path() . '/'], ['name' => 'Stall Directory']])) ?>
 <link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=15">
+<link rel="stylesheet" href="../../css/style.css?v=16">
 </head>
 <body>
 
@@ -181,6 +189,14 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
   </div>
 </section>
 
+<section class="section">
+  <div class="wrap seo-block seo-links">
+    <h2>Shop by category</h2>
+    <p>Every stall on SaleBari lists its products in a category. Pick one to compare prices from sellers across Bangladesh.</p>
+    <?= seo_category_chips_html(3) ?>
+  </div>
+</section>
+
 <!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="wrap footer-inner">
@@ -232,6 +248,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
     </div>
   </div>
 
+  <div class="wrap"><?= footer_categories_html() ?></div>
   <div class="wrap footer-bottom">
     <div class="footer-badges">
       <span data-i18n="footer.badgeSsl">✓ SSL Secured</span>
@@ -255,7 +272,7 @@ $grandTotal = (int) scalar("SELECT COUNT(*) FROM stalls WHERE status = 'active' 
 <script src="../../api/category-urls.php"></script>
 <script src="../../js/nav-data.js?v=4"></script>
 <script src="../../js/catalog-data.js?v=4"></script>
-<script src="../../js/main.js?v=7"></script>
+<script src="../../js/main.js?v=8"></script>
 <script src="../../api/tracking-config.php"></script>
 <script src="../../js/tracking.js?v=1"></script>
 </body>

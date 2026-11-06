@@ -27,6 +27,7 @@ if (is_post()) {
             'featured'       => input('featured') ? 1 : 0,
             'meta_title'       => input('meta_title') ?: null,
             'meta_description' => input('meta_description') ?: null,
+            'seo_text'         => input('seo_text') ?: null,
         ];
         $urlInput = url_safe((string) input('url_slug'));
         if ($data['name_en'] === '') {
@@ -116,6 +117,8 @@ admin_header('Categories');
       <input type="text" name="meta_title" maxlength="200" placeholder="Best <?= e($editing['name_en'] ?? 'Category') ?> in Bangladesh {year}" value="<?= e($editing['meta_title'] ?? '') ?>"></label>
     <label class="admin-field"><span>Meta description for Google (optional) — leave empty for an automatic one, about 150 characters.</span>
       <textarea name="meta_description" maxlength="320" rows="3"><?= e($editing['meta_description'] ?? '') ?></textarea></label>
+    <label class="admin-field"><span>Page text for SEO (optional) — a short paragraph shown on the category page. Leave empty for an automatic one that links to the sub categories.</span>
+      <textarea name="seo_text" rows="4"><?= e($editing['seo_text'] ?? '') ?></textarea></label>
     <label class="admin-field"><span>Name (Bangla) — optional</span>
       <input type="text" name="name_bn" value="<?= e($editing['name_bn'] ?? '') ?>"></label>
     <label class="admin-field"><span>Icon (emoji)</span>
