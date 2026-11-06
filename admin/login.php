@@ -16,12 +16,19 @@ if (is_post()) {
     $email = (string) input('email');
     $pass  = (string) input('password');
 
-    $user = row('SELECT * FROM users WHERE email = ? AND status = ?', [$email, 'active']);
-    if (!$user || !password_verify($pass, $user['password_hash'])) {
-        $errors[] = 'Incorrect email or password.';
+    if (throttle_blocked('admin', 10, 900)) {
+        $errors[] = 'Too many attempts. Please wait 15 minutes and try again.';
     } else {
-        login_user($user);
-        redirect('admin/index.php');
+        $user = row('SELECT * FROM users WHERE email = ? AND status = ?', [$email, 'active']);
+        if (!$user || !password_verify($pass, $user['password_hash'])) {
+            throttle_hit('admin', 900);
+            usleep(300000);
+            $errors[] = 'Incorrect email or password.';
+        } else {
+            throttle_clear('admin');
+            login_user($user);
+            redirect('admin/index.php');
+        }
     }
 }
 ?><!doctype html>

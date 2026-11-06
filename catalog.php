@@ -255,6 +255,7 @@ site_header($seoTitle, $head, false);
       <?php if ($children): ?><h2 class="catalog-subheading">Latest in <?= e($headingName) ?></h2><?php endif; ?>
       <div class="listing-grid catalog-grid">
         <?php foreach ($products as $p): $imgs = json_decode((string) $p['images'], true) ?: []; ?>
+          <div class="card-wrap">
           <a class="listing-card" href="<?= e(product_url($p)) ?>">
             <div class="listing-card-media">
               <?= stock_card_badge($p) ?>
@@ -265,6 +266,8 @@ site_header($seoTitle, $head, false);
               <?php if ($p['price_display']): ?><div class="listing-card-price"><?= e($p['price_display']) ?></div><?php endif; ?>
             </div>
           </a>
+          <button type="button" class="wish-btn" data-wish="<?= (int) $p['id'] ?>" aria-pressed="false" aria-label="Save this listing"><span class="wish-ico">♡</span></button>
+          </div>
         <?php endforeach; ?>
       </div>
 

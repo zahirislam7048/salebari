@@ -19,12 +19,13 @@ if (is_post()) {
 
     /* Simple brute-force brake: 5 misses lock this browser session for 10 minutes. */
     $fails = $_SESSION['seller_fails'] ?? ['n' => 0, 't' => 0];
-    if ($fails['n'] >= 5 && time() - $fails['t'] < 600) {
+    if (($fails['n'] >= 5 && time() - $fails['t'] < 600) || throttle_blocked('seller', 25, 900)) {
         $error = 'Too many attempts. Please wait a few minutes and try again.';
     } else {
         $s = find_seller_by_identifier($ident);
         if ($s && $s['status'] === 'active' && password_verify($pass, $s['password_hash'])) {
             unset($_SESSION['seller_fails']);
+            throttle_clear('seller');
             login_seller($s);
             track_queue('login', ['method' => valid_email(trim($ident)) ? 'email' : 'phone']);
             redirect('account/');
@@ -34,6 +35,7 @@ if (is_post()) {
             $pendingNotice = true;     // right password, but not approved yet
         } else {
             $_SESSION['seller_fails'] = ['n' => ($fails['n'] >= 5 ? 0 : $fails['n']) + 1, 't' => time()];
+            throttle_hit('seller', 900);
             usleep(300000);
             $error = $passwordOk && $s['status'] !== 'active'
                 ? 'This account has been suspended. Please contact SaleBari support.'

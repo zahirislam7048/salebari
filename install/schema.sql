@@ -261,3 +261,23 @@ CREATE TABLE product_stats (
   call_clicks INT UNSIGNED NOT NULL DEFAULT 0,
   UNIQUE (product_id, stat_date)
 );
+
+-- Visitor reports about a listing ("Report this ad")
+CREATE TABLE ad_reports (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id INT UNSIGNED NOT NULL,
+  reason VARCHAR(40) NOT NULL,
+  message TEXT NULL,
+  contact VARCHAR(120) NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'new',
+  created_at DATETIME NOT NULL
+);
+
+-- Failed-login / form-spam counters, per hashed visitor address
+CREATE TABLE login_attempts (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  k VARCHAR(64) NOT NULL,
+  fails INT UNSIGNED NOT NULL DEFAULT 0,
+  last_at INT UNSIGNED NOT NULL DEFAULT 0,
+  UNIQUE (k)
+);

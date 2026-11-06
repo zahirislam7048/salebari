@@ -13,6 +13,7 @@ function admin_nav_items(): array
         'orders.php'      => 'Orders',
         'stories.php'     => 'Success Stories',
         'reviews.php'     => 'Reviews',
+        'reports.php'     => 'Reports',
         'stalls.php'      => 'Stalls',
         'malls.php'       => 'Shopping Malls',
         'brands.php'      => 'Brands',

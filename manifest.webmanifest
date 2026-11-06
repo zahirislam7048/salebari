@@ -1,0 +1,15 @@
+{
+  "name": "SaleBari — Bangladesh's Digital Bazaar",
+  "short_name": "SaleBari",
+  "description": "Buy and sell real estate, cars, electronics, household items and more across Bangladesh.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F0",
+  "theme_color": "#0F2A24",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

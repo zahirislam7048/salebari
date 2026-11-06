@@ -77,6 +77,37 @@ if ($product && is_post() && input('action') === 'review') {
         }
     }
 }
+/* "Report this ad" */
+$reportDone = null;
+if ($product && is_post() && input('action') === 'report') {
+    csrf_check();
+    if ((string) input('company_url') !== '') {
+        exit; // honeypot
+    }
+    $reasons = report_reasons();
+    $reason  = (string) input('reason');
+    $rmsg    = trim(mb_substr((string) input('rmessage'), 0, 500));
+    $rcontact = trim(mb_substr((string) input('rcontact'), 0, 120));
+    if (!isset($reasons[$reason])) {
+        $_SESSION['report_done'] = ['ok' => false, 'msg' => 'Please choose a reason.'];
+    } elseif (throttle_blocked('report', 6, 3600)) {
+        $_SESSION['report_done'] = ['ok' => false, 'msg' => 'You have sent several reports already. Please try again later.'];
+    } else {
+        try {
+            insert('ad_reports', ['product_id' => (int) $product['id'], 'reason' => $reason, 'message' => $rmsg ?: null, 'contact' => $rcontact ?: null, 'status' => 'new', 'created_at' => now()]);
+            throttle_hit('report', 3600);
+            $_SESSION['report_done'] = ['ok' => true, 'msg' => 'Thank you. Our team will review this listing.'];
+        } catch (Throwable $ex) {
+            $_SESSION['report_done'] = ['ok' => false, 'msg' => 'Could not send your report right now. Please try again.'];
+        }
+    }
+    header('Location: ' . product_url($product) . '#pp-report');
+    exit;
+}
+if (isset($_SESSION['report_done'])) {
+    $reportDone = $_SESSION['report_done'];
+    unset($_SESSION['report_done']);
+}
 $reviews = $product ? rows(
     "SELECT * FROM product_reviews WHERE product_id = ? AND status = 'approved' ORDER BY id DESC LIMIT 50",
     [$product['id']]
@@ -137,10 +168,12 @@ $relatedCats = $category ? related_categories($category, 8) : [];
 <meta name="robots" content="noindex,follow">
 <?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="<?= base_path() ?>/assets/favicon.svg">
+<link rel="manifest" href="<?= base_path() ?>/manifest.webmanifest">
+<link rel="apple-touch-icon" href="<?= base_path() ?>/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=18">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=19">
 </head>
 <body class="has-pp-bar">
 
@@ -200,6 +233,11 @@ $relatedCats = $category ? related_categories($category, 8) : [];
       <a href="<?= base_path() ?>/sell/" class="icon-link sell-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 10 5 4h14l1 6M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0M5 10v9h14v-9"/></svg>
         <span data-i18n="header.sell">Sell</span>
+      </a>
+      <a href="<?= base_path() ?>/wishlist/" class="icon-link wish-link" aria-label="Saved items">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z"/></svg>
+        <span data-i18n="header.saved">Saved</span>
+        <b class="cart-count wish-count" hidden>0</b>
       </a>
       <a href="<?= base_path() ?>/index.html#cart" class="icon-link cart-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h2l2.2 11.6a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 8H6"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
@@ -286,7 +324,13 @@ $relatedCats = $category ? related_categories($category, 8) : [];
           <span class="pp-meta-item">SKU <?= (int) $product['id'] ?></span>
           <?php if ($ratingCount): ?><a class="pp-meta-item pp-meta-rating" href="#pp-reviews">★ <?= number_format($ratingAvg, 1) ?> (<?= $ratingCount ?>)</a><?php endif; ?>
           <span class="pp-meta-item">Posted <?= e(date('j M Y', strtotime((string) $product['created_at']))) ?></span>
-          <button type="button" class="pp-share" id="ppShare" data-title="<?= e($product['title_en']) ?>">↗ <span data-i18n="pp.share">Share</span></button>
+          <?php $shareUrl = abs_url(product_url($product)); ?>
+          <span class="pp-sharebar">
+            <button type="button" class="pp-share wish-inline" data-wish="<?= (int) $product['id'] ?>" aria-pressed="false"><span class="wish-ico">♡</span> <span data-i18n="pp.save">Save</span></button>
+            <a class="pp-share" target="_blank" rel="noopener" href="https://wa.me/?text=<?= urlencode($product['title_en'] . ' ' . $shareUrl) ?>">WhatsApp</a>
+            <a class="pp-share" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode($shareUrl) ?>">Facebook</a>
+            <button type="button" class="pp-share" id="ppShare" data-title="<?= e($product['title_en']) ?>">↗ <span data-i18n="pp.share">Share</span></button>
+          </span>
         </div>
 
         <div class="pp-chips">
@@ -338,6 +382,27 @@ $relatedCats = $category ? related_categories($category, 8) : [];
             <?php endforeach; ?>
           </div>
           <p class="pp-seller-note" data-i18n="pp.waNote">Chat or call the seller directly — ask about price, stock, delivery or a visit.</p>
+          <details class="pp-report" id="pp-report"<?= $reportDone ? ' open' : '' ?>>
+            <summary>⚑ Report this ad</summary>
+            <?php if ($reportDone): ?><p class="acct-flash acct-flash-<?= $reportDone['ok'] ? 'success' : 'error' ?>"><?= e($reportDone['msg']) ?></p><?php endif; ?>
+            <?php if (!$reportDone || !$reportDone['ok']): ?>
+            <form method="post" class="acct-form" action="<?= e(product_url($product)) ?>#pp-report">
+              <?= csrf_field() ?>
+              <input type="hidden" name="action" value="report">
+              <div class="acct-hp" aria-hidden="true"><label>Company URL <input type="text" name="company_url" tabindex="-1" autocomplete="off"></label></div>
+              <label>What is wrong?
+                <select name="reason" required>
+                  <option value="">Choose a reason…</option>
+                  <?php foreach (report_reasons() as $rk => $rl): ?><option value="<?= e($rk) ?>"><?= e($rl) ?></option><?php endforeach; ?>
+                </select></label>
+              <label>Details (optional)
+                <textarea name="rmessage" rows="3" maxlength="500" placeholder="Tell us what you noticed"></textarea></label>
+              <label>Your phone or email (optional, only if you want us to reply)
+                <input type="text" name="rcontact" maxlength="120"></label>
+              <button type="submit" class="btn btn-ghost">Send report</button>
+            </form>
+            <?php endif; ?>
+          </details>
         </div>
       </div>
     </div>
@@ -548,7 +613,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
 <script src="<?= base_path() ?>/api/category-urls.php"></script>
 <script src="<?= base_path() ?>/js/nav-data.js?v=4"></script>
 <script src="<?= base_path() ?>/js/catalog-data.js?v=4"></script>
-<script src="<?= base_path() ?>/js/main.js?v=8"></script>
+<script src="<?= base_path() ?>/js/main.js?v=9"></script>
 <?php if ($product): ?>
 <script>
   Object.assign(window.I18N.dict, {
@@ -576,6 +641,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
     'pp.tab.overview': { en: 'Overview', bn: 'বিবরণ' },
     'pp.tab.related': { en: 'Related', bn: 'সম্পর্কিত' },
     'pp.share': { en: 'Share', bn: 'শেয়ার' },
+    'pp.save': { en: 'Save', bn: 'সেভ' },
     'stock.available': { en: 'Available', bn: 'স্টকে আছে' },
     'stock.limited': { en: 'Stock limited', bn: 'স্টক সীমিত' },
     'stock.out': { en: 'Stock out', bn: 'স্টক শেষ' },

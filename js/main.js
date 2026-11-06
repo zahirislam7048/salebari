@@ -127,6 +127,7 @@
     'search.placeholder': { en: 'Search for a product, brand or stall…', bn: 'পণ্য, ব্র্যান্ড বা স্টল খুঁজুন…' },
 
     'header.account': { en: 'Account', bn: 'অ্যাকাউন্ট' },
+    'header.saved': { en: 'Saved', bn: 'সেভ করা' },
     'header.sell': { en: 'Sell', bn: 'বিক্রি' },
     'header.cart': { en: 'Cart', bn: 'কার্ট' },
 
@@ -323,4 +324,58 @@
   if (saved === 'bn') applyLanguage('bn');
 
   window.I18N = { dict: dict, applyLanguage: applyLanguage, currentLang: currentLang };
+})();
+
+/* ---------- Saved items (kept in this browser only) + offline page ---------- */
+(function () {
+  'use strict';
+  var KEY = 'sb_wish';
+  function read() {
+    try { var a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a.map(Number).filter(Boolean) : []; } catch (e) { return []; }
+  }
+  function write(a) { try { localStorage.setItem(KEY, JSON.stringify(a.slice(0, 200))); } catch (e) { /* storage blocked */ } }
+  function sync() {
+    var l = read();
+    Array.prototype.forEach.call(document.querySelectorAll('.wish-count'), function (b) { b.textContent = l.length; b.hidden = !l.length; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-wish]'), function (btn) {
+      var on = l.indexOf(Number(btn.getAttribute('data-wish'))) > -1;
+      btn.classList.toggle('is-on', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      var ico = btn.querySelector('.wish-ico');
+      if (ico) ico.textContent = on ? '♥' : '♡';
+    });
+  }
+  function change(id, on, silent) {
+    id = Number(id);
+    var l = read(), at = l.indexOf(id);
+    if (on && at === -1) l.unshift(id);
+    if (!on && at > -1) l.splice(at, 1);
+    write(l);
+    sync();
+    if (!silent) {
+      try { document.dispatchEvent(new CustomEvent('sb:wish')); } catch (e) { /* old browser */ }
+      if (on && window.dataLayer) window.dataLayer.push({ event: 'add_to_wishlist', items: [{ item_id: String(id) }] });
+    }
+  }
+  window.SBWish = {
+    list: read,
+    has: function (id) { return read().indexOf(Number(id)) > -1; },
+    add: function (id) { change(id, true); },
+    remove: function (id, silent) { change(id, false, silent); }
+  };
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-wish]') : null;
+    if (!b) return;
+    e.preventDefault();
+    e.stopPropagation();
+    change(b.getAttribute('data-wish'), !window.SBWish.has(b.getAttribute('data-wish')));
+  });
+  window.addEventListener('storage', sync);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else sync();
+
+  /* offline page for phones that lose their connection (the worker caches nothing else) */
+  var secure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  if ('serviceWorker' in navigator && secure) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+  }
 })();

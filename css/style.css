@@ -2088,3 +2088,26 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .perf-key-e { background: var(--market-green); }
 .perf-nums { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.86rem; color: var(--ink-soft); }
 .perf-nums b { color: var(--ink); }
+
+/* ---- saved items, share row, report form, 404 ---- */
+.card-wrap { position: relative; display: flex; }
+.card-wrap > .listing-card { flex: 1; min-width: 0; }
+.wish-btn { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: rgba(255, 255, 255, 0.94); color: var(--ink); font-size: 1.15rem; line-height: 1; cursor: pointer; display: grid; place-items: center; box-shadow: 0 2px 8px rgba(15, 42, 36, 0.16); z-index: 2; }
+.wish-btn:hover { border-color: var(--gold-deep); }
+.wish-btn.is-on, .wish-inline.is-on { color: #B3261E; }
+.wish-link .wish-count[hidden] { display: none; }
+.pp-sharebar { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.pp-sharebar .pp-share { margin-left: 0; text-decoration: none; display: inline-block; }
+.pp-report { margin-top: 14px; font-size: 0.88rem; }
+.pp-report summary { cursor: pointer; color: var(--ink-soft); font-weight: 600; list-style: none; }
+.pp-report summary::-webkit-details-marker { display: none; }
+.pp-report summary:hover { color: #B3261E; }
+.pp-report form { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.pp-report label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; color: var(--ink-soft); font-size: 0.82rem; }
+.pp-report select, .pp-report textarea, .pp-report input[type="text"] { padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 0.9rem; background: #fff; }
+.not-found { text-align: center; padding: 30px 0 10px; }
+.not-found-code { font-size: 5rem; font-weight: 700; line-height: 1; margin: 0; color: var(--gold-deep); }
+.not-found-search { display: flex; gap: 8px; max-width: 520px; margin: 18px auto; }
+.not-found-search input { flex: 1; padding: 11px 14px; border: 1px solid var(--line); border-radius: 999px; font: inherit; background: #fff; }
+.not-found .chip-row { justify-content: center; }
+@media (max-width: 720px) { .pp-sharebar { margin-left: 0; } }

@@ -33,10 +33,12 @@ if ($post) {
 <meta name="robots" content="noindex,follow">
 <?php endif; ?>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=18">
+<link rel="stylesheet" href="css/style.css?v=19">
 </head>
 <body>
 
@@ -96,6 +98,11 @@ if ($post) {
       <a href="sell/" class="icon-link sell-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M4 10 5 4h14l1 6M4 10a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0M5 10v9h14v-9"/></svg>
         <span data-i18n="header.sell">Sell</span>
+      </a>
+      <a href="wishlist/" class="icon-link wish-link" aria-label="Saved items">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2Z"/></svg>
+        <span data-i18n="header.saved">Saved</span>
+        <b class="cart-count wish-count" hidden>0</b>
       </a>
       <a href="index.html#cart" class="icon-link cart-link">
         <svg viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M3 4h2l2.2 11.6a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L20 8H6"/><circle cx="9.5" cy="20" r="1.4" fill="currentColor"/><circle cx="17" cy="20" r="1.4" fill="currentColor"/></svg>
@@ -235,7 +242,7 @@ if ($post) {
 <script src="api/category-urls.php"></script>
 <script src="js/nav-data.js?v=4"></script>
 <script src="js/catalog-data.js?v=4"></script>
-<script src="js/main.js?v=8"></script>
+<script src="js/main.js?v=9"></script>
 <script src="api/tracking-config.php"></script>
 <script src="js/tracking.js?v=1"></script>
 <?php if ($post): ?>

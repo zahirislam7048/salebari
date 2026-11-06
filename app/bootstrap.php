@@ -30,6 +30,7 @@ require APP_ROOT . '/app/extra_categories.php';
 require APP_ROOT . '/app/seo.php';
 require APP_ROOT . '/app/locations.php';
 require APP_ROOT . '/app/stats.php';
+require APP_ROOT . '/app/security.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([

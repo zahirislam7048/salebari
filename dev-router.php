@@ -28,7 +28,7 @@ if (stripos($host, 'www.') === 0) {
 }
 $legacyRules = [
     ['#^/product-category/(.*)$#', 'cat'], ['#^/product/(.*)$#', 'product'],
-    ['#^/(shop|cart|checkout|my-account|wishlist|compare)(?:/.*)?$#', null], ['#^/(?:category|tag)/#', 'blog'],
+    ['#^/(shop|cart|checkout|my-account|compare)(?:/.*)?$#', null], ['#^/(?:category|tag)/#', 'blog'],
 ];
 foreach ($legacyRules as [$re, $t]) {
     if (preg_match($re, $path, $lm)) {
@@ -43,6 +43,14 @@ foreach ($legacyRules as [$re, $t]) {
 }
 if (preg_match('#^/(?:wp-admin|wp-login\.php|wp-content|wp-includes|wp-json|xmlrpc\.php|feed|comments)(?:/.*)?$#', $path)) {
     http_response_code(410);
+    return true;
+}
+
+/* Product feed */
+if ($path === '/product-feed.xml') {
+    $_SERVER['SCRIPT_NAME'] = '/product-feed.php';
+    chdir(__DIR__);
+    require __DIR__ . '/product-feed.php';
     return true;
 }
 
