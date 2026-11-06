@@ -90,7 +90,7 @@ DirectoryIndex index.html index.php
   <FilesMatch "\.(css|js|svg|jpe?g|png|webp|gif|ico|woff2)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
-  # two read-only PHP endpoints used on every page: a short cache is fine
+  # the category menu data is the same for everyone: a short cache is fine (tracking-config.php is per visitor and stays uncached)
   <FilesMatch "^(category-urls|tracking-config)\.php$">
     Header set Cache-Control "public, max-age=300"
   </FilesMatch>

@@ -2069,3 +2069,22 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .catalog-filter-actions .btn { flex: 1; justify-content: center; padding: 10px 14px; }
 .chip small { color: var(--ink-soft); font-weight: 500; }
 @media (max-width: 560px) { .catalog-filter { grid-template-columns: 1fr 1fr; } .catalog-filter-actions { grid-column: 1 / -1; } }
+
+/* ---- seller dashboard: performance ---- */
+.perf-range { display: flex; gap: 6px; flex-wrap: wrap; }
+.perf-range a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 0.84rem; font-weight: 600; color: var(--ink); background: #fff; }
+.perf-range a.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.perf-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0 0 16px; }
+.perf-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.perf-card strong { font-size: 1.7rem; line-height: 1.1; color: var(--ink); }
+.perf-card span { font-size: 0.82rem; color: var(--ink-soft); }
+.perf-chart { display: flex; align-items: flex-end; gap: 2px; height: 120px; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 12px 12px 0; margin: 0 0 6px; }
+.perf-bar { flex: 1; min-width: 2px; background: rgba(46, 125, 91, 0.28); border-radius: 2px 2px 0 0; position: relative; display: flex; align-items: flex-end; }
+.perf-bar i { display: block; width: 100%; background: var(--market-green); border-radius: 2px 2px 0 0; }
+.perf-legend { font-size: 0.8rem; color: var(--ink-soft); margin: 0 0 16px; }
+.perf-key { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 4px 0 10px; vertical-align: -1px; }
+.perf-legend .perf-key:first-child { margin-left: 0; }
+.perf-key-v { background: rgba(46, 125, 91, 0.28); }
+.perf-key-e { background: var(--market-green); }
+.perf-nums { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.86rem; color: var(--ink-soft); }
+.perf-nums b { color: var(--ink); }

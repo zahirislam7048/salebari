@@ -14,6 +14,10 @@ if (!$product) {
     redirect_to_canonical(product_url($product));
 }
 
+if ($product) {
+    count_product_view((int) $product['id']);
+}
+
 $category = $product ? row('SELECT * FROM categories WHERE id = ?', [$product['category_id']]) : null;
 $stall = $product && $product['stall_id'] ? row("SELECT * FROM stalls WHERE id = ? AND review_status = 'approved'", [$product['stall_id']]) : null;
 $brand = $product && $product['brand_id'] ? row("SELECT * FROM brands WHERE id = ? AND review_status = 'approved'", [$product['brand_id']]) : null;
@@ -136,7 +140,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=17">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=18">
 </head>
 <body class="has-pp-bar">
 
@@ -709,6 +713,24 @@ endif; ?>
   <a class="pp-bar-call" href="tel:<?= e($nums[0]['tel']) ?>">📞 <span data-i18n="pp.call">Call</span></a>
   <a class="pp-bar-wa" href="<?= e($waLink) ?>" target="_blank" rel="noopener"><?= $waIcon ?> <span data-i18n="pp.wa">WhatsApp</span></a>
 </div>
+<script>
+  /* Counts WhatsApp / Call taps for the seller's dashboard (numbers only). */
+  (function () {
+    var pid = <?= (int) $product['id'] ?>, url = <?= json_encode(base_path() . '/api/hit.php') ?>;
+    function hit(t) {
+      try {
+        var d = new FormData(); d.append('p', pid); d.append('t', t);
+        if (navigator.sendBeacon) { navigator.sendBeacon(url, d); } else { fetch(url, { method: 'POST', body: d, keepalive: true }); }
+      } catch (e) { /* never block the click */ }
+    }
+    document.addEventListener('click', function (ev) {
+      var a = ev.target.closest ? ev.target.closest('a') : null;
+      if (!a) return;
+      if (a.matches('.pp-whatsapp-btn, .pp-bar-wa') || (a.href && a.href.indexOf('wa.me') > -1)) hit('wa');
+      else if (a.matches('.pp-call-btn, .pp-bar-call') || (a.href && a.href.indexOf('tel:') === 0)) hit('call');
+    }, true);
+  })();
+</script>
 <?php endif; ?>
 </body>
 </html>

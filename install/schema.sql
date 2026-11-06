@@ -250,3 +250,14 @@ CREATE TABLE success_stories (
   sort_order INT NOT NULL DEFAULT 0,
   created_at DATETIME NOT NULL
 );
+
+-- Daily counters per product, for the seller dashboard (counts only, no visitor data)
+CREATE TABLE product_stats (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id INT UNSIGNED NOT NULL,
+  stat_date DATE NOT NULL,
+  views INT UNSIGNED NOT NULL DEFAULT 0,
+  wa_clicks INT UNSIGNED NOT NULL DEFAULT 0,
+  call_clicks INT UNSIGNED NOT NULL DEFAULT 0,
+  UNIQUE (product_id, stat_date)
+);
