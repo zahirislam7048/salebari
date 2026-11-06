@@ -44,7 +44,15 @@ function save_uploaded_image(array $file, string $subdir): ?string
         );
     }
 
-    $name = bin2hex(random_bytes(12)) . '.' . $allowed[$info[2]];
+    /* Shrink and re-encode (max 1600px, WebP where the server can) so pages load fast on mobile data. */
+    $ext     = $allowed[$info[2]];
+    $name    = bin2hex(random_bytes(12));
+    $optimal = optimize_image($file['tmp_name'], (int) $info[2], $dir . '/' . $name);
+    if ($optimal !== null) {
+        return 'uploads/' . $subdir . '/' . $name . '.' . $optimal;
+    }
+
+    $name .= '.' . $ext;
     if (!move_uploaded_file($file['tmp_name'], $dir . '/' . $name)) {
         throw new RuntimeException(
             'Could not save ' . $file['name'] . ' — the folder looked writable but the file write itself failed. '
@@ -103,5 +111,63 @@ function delete_uploaded_file(string $relativePath): void
     $uploadsRoot = realpath(APP_ROOT . '/uploads') ?: "\0";
     if (is_file($full) && strpos(realpath($full) ?: '', $uploadsRoot) === 0) {
         unlink($full);
+    }
+}
+
+/**
+ * Resize (longest side <= IMAGE_MAX_SIDE) and re-encode an uploaded image.
+ * Writes "$destBase.webp" (or .jpg/.png when WebP is unavailable) and returns the extension,
+ * or null when nothing was done (GD missing, animated GIF, decode failure) so the caller keeps the original.
+ */
+function optimize_image(string $src, int $type, string $destBase): ?string
+{
+    $maxSide = defined('IMAGE_MAX_SIDE') ? (int) IMAGE_MAX_SIDE : 1600;
+    if (!extension_loaded('gd') || $type === IMAGETYPE_GIF) {
+        return null;
+    }
+    try {
+        $img = null;
+        if ($type === IMAGETYPE_JPEG && function_exists('imagecreatefromjpeg')) {
+            $img = @imagecreatefromjpeg($src);
+            if ($img && function_exists('exif_read_data')) {
+                $exif = @exif_read_data($src);
+                $rot  = [3 => 180, 6 => -90, 8 => 90][(int) ($exif['Orientation'] ?? 1)] ?? 0;
+                if ($rot) {
+                    $r = imagerotate($img, $rot, 0);
+                    if ($r) { $img = $r; }
+                }
+            }
+        } elseif ($type === IMAGETYPE_PNG && function_exists('imagecreatefrompng')) {
+            $img = @imagecreatefrompng($src);
+        } elseif ($type === IMAGETYPE_WEBP && function_exists('imagecreatefromwebp')) {
+            $img = @imagecreatefromwebp($src);
+        }
+        if (!$img) {
+            return null;
+        }
+        $w = imagesx($img);
+        $h = imagesy($img);
+        if (max($w, $h) > $maxSide) {
+            $scale = $maxSide / max($w, $h);
+            $small = imagescale($img, max(1, (int) round($w * $scale)), max(1, (int) round($h * $scale)));
+            if ($small) { $img = $small; }
+        }
+        imagepalettetotruecolor($img);
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+
+        if (function_exists('imagewebp') && imagewebp($img, $destBase . '.webp', 82)) {
+            return 'webp';
+        }
+        if ($type === IMAGETYPE_PNG) {
+            return imagepng($img, $destBase . '.png', 8) ? 'png' : null;
+        }
+        // JPEG: flatten any transparency onto white
+        $flat = imagecreatetruecolor(imagesx($img), imagesy($img));
+        imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
+        imagecopy($flat, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+        return imagejpeg($flat, $destBase . '.jpg', 82) ? 'jpg' : null;
+    } catch (Throwable $e) {
+        return null;
     }
 }

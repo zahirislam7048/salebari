@@ -257,7 +257,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
       <div class="pp-panel">
         <div class="pp-gallery-main" id="ppMainImage">
           <?php if ($images): ?>
-            <img src="<?= e(asset($images[0])) ?>" alt="<?= e($product['title_en']) ?>" id="ppMainImg">
+            <img src="<?= e(asset($images[0])) ?>" alt="<?= e($product['title_en']) ?>" id="ppMainImg" fetchpriority="high" decoding="async">
           <?php else: ?>
             <span>🛒</span>
           <?php endif; ?>
@@ -266,7 +266,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
           <div class="pp-thumbs">
             <?php foreach ($images as $i => $img): ?>
               <button type="button" class="pp-thumb <?= $i === 0 ? 'active' : '' ?>" data-src="<?= e(asset($img)) ?>">
-                <img src="<?= e(asset($img)) ?>" alt="">
+                <img src="<?= e(asset($img)) ?>" alt="" loading="lazy" decoding="async">
               </button>
             <?php endforeach; ?>
           </div>

@@ -30,7 +30,7 @@ if (is_post()) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Log in — SaleBari Admin</title>
-<link rel="stylesheet" href="<?= asset('admin/admin.css') ?>">
+<link rel="stylesheet" href="<?= asset('admin/admin.css') ?>?v=2">
 </head>
 <body class="admin-auth-body">
 <div class="admin-auth-wrap">
