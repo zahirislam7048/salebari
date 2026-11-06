@@ -20,6 +20,32 @@ foreach ($rules as [$re, $target, $param]) {
     }
 }
 
+/* www -> bare domain, and the old WordPress addresses (mirrors .htaccess) */
+$host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+if (stripos($host, 'www.') === 0) {
+    header('Location: http://' . substr($host, 4) . $_SERVER['REQUEST_URI'], true, 301);
+    return true;
+}
+$legacyRules = [
+    ['#^/product-category/(.*)$#', 'cat'], ['#^/product/(.*)$#', 'product'],
+    ['#^/(shop|cart|checkout|my-account|wishlist|compare)(?:/.*)?$#', null], ['#^/(?:category|tag)/#', 'blog'],
+];
+foreach ($legacyRules as [$re, $t]) {
+    if (preg_match($re, $path, $lm)) {
+        if (in_array($t, ['cat', 'product'], true)) { $_GET['t'] = $t; $_GET['p'] = $lm[1]; }
+        elseif ($t === 'blog') { $_GET['t'] = 'blog'; }
+        else { $_GET['t'] = $lm[1]; }
+        $_SERVER['SCRIPT_NAME'] = '/legacy.php';
+        chdir(__DIR__);
+        require __DIR__ . '/legacy.php';
+        return true;
+    }
+}
+if (preg_match('#^/(?:wp-admin|wp-login\.php|wp-content|wp-includes|wp-json|xmlrpc\.php|feed|comments)(?:/.*)?$#', $path)) {
+    http_response_code(410);
+    return true;
+}
+
 /* Sitemaps */
 if (preg_match('#^/sitemap(?:_index|-([a-z]+))?\.xml$#', $path, $sm)) {
     $_GET['type'] = $sm[1] ?? 'index';
