@@ -25,6 +25,11 @@ DirectoryIndex index.html index.php
   # Product feed for Facebook / Instagram Shops and Google Merchant Center
   RewriteRule ^product-feed\.xml$ product-feed.php [L]
 
+  # Property landing pages: /flat-for-sale-in-dhaka/  /land-for-sale/  /property-for-sale/
+  RewriteRule ^property-for-sale/?$ property.php [L]
+  RewriteRule ^(flat|apartment|land)-for-sale/?$ property.php?t=$1 [L,QSA]
+  RewriteRule ^(flat|apartment|land)-for-sale-in-([a-z0-9-]+)/?$ property.php?t=$1&c=$2 [L,QSA]
+
   # Sitemaps (built from the database)
   RewriteRule ^sitemap_index\.xml$ sitemap.php?type=index [L]
   RewriteRule ^sitemap\.xml$       sitemap.php?type=index [L]

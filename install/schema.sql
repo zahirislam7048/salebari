@@ -166,6 +166,7 @@ CREATE TABLE products (
   price_num DECIMAL(14,2) NULL,
   condition_type VARCHAR(10) NULL,
   city VARCHAR(80) NULL,
+  deal_type VARCHAR(10) NULL,
   stock_status VARCHAR(20) NOT NULL DEFAULT 'available',
   stock_qty INT NULL,
   images TEXT NULL,

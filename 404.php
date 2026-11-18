@@ -1,6 +1,6 @@
 <?php
 /* Shown by Apache (ErrorDocument 404) for any address that does not exist. */
-require __DIR__ . '/app/bootstrap.php';
+require_once __DIR__ . '/app/bootstrap.php';
 
 http_response_code(404);
 site_header('Page not found', '<meta name="robots" content="noindex,follow">', false);

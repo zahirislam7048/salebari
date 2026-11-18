@@ -69,6 +69,7 @@ if (is_post()) {
             'description_bn'   => input('description_bn') ?: null,
             'price_display'    => input('price_display') ?: null,
             'price_num'        => price_to_number(input('price_display')),
+            'deal_type'        => in_array((string) input('deal_type'), ['sale', 'rent'], true) ? (string) input('deal_type') : null,
             'condition_type'   => in_array((string) input('condition_type'), ['new', 'used'], true) ? (string) input('condition_type') : null,
             'city'             => trim((string) input('city')) ?: null,
             'stock_status'     => array_key_exists((string) input('stock_status'), stock_labels()) ? (string) input('stock_status') : 'available',
@@ -186,6 +187,12 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
 
     <label class="admin-field"><span>Price (e.g. "৳ 42 Lakh" or "৳ 1,850")</span>
       <input type="text" name="price_display" value="<?= e($editing['price_display'] ?? '') ?>"></label>
+    <label class="admin-field"><span>Offer (for property: the "Flat / Apartment / Land for Sale" pages only show items that are not marked For rent)</span>
+      <select name="deal_type">
+        <option value="">Not specified (treated as for sale)</option>
+        <option value="sale" <?= ($editing['deal_type'] ?? '') === 'sale' ? 'selected' : '' ?>>For sale</option>
+        <option value="rent" <?= ($editing['deal_type'] ?? '') === 'rent' ? 'selected' : '' ?>>For rent</option>
+      </select></label>
     <label class="admin-field"><span>Condition</span>
       <select name="condition_type">
         <option value="">Not specified</option>

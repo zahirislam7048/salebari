@@ -127,6 +127,13 @@ function footer_categories_html(): string
         }
         $h .= '</div>';
     }
+    $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(property_url()) . '">Property for Sale</a>';
+    foreach (property_types() as $tk => $t) {
+        foreach (property_locations() as $ck => $c) {
+            $h .= '<a href="' . e(property_url($tk, $ck)) . '">' . e($t['en'] . ' for Sale in ' . $c['name']) . '</a>';
+        }
+    }
+    $h .= '</div>';
     return $h . '</div></div>';
 }
 

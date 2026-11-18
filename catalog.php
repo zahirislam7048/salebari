@@ -291,6 +291,10 @@ site_header($seoTitle, $head, false);
       <?php else: ?>
         <div class="catalog-intro"><?= category_intro_html($cat, $children, $trail) ?></div>
       <?php endif; ?>
+      <?php if (($trail[0]['url_slug'] ?? '') === 'real-estate'): ?>
+        <h2 class="catalog-subheading">Property for sale by city</h2>
+        <?= property_links_html() ?>
+      <?php endif; ?>
       <?php $cityLinks = array_filter($cityCounts, function ($cc, $slug) use ($cityPage) { return !$cityPage || $cityPage['slug'] !== $slug; }, ARRAY_FILTER_USE_BOTH); ?>
       <?php if ($cityLinks): ?>
         <h2 class="catalog-subheading"><?= $cityPage ? 'Other cities' : 'Browse ' . e($name) . ' by city' ?></h2>

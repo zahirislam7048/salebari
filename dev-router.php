@@ -46,6 +46,22 @@ if (preg_match('#^/(?:wp-admin|wp-login\.php|wp-content|wp-includes|wp-json|xmlr
     return true;
 }
 
+/* Property landing pages */
+if ($path === '/property-for-sale/' || $path === '/property-for-sale') {
+    $_SERVER['SCRIPT_NAME'] = '/property.php';
+    chdir(__DIR__);
+    require __DIR__ . '/property.php';
+    return true;
+}
+if (preg_match('#^/(flat|apartment|land)-for-sale(?:-in-([a-z0-9-]+))?/?$#', $path, $pm)) {
+    $_GET['t'] = $pm[1];
+    if (!empty($pm[2])) { $_GET['c'] = $pm[2]; }
+    $_SERVER['SCRIPT_NAME'] = '/property.php';
+    chdir(__DIR__);
+    require __DIR__ . '/property.php';
+    return true;
+}
+
 /* Product feed */
 if ($path === '/product-feed.xml') {
     $_SERVER['SCRIPT_NAME'] = '/product-feed.php';
