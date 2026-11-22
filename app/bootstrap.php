@@ -32,6 +32,7 @@ require APP_ROOT . '/app/locations.php';
 require APP_ROOT . '/app/stats.php';
 require APP_ROOT . '/app/security.php';
 require APP_ROOT . '/app/property_pages.php';
+require APP_ROOT . '/app/property_data.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([

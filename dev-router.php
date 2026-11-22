@@ -62,6 +62,28 @@ if (preg_match('#^/(flat|apartment|land)-for-sale(?:-in-([a-z0-9-]+))?/?$#', $pa
     return true;
 }
 
+if (preg_match('#^/compare-locations/?$#', $path)) {
+    $_SERVER['SCRIPT_NAME'] = '/property-compare.php';
+    chdir(__DIR__);
+    require __DIR__ . '/property-compare.php';
+    return true;
+}
+if (preg_match('#^/compare-locations/([a-z0-9]+)-vs-([a-z0-9]+)/?$#', $path, $cm)) {
+    $_GET['a'] = $cm[1];
+    $_GET['b'] = $cm[2];
+    $_SERVER['SCRIPT_NAME'] = '/property-compare.php';
+    chdir(__DIR__);
+    require __DIR__ . '/property-compare.php';
+    return true;
+}
+if (preg_match('#^/([a-z0-9-]+-for-sale[a-z0-9-]*)/?$#', $path, $zm)) {
+    $_GET['s'] = $zm[1];
+    $_SERVER['SCRIPT_NAME'] = '/property-size.php';
+    chdir(__DIR__);
+    require __DIR__ . '/property-size.php';
+    return true;
+}
+
 /* Product feed */
 if ($path === '/product-feed.xml') {
     $_SERVER['SCRIPT_NAME'] = '/product-feed.php';

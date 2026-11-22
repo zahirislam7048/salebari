@@ -134,6 +134,21 @@ function footer_categories_html(): string
         }
     }
     $h .= '</div>';
+    $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(property_url()) . '">Property by size</a>';
+    foreach (array_keys(property_sizes()) as $sk) {
+        $h .= '<a href="' . e(property_size_url($sk)) . '">' . e(property_sizes()[$sk]['h1']) . '</a>';
+    }
+    $h .= '</div>';
+    $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(property_url('flat', 'dhaka')) . '">Dhaka areas</a>';
+    foreach (property_areas() as $ak => $a) {
+        $h .= '<a href="' . e(property_url('flat', $ak)) . '">' . e('Flat for Sale in ' . $a['name']) . '</a>';
+    }
+    $h .= '</div>';
+    $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(property_compare_url()) . '">Compare locations</a>';
+    foreach (property_compare_chips(null, 8) as [$href, $label]) {
+        $h .= '<a href="' . e($href) . '">' . e($label) . '</a>';
+    }
+    $h .= '</div>';
     return $h . '</div></div>';
 }
 

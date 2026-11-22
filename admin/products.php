@@ -69,7 +69,11 @@ if (is_post()) {
             'description_bn'   => input('description_bn') ?: null,
             'price_display'    => input('price_display') ?: null,
             'price_num'        => price_to_number(input('price_display')),
+            'size_sqft'        => size_to_sqft((input('size_value') !== '' && input('size_value') !== null) ? (float) input('size_value') : null, (string) input('size_unit')),
             'deal_type'        => in_array((string) input('deal_type'), ['sale', 'rent'], true) ? (string) input('deal_type') : null,
+            'size_value'       => (input('size_value') !== '' && input('size_value') !== null && (float) input('size_value') > 0) ? (float) input('size_value') : null,
+            'size_unit'        => array_key_exists((string) input('size_unit'), land_unit_sqft()) ? (string) input('size_unit') : null,
+            'bedrooms'         => (input('bedrooms') !== '' && input('bedrooms') !== null && (int) input('bedrooms') > 0) ? (int) input('bedrooms') : null,
             'condition_type'   => in_array((string) input('condition_type'), ['new', 'used'], true) ? (string) input('condition_type') : null,
             'city'             => trim((string) input('city')) ?: null,
             'stock_status'     => array_key_exists((string) input('stock_status'), stock_labels()) ? (string) input('stock_status') : 'available',
@@ -193,6 +197,15 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
         <option value="sale" <?= ($editing['deal_type'] ?? '') === 'sale' ? 'selected' : '' ?>>For sale</option>
         <option value="rent" <?= ($editing['deal_type'] ?? '') === 'rent' ? 'selected' : '' ?>>For rent</option>
       </select></label>
+    <div class="admin-field"><span>Property size (flats, apartments and land: fills the "by size" pages. Leave empty for other products)</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input type="number" name="size_value" min="0" step="0.01" placeholder="e.g. 1450" value="<?= e((string) ($editing['size_value'] ?? '')) ?>" style="max-width:160px">
+        <select name="size_unit" style="max-width:160px">
+          <option value="">Unit…</option>
+          <?php foreach (['sqft' => 'sqft', 'katha' => 'katha', 'decimal' => 'decimal (shotok)', 'bigha' => 'bigha'] as $uk => $ul): ?><option value="<?= e($uk) ?>" <?= ($editing['size_unit'] ?? '') === $uk ? 'selected' : '' ?>><?= e($ul) ?></option><?php endforeach; ?>
+        </select>
+        <input type="number" name="bedrooms" min="0" max="20" placeholder="Bedrooms" value="<?= e((string) ($editing['bedrooms'] ?? '')) ?>" style="max-width:140px">
+      </div></div>
     <label class="admin-field"><span>Condition</span>
       <select name="condition_type">
         <option value="">Not specified</option>
@@ -201,7 +214,7 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
       </select></label>
     <label class="admin-field"><span>City / district (optional — leave empty to use the stall's city)</span>
       <input type="text" name="city" list="districtList" maxlength="80" value="<?= e($editing['city'] ?? '') ?>" placeholder="e.g. Dhaka">
-      <datalist id="districtList"><?php foreach (bd_districts() as $d): ?><option value="<?= e($d) ?>"><?php endforeach; ?></datalist></label>
+      <datalist id="districtList"><?php foreach (bd_districts() as $d): ?><option value="<?= e($d) ?>"><?php endforeach; ?><?php foreach (property_areas() as $pa): ?><option value="<?= e($pa['name'] . ', Dhaka') ?>"><?php endforeach; ?></datalist></label>
     <label class="admin-field"><span>Availability</span>
       <select name="stock_status">
         <?php foreach (stock_labels() as $k => $lab): ?><option value="<?= e($k) ?>" <?= ($editing['stock_status'] ?? 'available') === $k ? 'selected' : '' ?>><?= e($lab[0]) ?></option><?php endforeach; ?>

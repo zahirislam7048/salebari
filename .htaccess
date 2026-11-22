@@ -29,6 +29,11 @@ DirectoryIndex index.html index.php
   RewriteRule ^property-for-sale/?$ property.php [L]
   RewriteRule ^(flat|apartment|land)-for-sale/?$ property.php?t=$1 [L,QSA]
   RewriteRule ^(flat|apartment|land)-for-sale-in-([a-z0-9-]+)/?$ property.php?t=$1&c=$2 [L,QSA]
+  # Size pages (/flat-for-sale-under-1000-sqft/, /3-bedroom-flat-for-sale/, /5-katha-plot-for-sale/): property-size.php answers 404 for unknown names
+  RewriteRule ^([a-z0-9-]+-for-sale[a-z0-9-]*)/?$ property-size.php?s=$1 [L,QSA]
+  # Location comparisons
+  RewriteRule ^compare-locations/?$ property-compare.php [L]
+  RewriteRule ^compare-locations/([a-z0-9]+)-vs-([a-z0-9]+)/?$ property-compare.php?a=$1&b=$2 [L,QSA]
 
   # Sitemaps (built from the database)
   RewriteRule ^sitemap_index\.xml$ sitemap.php?type=index [L]

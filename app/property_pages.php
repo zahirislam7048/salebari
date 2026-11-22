@@ -182,10 +182,11 @@ function property_category_ids(array $cat): array
 }
 
 /**
- * Active products for sale (not rent) in a category, optionally in one district.
+ * Active products for sale (not rent) in a category, optionally in one district / Dhaka area / size band.
+ * $o: 'area' => slug, 'min' / 'max' => sqft (min <= size < max), 'bed' => n, 'bed_min' => true for "n or more".
  * Returns ['rows' => [...], 'total' => n, 'pg' => paginate()].
  */
-function property_listings(array $cat, ?string $districtSlug, int $perPage = 12, int $page = 1): array
+function property_listings(array $cat, ?string $districtSlug, int $perPage = 12, int $page = 1, array $o = []): array
 {
     $ids  = property_category_ids($cat);
     $in   = implode(',', array_fill(0, count($ids), '?'));
@@ -196,7 +197,7 @@ function property_listings(array $cat, ?string $districtSlug, int $perPage = 12,
         $raw = [];
         foreach (rows("SELECT DISTINCT $expr AS c $from", $ids) as $r) {
             $d = district_for($r['c']);
-            if ($d && $d['slug'] === $districtSlug) {
+            if ($d && $d['slug'] === $districtSlug && (empty($o['area']) || property_area_for($r['c']) === $o['area'])) {
                 $raw[] = $r['c'];
             }
         }
@@ -206,10 +207,27 @@ function property_listings(array $cat, ?string $districtSlug, int $perPage = 12,
         $from  .= " AND $expr IN (" . implode(',', array_fill(0, count($raw), '?')) . ')';
         $params = array_merge($params, $raw);
     }
+    if (isset($o['min'])) { $from .= ' AND p.size_sqft >= ?'; $params[] = (float) $o['min']; }
+    if (isset($o['max'])) { $from .= ' AND p.size_sqft < ?';  $params[] = (float) $o['max']; }
+    if (isset($o['bed'])) { $from .= empty($o['bed_min']) ? ' AND p.bedrooms = ?' : ' AND p.bedrooms >= ?'; $params[] = (int) $o['bed']; }
     $total = (int) scalar("SELECT COUNT(*) $from", $params);
     $pg    = paginate($total, $perPage, $page);
     $rows  = rows("SELECT p.* $from ORDER BY p.id DESC LIMIT " . $pg['per'] . ' OFFSET ' . $pg['offset'], $params);
     return ['rows' => $rows, 'total' => $total, 'pg' => $pg];
+}
+
+/** "1,450 sqft · 3 bed" for a listing card (empty when the product has neither). */
+function property_spec_text(array $p): string
+{
+    $parts = [];
+    if (!empty($p['size_value']) && !empty($p['size_unit'])) {
+        $v = (float) $p['size_value'];
+        $parts[] = rtrim(rtrim(number_format($v, 2), '0'), '.') . ' ' . $p['size_unit'];
+    }
+    if (!empty($p['bedrooms'])) {
+        $parts[] = (int) $p['bedrooms'] . ' bed';
+    }
+    return implode(' · ', $parts);
 }
 
 function property_card_html(array $p, string $icon): string
@@ -220,6 +238,9 @@ function property_card_html(array $p, string $icon): string
     $h .= '</div><div class="listing-card-body"><h3 class="listing-card-title">' . e($p['title_en']) . '</h3>';
     if ($p['price_display']) {
         $h .= '<div class="listing-card-price">' . e($p['price_display']) . '</div>';
+    }
+    if ($spec = property_spec_text($p)) {
+        $h .= '<div class="listing-card-spec">' . e($spec) . '</div>';
     }
     $h .= '</div></a><button type="button" class="wish-btn" data-wish="' . (int) $p['id'] . '" aria-pressed="false" aria-label="Save this listing"><span class="wish-ico">♡</span></button></div>';
     return $h;
@@ -246,6 +267,101 @@ function property_all_paths(): array
         foreach (property_locations() as $ck => $c) {
             $paths[] = property_url($tk, $ck);
         }
+        foreach (property_areas() as $ak => $a) {
+            if (in_array($tk, $a['types'], true)) {
+                $paths[] = property_url($tk, $ak);
+            }
+        }
+    }
+    foreach (array_keys(property_sizes()) as $sk) {
+        $paths[] = property_size_url($sk);
+    }
+    $paths[] = property_compare_url();
+    foreach (property_compare_pairs() as [$x, $y]) {
+        $paths[] = property_compare_url($x, $y);
     }
     return $paths;
+}
+
+/* ---------- internal-link blocks shared by every property page ---------- */
+
+function property_chip_row(array $chips): string
+{
+    $h = '<div class="chip-row">';
+    foreach ($chips as [$href, $label]) {
+        $h .= '<a class="chip" href="' . e($href) . '">' . e($label) . '</a>';
+    }
+    return $h . '</div>';
+}
+
+/** Chips to the size pages of one type: 'flat' or 'land'. */
+function property_size_chips(string $type, ?string $exclude = null): array
+{
+    $out = [];
+    foreach (property_sizes_of($type) as $slug => $sz) {
+        if ($slug !== $exclude) {
+            $out[] = [property_size_url($slug), $sz['h1']];
+        }
+    }
+    return $out;
+}
+
+/** Chips to "<Type> for Sale in <Dhaka area>" for every area that has that type. */
+function property_area_chips(string $type, ?string $exclude = null): array
+{
+    $t = property_types()[$type];
+    $out = [];
+    foreach (property_areas() as $slug => $a) {
+        if ($slug !== $exclude && in_array($type, $a['types'], true)) {
+            $out[] = [property_url($type, $slug), $t['en'] . ' for Sale in ' . $a['name']];
+        }
+    }
+    return $out;
+}
+
+/** Chips to comparison pages: those involving $slug, or the first $limit overall. */
+function property_compare_chips(?string $slug = null, int $limit = 100): array
+{
+    $out = [];
+    $pairs = $slug ? property_compare_pairs_for($slug) : property_compare_pairs();
+    foreach ($pairs as [$x, $y]) {
+        $px = property_place($x);
+        $py = property_place($y);
+        $out[] = [property_compare_url($x, $y), $px['name'] . ' vs ' . $py['name']];
+    }
+    return array_slice($out, 0, $limit);
+}
+
+/* ---------- shared rendering ---------- */
+
+/** Both language versions of a text, each in a span the language toggle shows or hides. */
+function property_bi(string $en, string $bn): string
+{
+    return '<span data-lang="en">' . e($en) . '</span><span data-lang="bn">' . e($bn) . '</span>';
+}
+
+/** Side-by-side table of area / city descriptions (one column per place). */
+function property_attr_table_html(array $places): string
+{
+    $labels = property_attr_labels();
+    $tiers  = property_tier_labels();
+    $h = '<div class="prop-table-wrap"><table class="prop-table"><thead><tr><th></th>';
+    foreach ($places as $pl) {
+        $h .= '<th>' . property_bi($pl['name'], $pl['bn']) . '</th>';
+    }
+    $h .= '</tr></thead><tbody>';
+    foreach ($labels as $key => $lab) {
+        if ($key === 'tier') {
+            foreach ($places as $pl) {
+                if (empty($pl['tier'])) { continue 2; }
+            }
+        }
+        $h .= '<tr><th scope="row">' . property_bi($lab[0], $lab[1]) . '</th>';
+        foreach ($places as $pl) {
+            $v = $key === 'tier' ? $tiers[$pl['tier']] : ($pl['attrs'][$key] ?? ['', '']);
+            $h .= '<td>' . property_bi($v[0], $v[1]) . '</td>';
+        }
+        $h .= '</tr>';
+    }
+    return $h . '</tbody></table></div>';
 }

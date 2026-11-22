@@ -173,7 +173,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=20">
+<link rel="stylesheet" href="<?= base_path() ?>/css/style.css?v=21">
 </head>
 <body class="has-pp-bar">
 
@@ -336,6 +336,7 @@ $relatedCats = $category ? related_categories($category, 8) : [];
         <div class="pp-chips">
           <?php if ($category): ?><span class="pp-category-chip"><?= e($category['name_en']) ?></span><?php endif; ?>
           <?php if ($brand): ?><a class="pp-category-chip" href="<?= e(brand_url($brand)) ?>">🏷️ <?= e($brand['name']) ?></a><?php endif; ?>
+          <?php foreach (property_product_chips($product, $trail, $stall) as [$phref, $plabel]): ?><a class="pp-category-chip" href="<?= e($phref) ?>"><?= e($plabel) ?></a><?php endforeach; ?>
         </div>
 
         <?php if ($product['price_display']): ?>

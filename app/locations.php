@@ -48,7 +48,7 @@ function district_aliases(): array
         'uttara' => 'Dhaka', 'mirpur' => 'Dhaka', 'dhanmondi' => 'Dhaka', 'gulshan' => 'Dhaka', 'banani' => 'Dhaka', 'motijheel' => 'Dhaka',
         'mohammadpur' => 'Dhaka', 'badda' => 'Dhaka', 'rampura' => 'Dhaka', 'farmgate' => 'Dhaka', 'tejgaon' => 'Dhaka', 'savar' => 'Dhaka',
         'keraniganj' => 'Dhaka', 'old dhaka' => 'Dhaka', 'bashundhara' => 'Dhaka', 'khilgaon' => 'Dhaka', 'jatrabari' => 'Dhaka',
-        'demra' => 'Dhaka', 'dohar' => 'Dhaka', 'nawabganj dhaka' => 'Dhaka',
+        'demra' => 'Dhaka', 'baridhara' => 'Dhaka', 'purbachal' => 'Dhaka', 'purbachol' => 'Dhaka', 'basundhara' => 'Dhaka', 'mohammedpur' => 'Dhaka', 'dohar' => 'Dhaka', 'nawabganj dhaka' => 'Dhaka',
     ];
 }
 

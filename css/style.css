@@ -2139,3 +2139,19 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .prop-note { margin-top: 28px; color: var(--ink-soft); }
 .prop-hero .btn-primary { background: var(--gold); color: var(--ink); border-color: var(--gold); }
 .prop-hero .btn-primary:hover { background: #d8bb78; }
+
+/* ---- property: tables, size/compare pages ---- */
+.prop-table-wrap { overflow-x: auto; margin: 0 0 14px; -webkit-overflow-scrolling: touch; }
+.prop-table { border-collapse: collapse; width: 100%; background: #fff; font-size: 0.94rem; }
+.prop-table th, .prop-table td { border: 1px solid var(--line); padding: 10px 12px; text-align: left; vertical-align: top; line-height: 1.55; }
+.prop-table thead th { background: var(--ink); color: var(--paper); font-weight: 700; }
+.prop-table tbody th { background: var(--paper-warm); color: var(--ink); font-weight: 700; width: 24%; min-width: 130px; }
+.prop-table td a { color: var(--gold-deep); font-weight: 600; }
+.prop-table tr.is-current td { background: rgba(201, 169, 97, 0.18); font-weight: 600; }
+.prop-table-narrow { max-width: 560px; }
+.prop-wide { max-width: 1040px; }
+.prop-grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.prop-tile-static { cursor: default; gap: 8px; }
+.prop-tile-static:hover { transform: none; border-color: var(--line); }
+.prop-tile-static span { line-height: 1.6; }
+.listing-card-spec { font-size: 0.8rem; color: var(--ink-soft); margin-top: 3px; }
