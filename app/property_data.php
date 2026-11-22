@@ -442,3 +442,128 @@ function property_product_chips(array $p, array $trail, ?array $stall = null): a
     }
     return $out;
 }
+
+
+/* ===================================================================================== */
+/*  Filling size / bedrooms / area automatically                                         */
+/* ===================================================================================== */
+
+/** True when the category is Real Estate -> Apartment or Land (or something under them). */
+function is_property_category(int $categoryId): bool
+{
+    $path = category_index()[$categoryId]['path'] ?? '';
+    return strpos($path, 'real-estate/apartment') === 0 || strpos($path, 'real-estate/land') === 0;
+}
+
+/**
+ * Reads size, bedrooms and a Dhaka area / district out of free text such as a title or specs
+ * ("3 Bed Flat, 1,450 sqft, Uttara" or "Size: 5 katha"). Returns only what it found:
+ * ['size_value' => 1450.0, 'size_unit' => 'sqft', 'bedrooms' => 3, 'city' => 'Uttara, Dhaka'].
+ */
+function property_guess_fields(string $text): array
+{
+    $t = strtr($text, ['০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4', '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9']);
+    $t = mb_strtolower(preg_replace('/\s+/u', ' ', $t));
+    $out = [];
+
+    // size: a number followed by a unit
+    $units = ['sqft' => 'sqft|sq\.? ?ft|sft|square ?feet|square ?foot|বর্গফুট', 'katha' => 'katha|kathas|kata|কাঠা|কাটা', 'decimal' => 'decimal|decimals|shotok|shatak|shotansho|শতক|শতাংশ', 'bigha' => 'bigha|bighas|বিঘা'];
+    $best = null;
+    foreach ($units as $unit => $alt) {
+        if (preg_match('/(\d[\d,]*(?:\.\d+)?)\s*(?:' . $alt . ')(?![a-z])/u', $t, $m, PREG_OFFSET_CAPTURE)) {
+            $val = (float) str_replace(',', '', $m[1][0]);
+            if ($val > 0 && ($best === null || $m[0][1] < $best[2])) {
+                $best = [$val, $unit, $m[0][1]];   // the first one written in the text wins
+            }
+        }
+    }
+    if ($best) {
+        $out['size_value'] = $best[0];
+        $out['size_unit']  = $best[1];
+    }
+
+    // bedrooms: "3 bed", "3-bedroom", "3 BHK", or "bedrooms: 3"
+    if (preg_match('/\b(\d{1,2})\s*[- ]?(?:(?:bed(?:room)?s?|br|bhk)\b|বেডরুম|বেড)/u', $t, $m) || preg_match('/bed(?:room)?s?\s*[:\-]\s*(\d{1,2})\b/u', $t, $m)) {
+        $n = (int) $m[1];
+        if ($n >= 1 && $n <= 20) {
+            $out['bedrooms'] = $n;
+        }
+    }
+
+    // place: a Dhaka area wins ("Uttara, Dhaka"), otherwise a district; Bangla names work too
+    $ak = property_area_for($t);
+    if (!$ak) {
+        foreach (property_areas() as $slug => $a) {
+            $bn = trim(explode(' ', $a['bn'])[0]);
+            if ($bn !== '' && mb_strpos($t, $bn) !== false) { $ak = $slug; break; }
+        }
+    }
+    if ($ak) {
+        $out['city'] = property_areas()[$ak]['name'] . ', Dhaka';
+    } elseif ($d = district_for($t)) {
+        $out['city'] = $d['name'];
+    } else {
+        foreach (property_locations() as $l) {
+            if (mb_strpos($t, $l['bn']) !== false) { $out['city'] = $l['name']; break; }
+        }
+    }
+    return $out;
+}
+
+/** Fills the empty size / bedroom / city fields of $data from its title, specs and description. Returns the names it filled. */
+function property_fill_missing(array &$data, ?string $title, ?string $specs, ?string $descriptionHtml): array
+{
+    $filled = [];
+    $sources = [
+        (string) $title . ' ' . (string) $specs,
+        mb_substr(trim(html_entity_decode(strip_tags((string) $descriptionHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 600),
+    ];
+    foreach ($sources as $src) {
+        if (trim($src) === '') {
+            continue;
+        }
+        $g = property_guess_fields($src);
+        if (empty($data['size_value']) && isset($g['size_value'])) {
+            $data['size_value'] = $g['size_value'];
+            $data['size_unit']  = $g['size_unit'];
+            $data['size_sqft']  = size_to_sqft($g['size_value'], $g['size_unit']);
+            $filled[] = rtrim(rtrim(number_format($g['size_value'], 2), '0'), '.') . ' ' . $g['size_unit'];
+        }
+        if (empty($data['bedrooms']) && isset($g['bedrooms'])) {
+            $data['bedrooms'] = $g['bedrooms'];
+            $filled[] = $g['bedrooms'] . ' bed';
+        }
+        if (trim((string) ($data['city'] ?? '')) === '' && isset($g['city']) && $src === $sources[0]) {
+            // only trust the place when it is written in the title or specs
+            $data['city'] = $g['city'];
+            $filled[] = $g['city'];
+        }
+    }
+    return $filled;
+}
+
+/** Once: fill size / bedrooms / city for property products that were added before these fields existed. */
+function ensure_property_fields(): void
+{
+    try {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'prop_fields_v1'")) {
+            return;
+        }
+        foreach (rows("SELECT id, category_id, title_en, specs, description_en, city, size_value, bedrooms FROM products WHERE size_value IS NULL OR bedrooms IS NULL OR city IS NULL OR city = ''") as $r) {
+            if (!is_property_category((int) $r['category_id'])) {
+                continue;
+            }
+            $data = ['size_value' => $r['size_value'], 'bedrooms' => $r['bedrooms'], 'city' => $r['city']];
+            $before = $data;
+            property_fill_missing($data, $r['title_en'], $r['specs'], $r['description_en']);
+            $change = array_diff_assoc(array_filter($data, function ($v) { return $v !== null && $v !== ''; }), array_filter($before, function ($v) { return $v !== null && $v !== ''; }));
+            if (isset($data['size_unit'])) { $change['size_unit'] = $data['size_unit']; $change['size_sqft'] = $data['size_sqft']; $change['size_value'] = $data['size_value']; }
+            if ($change) {
+                update('products', $change, 'id = ?', [(int) $r['id']]);
+            }
+        }
+        insert('settings', ['k' => 'prop_fields_v1', 'v_en' => '1', 'v_bn' => null]);
+    } catch (Throwable $e) {
+        error_log('SaleBari ensure_property_fields: ' . $e->getMessage());
+    }
+}

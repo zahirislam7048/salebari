@@ -68,6 +68,7 @@ function installed(): bool
         ensure_category_icons();
         ensure_category_url_slugs();
         ensure_price_numbers();
+        ensure_property_fields();
     }
     return $ok;
 }

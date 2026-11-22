@@ -81,6 +81,8 @@ if (is_post()) {
             'specs'            => input('specs') ?: null,
             'status'           => input('status', 'active'),
         ];
+        // flats, apartments and land: read size, bedrooms and place from the text when those boxes were left empty
+        $autoFilled = is_property_category($catId) ? property_fill_missing($data, $titleEn, input('specs'), input('description_en')) : [];
 
         try {
             $existingImages = $id ? (json_decode((string) row('SELECT images FROM products WHERE id = ?', [$id])['images'], true) ?: []) : [];
@@ -94,13 +96,13 @@ if (is_post()) {
             if ($id) {
                 $data['slug'] = slug_after_rename('products', $id, $titleEn, (string) scalar('SELECT slug FROM products WHERE id = ?', [$id]));
                 update('products', $data, 'id = ?', [$id]);
-                flash('success', 'Product updated.');
+                flash('success', 'Product updated.' . ($autoFilled ? ' Filled in automatically: ' . implode(', ', $autoFilled) . '.' : ''));
             } else {
                 $data['slug']       = unique_slug('products', slugify($titleEn));
                 $data['sort_order'] = (int) scalar('SELECT COUNT(*) FROM products');
                 $data['created_at'] = now();
                 insert('products', $data);
-                flash('success', 'Product added.');
+                flash('success', 'Product added.' . ($autoFilled ? ' Filled in automatically: ' . implode(', ', $autoFilled) . '.' : ''));
             }
             redirect('admin/products.php');
         } catch (Throwable $ex) {
@@ -197,7 +199,7 @@ admin_header('Products', '<link rel="stylesheet" href="https://cdnjs.cloudflare.
         <option value="sale" <?= ($editing['deal_type'] ?? '') === 'sale' ? 'selected' : '' ?>>For sale</option>
         <option value="rent" <?= ($editing['deal_type'] ?? '') === 'rent' ? 'selected' : '' ?>>For rent</option>
       </select></label>
-    <div class="admin-field"><span>Property size (flats, apartments and land: fills the "by size" pages. Leave empty for other products)</span>
+    <div class="admin-field"><span>Property size and bedrooms (flats, apartments and land). Leave empty and the site reads them from the title and specs, e.g. "3 Bed Flat, 1,450 sqft, Uttara"</span>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <input type="number" name="size_value" min="0" step="0.01" placeholder="e.g. 1450" value="<?= e((string) ($editing['size_value'] ?? '')) ?>" style="max-width:160px">
         <select name="size_unit" style="max-width:160px">
