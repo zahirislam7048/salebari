@@ -82,7 +82,7 @@ if (is_post()) {
             'status'           => input('status', 'active'),
         ];
         // flats, apartments and land: read size, bedrooms and place from the text when those boxes were left empty
-        $autoFilled = is_property_category($catId) ? property_fill_missing($data, $titleEn, input('specs'), input('description_en')) : [];
+        $autoFilled = is_property_category($catId) ? property_fill_missing($data, $titleEn, input('specs'), input('description_en'), property_kind_for_category($catId)) : [];
 
         try {
             $existingImages = $id ? (json_decode((string) row('SELECT images FROM products WHERE id = ?', [$id])['images'], true) ?: []) : [];

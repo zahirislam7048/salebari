@@ -455,34 +455,75 @@ function is_property_category(int $categoryId): bool
     return strpos($path, 'real-estate/apartment') === 0 || strpos($path, 'real-estate/land') === 0;
 }
 
+/** 'land' for plots, 'flat' for flats and apartments. */
+function property_kind_for_category(int $categoryId): string
+{
+    return strpos(category_index()[$categoryId]['path'] ?? '', 'real-estate/land') === 0 ? 'land' : 'flat';
+}
+
+/** The Dhaka area mentioned most often in a text (ties: the one mentioned first), or null. Bangla names count too. */
+function property_area_in_text(string $text): ?string
+{
+    $low  = mb_strtolower($text);
+    $best = null;
+    $bestN = 0;
+    $bestAt = PHP_INT_MAX;
+    foreach (property_areas() as $slug => $a) {
+        $needles = $a['match'];
+        $bn = trim(explode(' ', $a['bn'])[0]);
+        if ($bn !== '') { $needles[] = $bn; }
+        $n = 0;
+        $at = PHP_INT_MAX;
+        foreach ($needles as $nd) {
+            $off = 0;
+            while (($pos = mb_strpos($low, $nd, $off)) !== false) {
+                $n++;
+                $at = min($at, $pos);
+                $off = $pos + mb_strlen($nd);
+            }
+        }
+        if ($n > $bestN || ($n === $bestN && $n > 0 && $at < $bestAt)) {
+            $best = $slug; $bestN = $n; $bestAt = $at;
+        }
+    }
+    return $bestN > 0 ? $best : null;
+}
+
 /**
- * Reads size, bedrooms and a Dhaka area / district out of free text such as a title or specs
- * ("3 Bed Flat, 1,450 sqft, Uttara" or "Size: 5 katha"). Returns only what it found:
- * ['size_value' => 1450.0, 'size_unit' => 'sqft', 'bedrooms' => 3, 'city' => 'Uttara, Dhaka'].
+ * Reads size, bedrooms and a place out of free text such as a title, specs or a description
+ * ("3 Bed Flat, 1,450 sqft, Uttara", "Size: 5 katha", "2975 SFT apartments ... Bashundhara Residential Area").
+ * $kind 'flat' reads only square feet (a plot size mentioned in a flat's description is the building's land, not the flat);
+ * 'land' prefers katha / decimal / bigha. Returns only what it found:
+ * ['size_value' => 1450.0, 'size_unit' => 'sqft', 'bedrooms' => 3, 'area' => 'uttara', 'city' => 'Uttara, Dhaka'].
  */
-function property_guess_fields(string $text): array
+function property_guess_fields(string $text, string $kind = 'flat'): array
 {
     $t = strtr($text, ['০' => '0', '১' => '1', '২' => '2', '৩' => '3', '৪' => '4', '৫' => '5', '৬' => '6', '৭' => '7', '৮' => '8', '৯' => '9']);
     $t = mb_strtolower(preg_replace('/\s+/u', ' ', $t));
     $out = [];
 
-    // size: a number followed by a unit
+    // size: a number (optionally "2100+") followed by a unit; the first one written in the text wins
     $units = ['sqft' => 'sqft|sq\.? ?ft|sft|square ?feet|square ?foot|বর্গফুট', 'katha' => 'katha|kathas|kata|কাঠা|কাটা', 'decimal' => 'decimal|decimals|shotok|shatak|shotansho|শতক|শতাংশ', 'bigha' => 'bigha|bighas|বিঘা'];
-    $best = null;
-    foreach ($units as $unit => $alt) {
-        if (preg_match('/(\d[\d,]*(?:\.\d+)?)\s*(?:' . $alt . ')(?![a-z])/u', $t, $m, PREG_OFFSET_CAPTURE)) {
-            $val = (float) str_replace(',', '', $m[1][0]);
-            if ($val > 0 && ($best === null || $m[0][1] < $best[2])) {
-                $best = [$val, $unit, $m[0][1]];   // the first one written in the text wins
+    $allowed = $kind === 'land' ? ['katha', 'decimal', 'bigha', 'sqft'] : ['sqft'];
+    $pick = function (array $unitNames) use ($units, $t) {
+        $best = null;
+        foreach ($unitNames as $unit) {
+            if (preg_match('/(\d[\d,]*(?:\.\d+)?)\+?\s*(?:' . $units[$unit] . ')(?![a-z])/u', $t, $m, PREG_OFFSET_CAPTURE)) {
+                $val = (float) str_replace(',', '', $m[1][0]);
+                if ($val > 0 && ($best === null || $m[0][1] < $best[2])) {
+                    $best = [$val, $unit, $m[0][1]];
+                }
             }
         }
-    }
+        return $best;
+    };
+    $best = $kind === 'land' ? ($pick(['katha', 'decimal', 'bigha']) ?: $pick(['sqft'])) : $pick(['sqft']);
     if ($best) {
         $out['size_value'] = $best[0];
         $out['size_unit']  = $best[1];
     }
 
-    // bedrooms: "3 bed", "3-bedroom", "3 BHK", or "bedrooms: 3"
+    // bedrooms: "3 bed", "3-bedroom", "3 BHK", "৩ বেডরুম", or "bedrooms: 3"
     if (preg_match('/\b(\d{1,2})\s*[- ]?(?:(?:bed(?:room)?s?|br|bhk)\b|বেডরুম|বেড)/u', $t, $m) || preg_match('/bed(?:room)?s?\s*[:\-]\s*(\d{1,2})\b/u', $t, $m)) {
         $n = (int) $m[1];
         if ($n >= 1 && $n <= 20) {
@@ -490,15 +531,10 @@ function property_guess_fields(string $text): array
         }
     }
 
-    // place: a Dhaka area wins ("Uttara, Dhaka"), otherwise a district; Bangla names work too
-    $ak = property_area_for($t);
-    if (!$ak) {
-        foreach (property_areas() as $slug => $a) {
-            $bn = trim(explode(' ', $a['bn'])[0]);
-            if ($bn !== '' && mb_strpos($t, $bn) !== false) { $ak = $slug; break; }
-        }
-    }
+    // place: the Dhaka area mentioned most, otherwise a district; Bangla names work too
+    $ak = property_area_in_text($t);
     if ($ak) {
+        $out['area'] = $ak;
         $out['city'] = property_areas()[$ak]['name'] . ', Dhaka';
     } elseif ($d = district_for($t)) {
         $out['city'] = $d['name'];
@@ -510,59 +546,74 @@ function property_guess_fields(string $text): array
     return $out;
 }
 
-/** Fills the empty size / bedroom / city fields of $data from its title, specs and description. Returns the names it filled. */
-function property_fill_missing(array &$data, ?string $title, ?string $specs, ?string $descriptionHtml): array
+/**
+ * Fills the empty size / bedroom / city fields of $data from its title, specs and description. Returns what it filled.
+ * A city that is only "Dhaka" is refined to the area when the text names one. Anything already filled is left alone.
+ */
+function property_fill_missing(array &$data, ?string $title, ?string $specs, ?string $descriptionHtml, string $kind = 'flat'): array
 {
     $filled = [];
-    $sources = [
-        (string) $title . ' ' . (string) $specs,
-        mb_substr(trim(html_entity_decode(strip_tags((string) $descriptionHtml), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 600),
-    ];
-    foreach ($sources as $src) {
+    $desc = mb_substr(trim(html_entity_decode(strip_tags(preg_replace('#</(p|li|h[1-6]|div|tr)>#i', ' ', (string) $descriptionHtml)), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 3000);
+    foreach ([(string) $title . ' ' . (string) $specs, $desc] as $src) {
         if (trim($src) === '') {
             continue;
         }
-        $g = property_guess_fields($src);
+        $g = property_guess_fields($src, $kind);
         if (empty($data['size_value']) && isset($g['size_value'])) {
             $data['size_value'] = $g['size_value'];
             $data['size_unit']  = $g['size_unit'];
             $data['size_sqft']  = size_to_sqft($g['size_value'], $g['size_unit']);
             $filled[] = rtrim(rtrim(number_format($g['size_value'], 2), '0'), '.') . ' ' . $g['size_unit'];
         }
-        if (empty($data['bedrooms']) && isset($g['bedrooms'])) {
+        if (empty($data['bedrooms']) && isset($g['bedrooms']) && $kind === 'flat') {
             $data['bedrooms'] = $g['bedrooms'];
             $filled[] = $g['bedrooms'] . ' bed';
         }
-        if (trim((string) ($data['city'] ?? '')) === '' && isset($g['city']) && $src === $sources[0]) {
-            // only trust the place when it is written in the title or specs
-            $data['city'] = $g['city'];
-            $filled[] = $g['city'];
+        $city = trim((string) ($data['city'] ?? ''));
+        if (isset($g['city'])) {
+            $d = district_for($city);
+            $needsPlace = $city === '' || ($d && $d['slug'] === 'dhaka' && !property_area_for($city) && isset($g['area']));
+            if ($needsPlace) {
+                $data['city'] = $g['city'];
+                $filled[] = $g['city'];
+            }
         }
     }
     return $filled;
 }
 
-/** Once: fill size / bedrooms / city for property products that were added before these fields existed. */
+/** Once (v2): fill size / bedrooms / place for property products that lack them, and fix flat sizes saved in a plot unit. */
 function ensure_property_fields(): void
 {
     try {
-        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'prop_fields_v1'")) {
+        if (scalar("SELECT COUNT(*) FROM settings WHERE k = 'prop_fields_v2'")) {
             return;
         }
-        foreach (rows("SELECT id, category_id, title_en, specs, description_en, city, size_value, bedrooms FROM products WHERE size_value IS NULL OR bedrooms IS NULL OR city IS NULL OR city = ''") as $r) {
-            if (!is_property_category((int) $r['category_id'])) {
+        foreach (rows("SELECT id, category_id, title_en, specs, description_en, city, size_value, size_unit, bedrooms FROM products") as $r) {
+            $cid = (int) $r['category_id'];
+            if (!is_property_category($cid)) {
                 continue;
             }
-            $data = ['size_value' => $r['size_value'], 'bedrooms' => $r['bedrooms'], 'city' => $r['city']];
-            $before = $data;
-            property_fill_missing($data, $r['title_en'], $r['specs'], $r['description_en']);
-            $change = array_diff_assoc(array_filter($data, function ($v) { return $v !== null && $v !== ''; }), array_filter($before, function ($v) { return $v !== null && $v !== ''; }));
-            if (isset($data['size_unit'])) { $change['size_unit'] = $data['size_unit']; $change['size_sqft'] = $data['size_sqft']; $change['size_value'] = $data['size_value']; }
+            $kind = property_kind_for_category($cid);
+            $data = ['size_value' => $r['size_value'], 'size_unit' => $r['size_unit'], 'bedrooms' => $r['bedrooms'], 'city' => $r['city']];
+            $fix = [];
+            if ($kind === 'flat' && $r['size_unit'] && $r['size_unit'] !== 'sqft') {
+                // a flat measured in katha / decimal / bigha is a mis-read (the plot the building stands on)
+                $data['size_value'] = null; $data['size_unit'] = null;
+                $fix = ['size_value' => null, 'size_unit' => null, 'size_sqft' => null];
+            }
+            property_fill_missing($data, $r['title_en'], $r['specs'], $r['description_en'], $kind);
+            $change = $fix;
+            foreach (['size_value', 'size_unit', 'size_sqft', 'bedrooms', 'city'] as $k) {
+                if (array_key_exists($k, $data) && $data[$k] !== null && $data[$k] !== '' && ($data[$k] != ($r[$k] ?? null))) {
+                    $change[$k] = $data[$k];
+                }
+            }
             if ($change) {
                 update('products', $change, 'id = ?', [(int) $r['id']]);
             }
         }
-        insert('settings', ['k' => 'prop_fields_v1', 'v_en' => '1', 'v_bn' => null]);
+        insert('settings', ['k' => 'prop_fields_v2', 'v_en' => '1', 'v_bn' => null]);
     } catch (Throwable $e) {
         error_log('SaleBari ensure_property_fields: ' . $e->getMessage());
     }
