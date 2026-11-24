@@ -2177,3 +2177,5 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .calc-sub { font-size: 1.1rem; margin: 18px 0 10px; }
 .calc-out td, .calc-year td { font-variant-numeric: tabular-nums; }
 @media (max-width: 560px) { .calc-big strong { font-size: 1.6rem; } }
+
+.estate-chips { margin-top: 18px; }
