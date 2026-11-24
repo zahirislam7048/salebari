@@ -92,7 +92,7 @@ $introBn = "{$A['bn']} নাকি {$B['bn']}, কোনটি বেছে ন
 
 /* price level sentence (areas only) */
 $tierLine = null;
-if (!$cityPair) {
+if (!$cityPair && $A['tier'] && $B['tier']) {
     $tl = property_tier_labels();
     if ($A['tier'] === $B['tier']) {
         $tierLine = ["{$A['name']} and {$B['name']} generally sit in a similar price bracket ({$tl[$A['tier']][0]}). Compare the price per square foot of current listings to see the real gap.",

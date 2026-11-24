@@ -189,6 +189,82 @@ function property_areas(): array
                 'watch'     => ['Distance, unfinished facilities and plot disputes: verify the allotment and papers with RAJUK or a lawyer', 'দূরত্ব, অসম্পূর্ণ সুবিধা ও প্লট বিরোধ: বরাদ্দ ও কাগজ রাজউক বা আইনজীবীর কাছে যাচাই করুন'],
             ],
         ],
+
+        'mohakhali' => [
+            'name' => 'Mohakhali', 'bn' => 'মহাখালী', 'bn_in' => 'মহাখালীতে', 'match' => ['mohakhali'], 'tier' => null,
+            'types' => ['flat', 'apartment'], 'neighbors' => ['banani', 'gulshan', 'badda'],
+            'blurb' => ["Mohakhali is a busy area in north-central Dhaka between Banani, Gulshan and Tejgaon. It is known for the Mohakhali bus terminal, a major transport junction, and for Mohakhali DOHS, a housing society of apartments and houses.",
+                        "মহাখালী ঢাকার উত্তর-মধ্য অংশে বনানী, গুলশান ও তেজগাঁওয়ের মাঝে ব্যস্ত এলাকা। মহাখালী বাস টার্মিনাল নামে বড় যাতায়াত কেন্দ্র এবং অ্যাপার্টমেন্ট ও বাড়ির আবাসিক সোসাইটি মহাখালী ডিওএইচএসের জন্য পরিচিত।"],
+            'attrs' => [
+                'character' => ['Busy junction area beside Banani and Gulshan', 'বনানী ও গুলশানের পাশে ব্যস্ত সংযোগ এলাকা'],
+                'homes'     => ['Apartments, including in the DOHS housing society, among offices and shops', 'অফিস ও দোকানের মাঝে অ্যাপার্টমেন্ট, ডিওএইচএস সোসাইটিতেও'],
+                'land'      => ['Plots are rare and costly', 'প্লট কম এবং ব্যয়বহুল'],
+                'access'    => ['Close to Banani, Gulshan and Tejgaon; the bus terminal makes it a transport hub', 'বনানী, গুলশান ও তেজগাঁওয়ের কাছে; বাস টার্মিনাল একে যাতায়াতের কেন্দ্র করেছে'],
+                'life'      => ['Offices, hospitals, markets and restaurants nearby', 'অফিস, হাসপাতাল, বাজার ও রেস্তোরাঁ কাছেই'],
+                'best'      => ['Buyers who want to be near Banani and Gulshan and need easy road connections', 'যারা বনানী ও গুলশানের কাছে থাকতে চান এবং সহজ সড়ক সংযোগ দরকার'],
+                'watch'     => ['Heavy traffic and noise around the terminal and the main roads', 'টার্মিনাল ও প্রধান সড়কের আশপাশে যানজট ও শব্দ'],
+            ],
+        ],
+        'aftabnagar' => [
+            'name' => 'Aftabnagar', 'bn' => 'আফতাবনগর', 'bn_in' => 'আফতাবনগরে', 'match' => ['aftabnagar', 'aftab nagar'], 'tier' => null,
+            'types' => ['flat', 'apartment'], 'neighbors' => ['badda', 'bashundhara', 'khilgaon'],
+            'blurb' => ["Aftabnagar is a residential area in east Dhaka beside Badda, Rampura and Banasree, and is home to East West University. It has many apartment buildings.",
+                        "আফতাবনগর ঢাকার পূর্বে বাড্ডা, রামপুরা ও বনশ্রীর পাশে আবাসিক এলাকা, এখানে ইস্ট ওয়েস্ট বিশ্ববিদ্যালয় আছে। এখানে অনেক অ্যাপার্টমেন্ট ভবন রয়েছে।"],
+            'attrs' => [
+                'character' => ['Residential area in east Dhaka beside Badda and Rampura', 'বাড্ডা ও রামপুরার পাশে ঢাকার পূর্বের আবাসিক এলাকা'],
+                'homes'     => ['Mostly apartments in residential buildings', 'বেশিরভাগ আবাসিক ভবনে অ্যাপার্টমেন্ট'],
+                'land'      => ['Plots are limited', 'প্লট সীমিত'],
+                'access'    => ['Close to Badda, Rampura and Banasree on the east side of the city', 'শহরের পূর্ব পাশে বাড্ডা, রামপুরা ও বনশ্রীর কাছে'],
+                'life'      => ['A university, schools, markets and hospitals nearby', 'বিশ্ববিদ্যালয়, স্কুল, বাজার ও হাসপাতাল কাছেই'],
+                'best'      => ['Families who want a residential east-side location near Badda and Rampura', 'যারা বাড্ডা ও রামপুরার কাছে পূর্ব পাশে আবাসিক এলাকা চান'],
+                'watch'     => ['Traffic towards central Dhaka at peak hours; check each building\'s papers', 'ব্যস্ত সময়ে মধ্য ঢাকার দিকে যানজট; প্রতিটি ভবনের কাগজ দেখুন'],
+            ],
+        ],
+        'khilgaon' => [
+            'name' => 'Khilgaon', 'bn' => 'খিলগাঁও', 'bn_in' => 'খিলগাঁওয়ে', 'match' => ['khilgaon', 'khilgaun'], 'tier' => null,
+            'types' => ['flat', 'apartment'], 'neighbors' => ['aftabnagar', 'badda', 'mohammadpur'],
+            'blurb' => ["Khilgaon is a large, densely populated residential area in south-east Dhaka near Malibagh, Rampura and Banasree. It has busy markets and a wide range of older and newer apartment buildings.",
+                        "খিলগাঁও ঢাকার দক্ষিণ-পূর্বে মালিবাগ, রামপুরা ও বনশ্রীর কাছে বড় ও ঘনবসতিপূর্ণ আবাসিক এলাকা। এখানে ব্যস্ত বাজার এবং পুরোনো ও নতুন নানা ধরনের অ্যাপার্টমেন্ট ভবন আছে।"],
+            'attrs' => [
+                'character' => ['Dense, busy and middle-income', 'ঘনবসতিপূর্ণ, ব্যস্ত ও মধ্যবিত্ত'],
+                'homes'     => ['Apartments of many ages and sizes', 'নানা বয়স ও আকারের অ্যাপার্টমেন্ট'],
+                'land'      => ['Plots are limited and mostly small', 'প্লট সীমিত এবং বেশিরভাগ ছোট'],
+                'access'    => ['Close to Malibagh, Rampura, Basabo and Banasree', 'মালিবাগ, রামপুরা, বাসাবো ও বনশ্রীর কাছে'],
+                'life'      => ['Markets, schools and hospitals within the area', 'এলাকার ভেতরেই বাজার, স্কুল ও হাসপাতাল'],
+                'best'      => ['Families who want a central-east location across a wide range of budgets', 'যারা নানা বাজেটের মধ্যে মধ্য-পূর্ব অবস্থান চান'],
+                'watch'     => ['Crowding, and waterlogging in some parts in heavy rain; check building age and approval', 'ভিড়, আর ভারী বর্ষণে কিছু অংশে জলাবদ্ধতা; ভবনের বয়স ও অনুমোদন দেখুন'],
+            ],
+        ],
+        'keraniganj' => [
+            'name' => 'Keraniganj', 'bn' => 'কেরানীগঞ্জ', 'bn_in' => 'কেরানীগঞ্জে', 'match' => ['keraniganj', 'keranigonj'], 'tier' => null,
+            'types' => ['flat', 'apartment', 'land'], 'neighbors' => ['mohammadpur', 'dhanmondi', 'savar'],
+            'blurb' => ["Keraniganj lies across the Buriganga river from old Dhaka and is an upazila of Dhaka district. It mixes residential areas, small industry and open land, and buyers often look there for more space than central Dhaka offers.",
+                        "কেরানীগঞ্জ পুরোনো ঢাকার ওপারে বুড়িগঙ্গা নদীর অপর পাড়ে, ঢাকা জেলার একটি উপজেলা। এখানে আবাসিক এলাকা, ছোট শিল্প ও খোলা জমি মিশে আছে, আর ক্রেতারা প্রায়ই মধ্য ঢাকার চেয়ে বেশি জায়গার জন্য এখানে খোঁজেন।"],
+            'attrs' => [
+                'character' => ['Across the river from old Dhaka: residential, industrial and open land', 'পুরোনো ঢাকার নদীর ওপারে: আবাসিক, শিল্প ও খোলা জমি'],
+                'homes'     => ['Apartments and houses in growing residential pockets', 'বেড়ে ওঠা আবাসিক এলাকায় অ্যাপার্টমেন্ট ও বাড়ি'],
+                'land'      => ['Plots and land are available; check the land type and whether it is low-lying', 'প্লট ও জমি পাওয়া যায়; জমির ধরন ও নিচু কি না দেখুন'],
+                'access'    => ['Linked to Dhaka by the bridges over the Buriganga; expect traffic at the bridges and at peak hours', 'বুড়িগঙ্গার সেতু দিয়ে ঢাকার সাথে যুক্ত; সেতুতে ও ব্যস্ত সময়ে যানজট থাকে'],
+                'life'      => ['Local markets and schools; fewer large facilities than central Dhaka', 'স্থানীয় বাজার ও স্কুল; মধ্য ঢাকার চেয়ে বড় সুবিধা কম'],
+                'best'      => ['Buyers who want more land or space and can accept a longer trip to the centre', 'যারা বেশি জমি বা জায়গা চান এবং কেন্দ্রে যেতে বেশি সময় মেনে নিতে পারেন'],
+                'watch'     => ['Flooding risk on low land, the land class and the ownership papers, and the trip across the river', 'নিচু জমিতে বন্যার ঝুঁকি, জমির শ্রেণি ও মালিকানার কাগজ এবং নদী পার হওয়ার যাতায়াত'],
+            ],
+        ],
+        'savar' => [
+            'name' => 'Savar', 'bn' => 'সাভার', 'bn_in' => 'সাভারে', 'match' => ['savar'], 'tier' => null,
+            'types' => ['flat', 'apartment', 'land'], 'neighbors' => ['mirpur', 'uttara', 'keraniganj'],
+            'blurb' => ["Savar is an upazila in the north-west of Dhaka district, on the Dhaka–Aricha highway. It is known for the National Martyrs' Memorial, Jahangirnagar University, the Savar EPZ and Savar Cantonment.",
+                        "সাভার ঢাকা জেলার উত্তর-পশ্চিমে ঢাকা–আরিচা মহাসড়কের ওপর একটি উপজেলা। জাতীয় স্মৃতিসৌধ, জাহাঙ্গীরনগর বিশ্ববিদ্যালয়, সাভার ইপিজেড ও সাভার সেনানিবাসের জন্য পরিচিত।"],
+            'attrs' => [
+                'character' => ['Large outer town on the Dhaka–Aricha highway', 'ঢাকা–আরিচা মহাসড়কের ওপর বড় শহরতলি'],
+                'homes'     => ['Apartments and houses, with new residential projects', 'অ্যাপার্টমেন্ট ও বাড়ি, সাথে নতুন আবাসিক প্রকল্প'],
+                'land'      => ['Plots and land are available, from small plots to larger holdings', 'ছোট প্লট থেকে বড় জমি পর্যন্ত পাওয়া যায়'],
+                'access'    => ['On the Dhaka–Aricha highway; heavy traffic towards Dhaka at peak hours', 'ঢাকা–আরিচা মহাসড়কে; ব্যস্ত সময়ে ঢাকার দিকে যানজট'],
+                'life'      => ['A university, industry and markets in the area', 'এলাকায় বিশ্ববিদ্যালয়, শিল্প ও বাজার'],
+                'best'      => ['Buyers who want a larger plot or home outside central Dhaka and can accept a long commute', 'যারা মধ্য ঢাকার বাইরে বড় প্লট বা বাড়ি চান এবং দীর্ঘ যাতায়াত মেনে নিতে পারেন'],
+                'watch'     => ['Highway traffic, distance from central Dhaka and land documents: verify carefully', 'মহাসড়কের যানজট, মধ্য ঢাকা থেকে দূরত্ব ও জমির কাগজ: সাবধানে যাচাই করুন'],
+            ],
+        ],
     ];
 }
 
@@ -262,6 +338,7 @@ function property_compare_pairs(): array
         ['gulshan', 'banani'], ['gulshan', 'baridhara'], ['gulshan', 'dhanmondi'], ['gulshan', 'uttara'], ['banani', 'baridhara'],
         ['dhanmondi', 'mohammadpur'], ['dhanmondi', 'uttara'], ['mirpur', 'mohammadpur'], ['uttara', 'mirpur'], ['uttara', 'bashundhara'],
         ['badda', 'bashundhara'], ['bashundhara', 'purbachal'], ['uttara', 'purbachal'],
+        ['banani', 'mohakhali'], ['badda', 'aftabnagar'], ['bashundhara', 'aftabnagar'], ['savar', 'keraniganj'], ['uttara', 'savar'],
         ['dhaka', 'chittagong'], ['dhaka', 'feni'], ['chittagong', 'feni'],
     ];
 }

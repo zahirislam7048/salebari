@@ -105,7 +105,7 @@ site_header(str_replace(' — SaleBari', '', $title), $head, false);
 </script>
     <?php $toolScript = ob_get_clean(); ?>
 
-<?php else: /* home-loan-emi-calculator */ ?>
+<?php elseif ($slug === 'home-loan-emi-calculator'): ?>
     <section class="calc-card" aria-label="Home loan EMI calculator">
       <div class="calc-fields">
         <label><span><?= $bi('Price of the flat (৳)', 'ফ্ল্যাটের দাম (৳)') ?></span><input type="number" id="emPrice" min="0" step="any" value="8000000" inputmode="numeric"></label>
@@ -171,6 +171,55 @@ site_header(str_replace(' — SaleBari', '', $title), $head, false);
     $('emYearRows').innerHTML = rows;
   }
   ['emPrice', 'emDown', 'emRate', 'emYears', 'emIncome'].forEach(function (id) { $(id).addEventListener('input', run); });
+  run();
+})();
+</script>
+    <?php $toolScript = ob_get_clean(); ?>
+<?php else: /* flat-price-calculator */ ?>
+    <section class="calc-card" aria-label="Flat price calculator">
+      <div class="calc-fields">
+        <label><span><?= $bi('Flat area (sqft)', 'ফ্ল্যাটের আকার (বর্গফুট)') ?></span><input type="number" id="fpArea" min="0" step="any" value="1500" inputmode="decimal"></label>
+        <label><span><?= $bi('Price per sqft (৳)', 'বর্গফুট প্রতি দাম (৳)') ?></span><input type="number" id="fpRate" min="0" step="any" value="7000" inputmode="decimal"></label>
+        <label><span><?= $bi('Or the total price (৳)', 'অথবা মোট দাম (৳)') ?></span><input type="number" id="fpPrice" min="0" step="any" placeholder="leave empty to use the rate" inputmode="numeric"></label>
+        <label><span><?= $bi('Parking (৳)', 'পার্কিং (৳)') ?></span><input type="number" id="fpPark" min="0" step="any" placeholder="0" inputmode="numeric"></label>
+        <label><span><?= $bi('Other one-time costs (৳)', 'অন্যান্য এককালীন খরচ (৳)') ?></span><input type="number" id="fpOther" min="0" step="any" placeholder="registration, utilities, legal…" inputmode="numeric"></label>
+        <label><span><?= $bi('Monthly rent (৳, optional)', 'মাসিক ভাড়া (৳, ঐচ্ছিক)') ?></span><input type="number" id="fpRent" min="0" step="any" placeholder="e.g. 30000" inputmode="numeric"></label>
+      </div>
+      <p class="prop-note"><?= $bi('The starting values are only examples. Use the area your price is based on, and put in the costs you were quoted. This page does not guess registration, tax or utility amounts.', 'শুরুর মানগুলো শুধু উদাহরণ। আপনার দাম যে আকারের ভিত্তিতে সেটি দিন এবং আপনাকে বলা খরচগুলো বসান। এই পেজ রেজিস্ট্রেশন, কর বা ইউটিলিটির অঙ্ক অনুমান করে না।') ?></p>
+      <div class="calc-results" aria-live="polite">
+        <div class="calc-big"><span><?= $bi('Real total cost', 'আসল মোট খরচ') ?></span><strong id="fpTotal">–</strong></div>
+        <div class="calc-row"><span><?= $bi('Flat price', 'ফ্ল্যাটের দাম') ?></span><b id="fpFlat">–</b></div>
+        <div class="calc-row"><span><?= $bi('Price per sqft (flat only)', 'বর্গফুট প্রতি দাম (শুধু ফ্ল্যাট)') ?></span><b id="fpPer">–</b></div>
+        <div class="calc-row"><span><?= $bi('Real cost per sqft (with extras)', 'আসল বর্গফুট প্রতি খরচ (বাড়তি সহ)') ?></span><b id="fpPerAll">–</b></div>
+        <div class="calc-row" id="fpYieldRow" hidden><span><?= $bi('Rent per year', 'বছরে ভাড়া') ?></span><b id="fpYearRent">–</b></div>
+        <div class="calc-row" id="fpYieldRow2" hidden><span><?= $bi('Gross rental yield', 'মোট ভাড়া-আয়ের হার') ?></span><b id="fpYield">–</b></div>
+      </div>
+      <p class="calc-error" id="fpError" hidden></p>
+      <p class="prop-note"><?= $bi('The yield ignores empty months, service charges, repairs and tax, so the real return is lower.', 'এই হারে খালি মাস, সার্ভিস চার্জ, মেরামত ও কর ধরা হয়নি, তাই প্রকৃত আয় কম।') ?></p>
+    </section>
+    <?php ob_start(); ?>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function num(id) { var x = parseFloat($(id).value); return x > 0 ? x : 0; }
+  function money(n) { return '৳ ' + Math.round(n).toLocaleString('en-IN'); }
+  function run() {
+    var area = num('fpArea'), rate = num('fpRate'), priceIn = num('fpPrice'), park = num('fpPark'), other = num('fpOther'), rent = num('fpRent');
+    var err = $('fpError'), ids = ['fpTotal', 'fpFlat', 'fpPer', 'fpPerAll'];
+    function blank(msg) { ids.forEach(function (i) { $(i).textContent = '–'; }); $('fpYieldRow').hidden = true; $('fpYieldRow2').hidden = true; err.hidden = !msg; err.textContent = msg || ''; }
+    if (!(area > 0)) return blank('Enter the flat area in square feet.');
+    var price = priceIn > 0 ? priceIn : area * rate;
+    if (!(price > 0)) return blank('Enter the price per sqft or the total price.');
+    var total = price + park + other;
+    err.hidden = true;
+    $('fpTotal').textContent = money(total); $('fpFlat').textContent = money(price);
+    $('fpPer').textContent = money(price / area) + ' / sqft'; $('fpPerAll').textContent = money(total / area) + ' / sqft';
+    if (rent > 0) {
+      $('fpYearRent').textContent = money(rent * 12); $('fpYield').textContent = (rent * 12 / total * 100).toFixed(2) + '%';
+      $('fpYieldRow').hidden = false; $('fpYieldRow2').hidden = false;
+    } else { $('fpYieldRow').hidden = true; $('fpYieldRow2').hidden = true; }
+  }
+  ['fpArea', 'fpRate', 'fpPrice', 'fpPark', 'fpOther', 'fpRent'].forEach(function (id) { $(id).addEventListener('input', run); });
   run();
 })();
 </script>
