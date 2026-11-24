@@ -97,6 +97,11 @@ if (!$type) {
       <p><a href="<?= e(property_compare_url()) ?>"><?= $bi('See all comparisons →', 'সব তুলনা দেখুন →') ?></a></p>
     </section>
 
+    <section class="prop-section">
+      <h2><?= $bi('Buying guides and calculators', 'কেনার গাইড ও ক্যালকুলেটর') ?></h2>
+      <?= property_chip_row(guide_all_chips()) ?>
+    </section>
+
     <p class="prop-note"><?= $bi('Looking for a different city? Message us on WhatsApp and we will help you find sellers there.', 'অন্য শহরে খুঁজছেন? হোয়াটসঅ্যাপে মেসেজ করুন, সেখানকার বিক্রেতা খুঁজে দিতে সাহায্য করব।') ?></p>
   </div>
 </section>
@@ -317,6 +322,8 @@ site_header(str_replace(' — SaleBari', '', $title), $head, false);
         <?= property_chip_row(property_size_chips('land')) ?>
       <?php endif; ?>
 
+      <h2 class="catalog-subheading">Buying guides and tools</h2>
+      <?= property_chip_row(guide_all_chips()) ?>
       <h2 class="catalog-subheading">More property<?= $loc ? ' in ' . e($cityEn) : '' ?></h2>
       <div class="chip-row">
         <?php foreach ($types as $k => $t): if ($k === $tk || ($area && !in_array($k, $area['types'], true))) continue; ?><a class="chip" href="<?= e(property_url($k, $ck ?: null)) ?>"><?= e($t['en']) ?> for Sale<?= $loc ? ' in ' . e($cityEn) : '' ?></a><?php endforeach; ?>

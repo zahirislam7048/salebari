@@ -2155,3 +2155,25 @@ html[lang="bn"] .ss-card [data-lang="en"], html:not([lang="bn"]) .ss-card [data-
 .prop-tile-static:hover { transform: none; border-color: var(--line); }
 .prop-tile-static span { line-height: 1.6; }
 .listing-card-spec { font-size: 0.8rem; color: var(--ink-soft); margin-top: 3px; }
+
+/* ---- guides and calculators ---- */
+.prop-updated { font-size: 0.82rem; color: rgba(250, 247, 240, 0.65) !important; margin: 0 !important; }
+.guide-toc { display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 12px 16px; margin: 0 0 8px; max-width: 940px; }
+.guide-toc strong { font-size: 0.82rem; color: var(--ink-soft); margin-right: 4px; }
+.guide-toc a { font-size: 0.88rem; font-weight: 600; color: var(--gold-deep); }
+.guide-section { scroll-margin-top: 90px; }
+.calc-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-m); padding: 20px; max-width: 940px; margin: 0 0 8px; }
+.calc-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 0 0 14px; }
+.calc-fields label { display: flex; flex-direction: column; gap: 5px; font-size: 0.8rem; font-weight: 700; color: var(--ink-soft); }
+.calc-fields input, .calc-fields select { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; font-size: 1rem; background: #fff; color: var(--ink); }
+.calc-results { display: grid; gap: 8px; margin: 14px 0; }
+.calc-big { background: var(--ink); color: var(--paper); border-radius: var(--radius-m); padding: 16px 18px; display: flex; flex-direction: column; gap: 4px; }
+.calc-big span { font-size: 0.85rem; opacity: 0.8; }
+.calc-big strong { font-size: 1.9rem; line-height: 1.1; color: var(--gold); }
+.calc-row { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 2px; }
+.calc-row b { white-space: nowrap; }
+.calc-row[hidden], .calc-error[hidden] { display: none; }
+.calc-error { color: #B3261E; font-weight: 600; margin: 8px 0; }
+.calc-sub { font-size: 1.1rem; margin: 18px 0 10px; }
+.calc-out td, .calc-year td { font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) { .calc-big strong { font-size: 1.6rem; } }

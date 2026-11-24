@@ -220,6 +220,8 @@ site_header(str_replace(' — SaleBari', '', $title), $head, false);
       <?= property_chip_row(array_values($more)) ?>
       <h2 class="catalog-subheading">Flats by size</h2>
       <?= property_chip_row(property_size_chips('flat')) ?>
+      <h2 class="catalog-subheading">Buying guides and tools</h2>
+      <?= property_chip_row(guide_all_chips()) ?>
       <p class="catalog-back">← <a href="<?= e(property_compare_url()) ?>">All comparisons</a> · <a href="<?= e(property_url()) ?>">All property for sale</a></p>
     </section>
   </div>

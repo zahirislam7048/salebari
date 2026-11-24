@@ -2,7 +2,7 @@
 /* XML sitemaps, built from the database so new categories, products, stalls, brands, malls and
    blog posts appear automatically.
      /sitemap_index.xml   (also /sitemap.xml)   -> lists the sitemaps below
-     /sitemap-pages.xml, -property.xml, -categories.xml, -products.xml, -stalls.xml, -brands.xml, -malls.xml, -blog.xml */
+     /sitemap-pages.xml, -property.xml, -guides.xml, -categories.xml, -products.xml, -stalls.xml, -brands.xml, -malls.xml, -blog.xml */
 require __DIR__ . '/app/bootstrap.php';
 
 $host   = (string) ($_SERVER['HTTP_HOST'] ?? 'salebari.com');
@@ -33,7 +33,7 @@ function sm_urlset(array $items): void
 }
 
 $type  = (string) input('type', 'index');
-$types = ['pages', 'property', 'categories', 'products', 'stalls', 'brands', 'malls', 'blog'];
+$types = ['pages', 'property', 'guides', 'categories', 'products', 'stalls', 'brands', 'malls', 'blog'];
 
 if (!installed()) {
     http_response_code(503);
@@ -77,6 +77,14 @@ switch ($type) {
         $propMod = date('Y-m-d', max((int) filemtime(__DIR__ . '/app/property_data.php'), (int) filemtime(__DIR__ . '/app/property_pages.php')));
         foreach (property_all_paths() as $pp) {
             $items[] = [$origin . $pp, $propMod, 'weekly', $pp === property_url() ? '0.8' : '0.7'];
+        }
+        break;
+
+    case 'guides':
+        // buying guides and calculators (see app/guide_data.php)
+        $guideMod = date('Y-m-d', (int) filemtime(__DIR__ . '/app/guide_data.php'));
+        foreach (guide_all_paths() as $gp) {
+            $items[] = [$origin . $gp, $guideMod, 'monthly', $gp === guide_url() ? '0.7' : '0.7'];
         }
         break;
 

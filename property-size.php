@@ -216,6 +216,8 @@ site_header(str_replace(' — SaleBari', '', $title), $head, false);
         <h2 class="catalog-subheading">Not sure where? Compare locations</h2>
         <?= property_chip_row(property_compare_chips(null, 8)) ?>
       <?php endif; ?>
+      <h2 class="catalog-subheading">Buying guides and tools</h2>
+      <?= property_chip_row(guide_all_chips()) ?>
       <p class="catalog-back">← <a href="<?= e(property_url()) ?>">All property for sale</a><?php if ($realEstate): ?> · <a href="<?= e(category_url($realEstate)) ?>">Real Estate</a><?php endif; ?></p>
     </section>
   </div>

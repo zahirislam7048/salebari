@@ -144,6 +144,11 @@ function footer_categories_html(): string
         $h .= '<a href="' . e(property_url('flat', $ak)) . '">' . e('Flat for Sale in ' . $a['name']) . '</a>';
     }
     $h .= '</div>';
+    $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(guide_url()) . '">Buying guides and tools</a>';
+    foreach (guide_all_chips() as [$href, $label]) {
+        $h .= '<a href="' . e($href) . '">' . e($label) . '</a>';
+    }
+    $h .= '</div>';
     $h .= '<div class="footer-cat-col"><a class="footer-cat-head" href="' . e(property_compare_url()) . '">Compare locations</a>';
     foreach (property_compare_chips(null, 8) as [$href, $label]) {
         $h .= '<a href="' . e($href) . '">' . e($label) . '</a>';

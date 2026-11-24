@@ -62,6 +62,26 @@ if (preg_match('#^/(flat|apartment|land)-for-sale(?:-in-([a-z0-9-]+))?/?$#', $pa
     return true;
 }
 
+if (preg_match('#^/guides/?$#', $path)) {
+    $_SERVER['SCRIPT_NAME'] = '/guide.php';
+    chdir(__DIR__);
+    require __DIR__ . '/guide.php';
+    return true;
+}
+if (preg_match('#^/guides/([a-z0-9-]+)/?$#', $path, $gm)) {
+    $_GET['g'] = $gm[1];
+    $_SERVER['SCRIPT_NAME'] = '/guide.php';
+    chdir(__DIR__);
+    require __DIR__ . '/guide.php';
+    return true;
+}
+if (preg_match('#^/tools/([a-z0-9-]+)/?$#', $path, $tm)) {
+    $_GET['t'] = $tm[1];
+    $_SERVER['SCRIPT_NAME'] = '/tool.php';
+    chdir(__DIR__);
+    require __DIR__ . '/tool.php';
+    return true;
+}
 if (preg_match('#^/compare-locations/?$#', $path)) {
     $_SERVER['SCRIPT_NAME'] = '/property-compare.php';
     chdir(__DIR__);
