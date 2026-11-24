@@ -100,6 +100,7 @@ site_header('Track your order', '<meta name="robots" content="noindex,follow">',
       <?php foreach ($phones as $i => $n): ?><?= $i ? ' / ' : ' ' ?><a href="https://wa.me/<?= e($n['wa']) ?>" target="_blank" rel="noopener">WhatsApp <?= e($n['display']) ?></a><?php endforeach; ?></p>
   </div>
 </section>
+<?= track_guide_html() ?>
 <?php ob_start(); ?>
 <script>
   (function () {

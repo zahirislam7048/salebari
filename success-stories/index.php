@@ -58,6 +58,7 @@ site_header('Success Stories', $head, false);
     </section>
   </div>
 </section>
+<?= success_guide_html() ?>
 <?php ob_start(); ?>
 <script>
   (function () {

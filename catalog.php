@@ -291,6 +291,7 @@ site_header($seoTitle, $head, false);
       <?php else: ?>
         <div class="catalog-intro"><?= category_intro_html($cat, $children, $trail) ?></div>
       <?php endif; ?>
+      <?= category_guide_html($cat, $children, $trail, $cityPage['name'] ?? null) ?>
       <?php if (($trail[0]['url_slug'] ?? '') === 'real-estate'): ?>
         <h2 class="catalog-subheading">Property for sale by city</h2>
         <?= property_links_html() ?>

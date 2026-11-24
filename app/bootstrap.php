@@ -34,6 +34,8 @@ require APP_ROOT . '/app/security.php';
 require APP_ROOT . '/app/property_pages.php';
 require APP_ROOT . '/app/property_data.php';
 require APP_ROOT . '/app/guide_data.php';
+require APP_ROOT . '/app/category_content.php';
+require APP_ROOT . '/app/page_content.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_set_cookie_params([

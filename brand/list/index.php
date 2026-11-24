@@ -30,7 +30,7 @@ $total = count($brands);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../css/style.css?v=23">
+<link rel="stylesheet" href="../../css/style.css?v=25">
 </head>
 <body>
 
@@ -155,6 +155,7 @@ $total = count($brands);
   </div>
 </section>
 
+<?= directory_guide_html('brand') ?>
 <section class="section">
   <div class="wrap seo-block seo-links">
     <h2>Shop by category</h2>

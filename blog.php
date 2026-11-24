@@ -28,7 +28,7 @@ $posts   = rows(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,600&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=23">
+<link rel="stylesheet" href="css/style.css?v=25">
 </head>
 <body>
 
@@ -159,6 +159,7 @@ $posts   = rows(
   </div>
 </section>
 
+<?= blog_guide_html() ?>
 <section class="section">
   <div class="wrap seo-block seo-links">
     <h2>Browse the bazaar</h2>

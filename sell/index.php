@@ -220,6 +220,7 @@ site_header('Open Your Stall — Start Selling', seo_meta([
   </div>
 </section>
 
+<?= sell_guide_html() ?>
 <?php ob_start(); ?>
 <script>
   /* Bilingual copy for this page, merged into the shared EN/বাংলা dictionary. */
